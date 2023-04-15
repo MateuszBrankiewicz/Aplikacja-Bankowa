@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:appbank/components/my_button.dart';
 import 'package:appbank/components/my_textfield.dart';
 import 'package:appbank/components/square_tile.dart';
+import 'package:appbank/components/logo.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
@@ -16,32 +17,29 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 50),
+              const SizedBox(height: 45),
 
               // logo
-              const Icon(
-                Icons.lock,
-                size: 100,
-              ),
+              const Logo(imagePath: './lib/images/logo.jfif'),
 
-              const SizedBox(height: 50),
+              const SizedBox(height: 25),
 
               // welcome back, you've been missed!
-              Text(
-                'Welcome back you\'ve been missed!',
+              const Text(
+                'Bank Polonia',
                 style: TextStyle(
-                  color: Colors.grey[700],
-                  fontSize: 16,
+                  color: Colors.red,
+                  fontSize: 35,
                 ),
               ),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 15),
 
               // username textfield
               MyTextField(
@@ -82,7 +80,7 @@ class LoginPage extends StatelessWidget {
                 onTap: signUserIn,
               ),
 
-              const SizedBox(height: 50),
+              const SizedBox(height: 30),
 
               // or continue with
               Padding(
@@ -96,7 +94,7 @@ class LoginPage extends StatelessWidget {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Text(
                         'Or continue with',
                         style: TextStyle(color: Colors.grey[700]),
@@ -112,23 +110,23 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 50),
+              const SizedBox(height: 20),
 
               // google + apple sign in buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
                   // google button
-                  SquareTile(imagePath: 'lib/images/googleicon.png'),
+                  SquareTile(imagePath: './lib/images/googleicon.png'),
 
-                  SizedBox(width: 25),
+                  SizedBox(width: 15),
 
                   // apple button
-                  SquareTile(imagePath: 'lib/images/applei.png')
+                  SquareTile(imagePath: './lib/images/appleimg.png')
                 ],
               ),
 
-              const SizedBox(height: 50),
+              const SizedBox(height: 10),
 
               // not a member? register now
               Row(

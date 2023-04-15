@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class SquareTile extends StatelessWidget {
+class Logo extends StatelessWidget {
   final String imagePath;
-  const SquareTile({
+  const Logo({
     super.key,
     required this.imagePath,
   });
@@ -18,7 +18,8 @@ class SquareTile extends StatelessWidget {
       ),
       child: Image.asset(
         imagePath,
-        height: 40,
+        height: 50,
+        width: 60,
       ),
     );
   }
