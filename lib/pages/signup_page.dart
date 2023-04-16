@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:appbank/components/my_button.dart';
 import 'package:appbank/components/my_textfield.dart';
 import 'package:appbank/components/logo.dart';
+import 'package:appbank/firebase/checkRegistation.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
@@ -12,11 +13,102 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-  final usernameController = TextEditingController(); //do zmiany
-  final passwordController = TextEditingController(); //do zmiany
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
-  void signUp() async {
-    //Funkcja do rejestrowania uzytkownika
+  String _firstNameError = '';
+  String _lastNameError = '';
+  String _emailError = '';
+  String _passwordError = '';
+  String _confirmPasswordError = '';
+
+  Future<void> signUp() async {
+    // Reset error messages
+    setState(() {
+      _firstNameError = '';
+      _lastNameError = '';
+      _emailError = '';
+      _passwordError = '';
+      _confirmPasswordError = '';
+    });
+
+    // Get input values
+    String firstName = _firstNameController.text.trim();
+    String lastName = _lastNameController.text.trim();
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+    String confirmPassword = _confirmPasswordController.text.trim();
+
+    // Validate input data
+    bool isValid = true;
+
+    if (firstName.isEmpty) {
+      setState(() {
+        _firstNameError = 'Please enter your first name';
+      });
+      isValid = false;
+    }
+
+    if (lastName.isEmpty) {
+      setState(() {
+        _lastNameError = 'Please enter your last name';
+      });
+      isValid = false;
+    }
+
+    if (email.isEmpty) {
+      setState(() {
+        _emailError = 'Please enter your email';
+      });
+      isValid = false;
+    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
+      setState(() {
+        _emailError = 'Please enter a valid email';
+      });
+      isValid = false;
+    }
+
+    if (password.isEmpty) {
+      setState(() {
+        _passwordError = 'Please enter your password';
+      });
+      isValid = false;
+    } else if (password.length < 6) {
+      setState(() {
+        _passwordError = 'Password must be at least 6 characters long';
+      });
+      isValid = false;
+    }
+
+    if (confirmPassword.isEmpty) {
+      setState(() {
+        _confirmPasswordError = 'Please confirm your password';
+      });
+      isValid = false;
+    } else if (password != confirmPassword) {
+      setState(() {
+        _confirmPasswordError = 'Passwords do not match';
+      });
+      isValid = false;
+    }
+
+    if (isValid) {
+      // Register user
+      bool isRegistered = await registerUser(
+          firstName, lastName, email, password, confirmPassword);
+
+      if (isRegistered) {
+        // Registration successful
+        // Navigate to home page or show a success message
+      } else {
+        // Registration failed
+        // Show an error message
+      }
+    }
   }
 
   @override
@@ -30,9 +122,8 @@ class _SignupPageState extends State<SignupPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 45),
-                // logo
+// logo
                 const Logo(imagePath: './lib/images/logo.jfif'),
-
                 const SizedBox(height: 25),
 
                 const Text(
@@ -54,17 +145,18 @@ class _SignupPageState extends State<SignupPage> {
                         children: [
                           Expanded(
                             child: MyTextField(
-                              controller:
-                                  usernameController, //do zmiany na odpowiedni kontroler
+                              controller: _firstNameController,
                               hintText: 'First Name',
+                              errorText: _firstNameError,
                               obscureText: false,
                             ),
                           ),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: MyTextField(
-                              controller:
-                                  usernameController, //do zmiany na odpowiedni kontroler
+                              controller: _lastNameController,
                               hintText: 'Last Name',
+                              errorText: _lastNameError,
                               obscureText: false,
                             ),
                           ),
@@ -73,22 +165,22 @@ class _SignupPageState extends State<SignupPage> {
                       const SizedBox(height: 10),
                       MyTextField(
                         hintText: 'Email',
-                        controller:
-                            usernameController, //do zmiany na odpowiedni kontroler
+                        controller: _emailController,
+                        errorText: _emailError,
                         obscureText: false,
                       ),
                       const SizedBox(height: 10),
                       MyTextField(
                         hintText: 'Password',
-                        controller:
-                            usernameController, //do zmiany na odpowiedni kontroler
+                        controller: _passwordController,
+                        errorText: _passwordError,
                         obscureText: true,
                       ),
                       const SizedBox(height: 10),
                       MyTextField(
                         hintText: 'Confirm Password',
-                        controller:
-                            usernameController, //do zmiany na odpowiedni kontroler
+                        controller: _confirmPasswordController,
+                        errorText: _confirmPasswordError,
                         obscureText: true,
                       ),
                     ],
