@@ -3,16 +3,46 @@ import 'package:appbank/components/my_button.dart';
 import 'package:appbank/components/my_textfield.dart';
 import 'package:appbank/components/square_tile.dart';
 import 'package:appbank/components/logo.dart';
+import 'package:appbank/firebase/authentication.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  LoginPage({Key? key}) : super(key: key);
 
-  // text editing controllers
+  @override
+  // ignore: library_private_types_in_public_api
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+  final Authentication _auth = Authentication();
 
-  // sign user in method
-  void signUserIn() {}
+  void signIn() async {
+    final String? result = await _auth.signInWithEmailAndPassword(
+        usernameController.text, passwordController.text);
+    if (result == null) {
+      // User successfully signed in
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      // Error occurred while signing in
+      // ignore: use_build_context_synchronously
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Error'),
+          content: Text(result),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'OK'),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,11 +103,25 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
 
+              // forgot password?
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Forgot Password?',
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+              ),
+
               const SizedBox(height: 25),
 
               // sign in button
               MyButton(
-                onTap: signUserIn,
+                onTap: () => signIn(),
               ),
 
               const SizedBox(height: 30),
