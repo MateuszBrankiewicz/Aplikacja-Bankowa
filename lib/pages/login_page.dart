@@ -1,10 +1,12 @@
 import 'package:appbank/pages/signup_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:appbank/components/my_button.dart';
 import 'package:appbank/components/my_textfield.dart';
 import 'package:appbank/components/square_tile.dart';
 import 'package:appbank/components/logo.dart';
 import 'package:appbank/firebase/authentication.dart';
+import 'package:appbank/pages/pin_page.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -15,33 +17,34 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+  String _email = '';
+  String _password = '';
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   final Authentication _auth = Authentication();
 
-  void signIn() async {
-    final String? result = await _auth.signInWithEmailAndPassword(
-        usernameController.text, passwordController.text);
-    if (result == null) {
-      // User successfully signed in
-      // ignore: use_build_context_synchronously
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      // Error occurred while signing in
-      // ignore: use_build_context_synchronously
-      showDialog(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: const Text('Error'),
-          content: Text(result),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, 'OK'),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
+  Future<void> _signInWithEmailAndPassword() async {
+    setState(() {
+      _email = usernameController.text.trim();
+      _password = passwordController.text.trim();
+    });
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _email,
+        password: _password,
       );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => PinInputScreen()),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('Nie znaleziono użytkownika o takim adresie e-mail.');
+      } else if (e.code == 'wrong-password') {
+        print('Nieprawidłowe hasło.');
+      }
     }
   }
 
@@ -50,6 +53,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
+        key: _formKey,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -112,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
               // sign in button
               MyButton(
                 buttonText: 'Sign In',
-                onTap: () => signIn(),
+                onTap: () => _signInWithEmailAndPassword(),
               ),
 
               const SizedBox(height: 30),

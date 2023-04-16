@@ -5,6 +5,7 @@ class MyTextField extends StatelessWidget {
   final String hintText;
   final bool obscureText;
   final String? errorText;
+  final bool isRequired;
 
   const MyTextField({
     Key? key,
@@ -12,6 +13,7 @@ class MyTextField extends StatelessWidget {
     required this.hintText,
     required this.obscureText,
     this.errorText,
+    this.isRequired = false,
   }) : super(key: key);
 
   @override
@@ -32,7 +34,10 @@ class MyTextField extends StatelessWidget {
           filled: true,
           hintText: hintText,
           hintStyle: const TextStyle(color: Colors.grey),
-          errorText: errorText,
+          errorText: (isRequired &&
+                  (controller.text.isEmpty || controller.text.trim().isEmpty))
+              ? 'This field is required'
+              : errorText,
         ),
       ),
     );
