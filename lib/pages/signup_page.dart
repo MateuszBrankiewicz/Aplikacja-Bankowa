@@ -211,7 +211,7 @@ class _SignupPageState extends State<SignupPage> {
                         Navigator.pop(context);
                       },
                       child: const Text(
-                        'Sign in now!',
+                        'Sign in now',
                         style: TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,
