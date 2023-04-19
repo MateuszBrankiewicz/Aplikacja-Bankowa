@@ -39,11 +39,50 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(builder: (context) => PinInputScreen()),
       );
     } on FirebaseAuthException catch (e) {
+      String errorMessage = '';
       if (e.code == 'user-not-found') {
-        print('Nie znaleziono użytkownika o takim adresie e-mail.');
+        errorMessage = e.message ?? 'Nie ma użytkownika o podanym e-mailu.';
       } else if (e.code == 'wrong-password') {
-        print('Nieprawidłowe hasło.');
+        errorMessage = e.message ?? 'Podaj poprawne haslo.';
+      } else {
+        errorMessage = e.message ?? 'Wystąpił nieznany błąd.';
       }
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Błąd logowania'),
+            content: Text(errorMessage),
+            actions: [
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      String errorMessage = e.toString() ?? 'Wystąpił nieznany błąd.';
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Błąd logowania'),
+            content: Text(errorMessage),
+            actions: [
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
