@@ -1,10 +1,6 @@
 import 'package:appbank/pages/signup_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:appbank/components/my_button.dart';
-import 'package:appbank/components/my_textfield.dart';
-import 'package:appbank/components/square_tile.dart';
-import 'package:appbank/components/logo.dart';
 import 'package:appbank/firebase/authentication.dart';
 import 'package:appbank/pages/pin_page.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -36,6 +32,8 @@ class _LoginPageState extends State<LoginPage> {
         email: _email,
         password: _password,
       );
+      print("zalogowano");
+      // ignore: use_build_context_synchronously
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => PinInputScreen()),
@@ -145,6 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                 width: 330 * fem,
                 height: 300 * fem,
                 child: Column(
+                  key: _formKey,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
@@ -172,14 +171,25 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           Container(
                             padding: EdgeInsets.fromLTRB(
-                                14.08 * fem, 18 * fem, 14.08 * fem, 16 * fem),
+                                3 * fem, 4 * fem, 3 * fem, 3 * fem),
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: grey,
                               borderRadius: BorderRadius.circular(11 * fem),
                             ),
-                            child: Text(
-                              'Email',
+                            child: TextFormField(
+                              controller: usernameController,
+                              obscureText: false,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Email',
+                                hintStyle: GoogleFonts.leagueSpartan(
+                                  fontSize: 23 * ffem,
+                                  fontWeight: FontWeight.w400,
+                                  height: 0.92 * ffem / fem,
+                                  color: white.withOpacity(0.5),
+                                ),
+                              ),
                               style: GoogleFonts.leagueSpartan(
                                 fontSize: 23 * ffem,
                                 fontWeight: FontWeight.w400,
@@ -191,16 +201,31 @@ class _LoginPageState extends State<LoginPage> {
                           SizedBox(
                             height: 18 * fem,
                           ),
+
+                          // Define a controller for the password text field
+
+// Use the controller in your password container
                           Container(
                             padding: EdgeInsets.fromLTRB(
-                                14 * fem, 18 * fem, 14 * fem, 16 * fem),
+                                3 * fem, 4 * fem, 3 * fem, 3 * fem),
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: grey,
                               borderRadius: BorderRadius.circular(11 * fem),
                             ),
-                            child: Text(
-                              'Password',
+                            child: TextFormField(
+                              controller: passwordController,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Password',
+                                hintStyle: GoogleFonts.leagueSpartan(
+                                  fontSize: 23 * ffem,
+                                  fontWeight: FontWeight.w400,
+                                  height: 0.92 * ffem / fem,
+                                  color: white.withOpacity(0.5),
+                                ),
+                              ),
                               style: GoogleFonts.leagueSpartan(
                                 fontSize: 23 * ffem,
                                 fontWeight: FontWeight.w400,
@@ -250,21 +275,24 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                     ),
-                    Container(
-                      width: double.infinity,
-                      height: 48 * fem,
-                      decoration: BoxDecoration(
-                        color: white,
-                        borderRadius: BorderRadius.circular(11 * fem),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Sign in',
-                          style: GoogleFonts.leagueSpartan(
-                            fontSize: 18 * ffem,
-                            fontWeight: FontWeight.w500,
-                            height: 0.92 * ffem / fem,
-                            color: lightRed,
+                    InkWell(
+                      onTap: () => _signInWithEmailAndPassword(),
+                      child: Container(
+                        width: double.infinity,
+                        height: 48 * fem,
+                        decoration: BoxDecoration(
+                          color: white,
+                          borderRadius: BorderRadius.circular(11 * fem),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Sign in',
+                            style: GoogleFonts.leagueSpartan(
+                              fontSize: 18 * ffem,
+                              fontWeight: FontWeight.w500,
+                              height: 0.92 * ffem / fem,
+                              color: lightRed,
+                            ),
                           ),
                         ),
                       ),

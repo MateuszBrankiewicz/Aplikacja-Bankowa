@@ -202,7 +202,7 @@ class _SignupPageState extends State<SignupPage> {
                 ),
               ),
               Positioned(
-                top: 210 * fem,
+                top: 300 * fem,
                 child: SizedBox(
                   width: 375 * fem,
                   height: 401 * fem,
@@ -243,8 +243,21 @@ class _SignupPageState extends State<SignupPage> {
                                       child: Padding(
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 16 * fem),
-                                        child: Text(
-                                          'First Name',
+                                        child: TextFormField(
+                                          controller: _firstNameController,
+                                          obscureText: false,
+                                          decoration: InputDecoration(
+                                            border: InputBorder.none,
+                                            hintText: 'First Name',
+                                            errorText: _firstNameError,
+                                            hintStyle:
+                                                GoogleFonts.leagueSpartan(
+                                              fontSize: 23 * ffem,
+                                              fontWeight: FontWeight.w400,
+                                              height: 0.92 * ffem / fem,
+                                              color: white.withOpacity(0.5),
+                                            ),
+                                          ),
                                           style: GoogleFonts.leagueSpartan(
                                             fontSize: 23 * ffem,
                                             fontWeight: FontWeight.w400,
@@ -270,8 +283,21 @@ class _SignupPageState extends State<SignupPage> {
                                       child: Padding(
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 16 * fem),
-                                        child: Text(
-                                          'Last Name',
+                                        child: TextFormField(
+                                          controller: _lastNameController,
+                                          obscureText: false,
+                                          decoration: InputDecoration(
+                                            border: InputBorder.none,
+                                            hintText: 'Last Name',
+                                            errorText: _lastNameError,
+                                            hintStyle:
+                                                GoogleFonts.leagueSpartan(
+                                              fontSize: 23 * ffem,
+                                              fontWeight: FontWeight.w400,
+                                              height: 0.92 * ffem / fem,
+                                              color: white.withOpacity(0.5),
+                                            ),
+                                          ),
                                           style: GoogleFonts.leagueSpartan(
                                             fontSize: 23 * ffem,
                                             fontWeight: FontWeight.w400,
@@ -302,8 +328,20 @@ class _SignupPageState extends State<SignupPage> {
                                   color: grey,
                                   borderRadius: BorderRadius.circular(11 * fem),
                                 ),
-                                child: Text(
-                                  'Email',
+                                child: TextFormField(
+                                  controller: _emailController,
+                                  obscureText: false,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'Email',
+                                    errorText: _emailError,
+                                    hintStyle: GoogleFonts.leagueSpartan(
+                                      fontSize: 23 * ffem,
+                                      fontWeight: FontWeight.w400,
+                                      height: 0.92 * ffem / fem,
+                                      color: white.withOpacity(0.5),
+                                    ),
+                                  ),
                                   style: GoogleFonts.leagueSpartan(
                                     fontSize: 23 * ffem,
                                     fontWeight: FontWeight.w400,
@@ -330,8 +368,20 @@ class _SignupPageState extends State<SignupPage> {
                                   color: grey,
                                   borderRadius: BorderRadius.circular(11 * fem),
                                 ),
-                                child: Text(
-                                  'Password',
+                                child: TextFormField(
+                                  controller: _confirmPasswordController,
+                                  obscureText: true,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'Confirm Password',
+                                    errorText: _confirmPasswordError,
+                                    hintStyle: GoogleFonts.leagueSpartan(
+                                      fontSize: 23 * ffem,
+                                      fontWeight: FontWeight.w400,
+                                      height: 0.92 * ffem / fem,
+                                      color: white.withOpacity(0.5),
+                                    ),
+                                  ),
                                   style: GoogleFonts.leagueSpartan(
                                     fontSize: 23 * ffem,
                                     fontWeight: FontWeight.w400,
@@ -356,8 +406,20 @@ class _SignupPageState extends State<SignupPage> {
                                   color: grey,
                                   borderRadius: BorderRadius.circular(11 * fem),
                                 ),
-                                child: Text(
-                                  'Confirm Password',
+                                child: TextFormField(
+                                  controller: _passwordController,
+                                  obscureText: true,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'Confirm Password',
+                                    errorText: _confirmPasswordError,
+                                    hintStyle: GoogleFonts.leagueSpartan(
+                                      fontSize: 23 * ffem,
+                                      fontWeight: FontWeight.w400,
+                                      height: 0.92 * ffem / fem,
+                                      color: white.withOpacity(0.5),
+                                    ),
+                                  ),
                                   style: GoogleFonts.leagueSpartan(
                                     fontSize: 23 * ffem,
                                     fontWeight: FontWeight.w400,
@@ -399,19 +461,27 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             Positioned(
-                              left: 158 * fem,
+                              left: 200 * fem,
                               top: 16 * fem,
-                              child: Align(
-                                child: SizedBox(
-                                  width: 57 * fem,
-                                  height: 17 * fem,
-                                  child: Text(
-                                    'Sign up',
-                                    style: GoogleFonts.leagueSpartan(
-                                      fontSize: 18 * ffem,
-                                      fontWeight: FontWeight.w500,
-                                      height: 0.92 * ffem / fem,
-                                      color: lightRed,
+                              child: InkWell(
+                                onTap: () => (signUp()),
+                                child: Container(
+                                  width: double.infinity,
+                                  height: 48 * fem,
+                                  decoration: BoxDecoration(
+                                    color: white,
+                                    borderRadius:
+                                        BorderRadius.circular(11 * fem),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'Sign Up',
+                                      style: GoogleFonts.leagueSpartan(
+                                        fontSize: 18 * ffem,
+                                        fontWeight: FontWeight.w500,
+                                        height: 0.92 * ffem / fem,
+                                        color: lightRed,
+                                      ),
                                     ),
                                   ),
                                 ),
