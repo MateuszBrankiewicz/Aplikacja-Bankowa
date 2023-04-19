@@ -202,7 +202,7 @@ class _SignupPageState extends State<SignupPage> {
                 ),
               ),
               Positioned(
-                top: 300 * fem,
+                top: 210 * fem,
                 child: SizedBox(
                   width: 375 * fem,
                   height: 401 * fem,
@@ -247,6 +247,8 @@ class _SignupPageState extends State<SignupPage> {
                                           controller: _firstNameController,
                                           obscureText: false,
                                           decoration: InputDecoration(
+                                            contentPadding: EdgeInsets.only(
+                                                bottom: -14 * fem),
                                             border: InputBorder.none,
                                             hintText: 'First Name',
                                             errorText: _firstNameError,
@@ -287,6 +289,8 @@ class _SignupPageState extends State<SignupPage> {
                                           controller: _lastNameController,
                                           obscureText: false,
                                           decoration: InputDecoration(
+                                            contentPadding: EdgeInsets.only(
+                                                bottom: -14 * fem),
                                             border: InputBorder.none,
                                             hintText: 'Last Name',
                                             errorText: _lastNameError,
@@ -332,6 +336,8 @@ class _SignupPageState extends State<SignupPage> {
                                   controller: _emailController,
                                   obscureText: false,
                                   decoration: InputDecoration(
+                                    contentPadding:
+                                        EdgeInsets.only(bottom: -4 * fem),
                                     border: InputBorder.none,
                                     hintText: 'Email',
                                     errorText: _emailError,
@@ -372,8 +378,10 @@ class _SignupPageState extends State<SignupPage> {
                                   controller: _confirmPasswordController,
                                   obscureText: true,
                                   decoration: InputDecoration(
+                                    contentPadding:
+                                        EdgeInsets.only(bottom: -4 * fem),
                                     border: InputBorder.none,
-                                    hintText: 'Confirm Password',
+                                    hintText: 'Password',
                                     errorText: _confirmPasswordError,
                                     hintStyle: GoogleFonts.leagueSpartan(
                                       fontSize: 23 * ffem,
@@ -410,6 +418,8 @@ class _SignupPageState extends State<SignupPage> {
                                   controller: _passwordController,
                                   obscureText: true,
                                   decoration: InputDecoration(
+                                    contentPadding:
+                                        EdgeInsets.only(bottom: -4 * fem),
                                     border: InputBorder.none,
                                     hintText: 'Confirm Password',
                                     errorText: _confirmPasswordError,
@@ -434,93 +444,43 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                       Container(
                         margin: EdgeInsets.fromLTRB(
-                            0 * fem, 0 * fem, 0 * fem, 18 * fem),
+                            20 * fem, 0 * fem, 20 * fem, 18 * fem),
                         width: double.infinity,
                         height: 48 * fem,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(11 * fem),
                         ),
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              left: 13 * fem,
-                              right: 13 * fem,
-                              top: 0.0000305176 * fem,
-                              child: Align(
-                                child: SizedBox(
-                                  width: 334 * fem,
-                                  height: 48 * fem,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(11 * fem),
-                                      color: white,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(11.0)),
+                            backgroundColor: white,
+                          ),
+                          onPressed: signUp,
+                          child: Text(
+                            'Sign Up',
+                            style: GoogleFonts.leagueSpartan(
+                              fontSize: 18 * ffem,
+                              fontWeight: FontWeight.w500,
+                              height: 0.92 * ffem / fem,
+                              color: lightRed,
                             ),
-                            Positioned(
-                              left: 200 * fem,
-                              top: 16 * fem,
-                              child: InkWell(
-                                onTap: () => (signUp()),
-                                child: Container(
-                                  width: double.infinity,
-                                  height: 48 * fem,
-                                  decoration: BoxDecoration(
-                                    color: white,
-                                    borderRadius:
-                                        BorderRadius.circular(11 * fem),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      'Sign Up',
-                                      style: GoogleFonts.leagueSpartan(
-                                        fontSize: 18 * ffem,
-                                        fontWeight: FontWeight.w500,
-                                        height: 0.92 * ffem / fem,
-                                        color: lightRed,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                       Container(
                         margin: EdgeInsets.fromLTRB(
-                            60.36 * fem, 0 * fem, 61.36 * fem, 0 * fem),
+                            50 * fem, 0 * fem, 61.36 * fem, 0 * fem),
                         width: double.infinity,
                         height: 22 * fem,
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              margin: EdgeInsets.fromLTRB(
-                                  30 * fem, 0 * fem, 2.28 * fem, 0 * fem),
-                              child: Text(
-                                'Already a member?',
-                                style: GoogleFonts.leagueSpartan(
-                                  fontSize: 18 * ffem,
-                                  fontWeight: FontWeight.w500,
-                                  height: 0.92 * ffem / fem,
-                                  color: white,
-                                ),
-                              ),
-                            ),
-                            Container(
-                              width: 62 * fem,
-                              height: double.infinity,
-                              decoration: BoxDecoration(
-                                color: darkGrey,
-                                borderRadius: BorderRadius.circular(6 * fem),
-                              ),
-                              child: Center(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                margin: EdgeInsets.fromLTRB(
+                                    30 * fem, 0 * fem, 2.28 * fem, 0 * fem),
                                 child: Text(
-                                  'Sign In',
+                                  'Already a member?',
                                   style: GoogleFonts.leagueSpartan(
                                     fontSize: 18 * ffem,
                                     fontWeight: FontWeight.w500,
@@ -529,9 +489,45 @@ class _SignupPageState extends State<SignupPage> {
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
+                              Container(
+                                width: 80 * fem,
+                                height: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: darkGrey,
+                                  borderRadius: BorderRadius.circular(6 * fem),
+                                ),
+                                child: Center(
+                                    child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(11.0)),
+                                    backgroundColor: darkGrey,
+                                  ),
+                                  onPressed: signUp,
+                                  child: Text(
+                                    'Sign In',
+                                    style: GoogleFonts.leagueSpartan(
+                                      fontSize: 18 * ffem,
+                                      fontWeight: FontWeight.w500,
+                                      height: 0.92 * ffem / fem,
+                                      color: white,
+                                    ),
+                                  ),
+                                )
+                                    // child: ElevatedButton(
+                                    //   onpressed:
+                                    //   'Sign In',
+                                    //   style: GoogleFonts.leagueSpartan(
+                                    //     fontSize: 18 * ffem,
+                                    //     fontWeight: FontWeight.w500,
+                                    //     height: 0.92 * ffem / fem,
+                                    //     color: white,
+                                    //   ),
+                                    // ),
+                                    ),
+                              ),
+                            ]),
                       ),
                     ],
                   ),

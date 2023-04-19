@@ -171,7 +171,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           Container(
                             padding: EdgeInsets.fromLTRB(
-                                3 * fem, 4 * fem, 3 * fem, 3 * fem),
+                                14 * fem, 4 * fem, 3 * fem, 3 * fem),
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: grey,
@@ -207,7 +207,7 @@ class _LoginPageState extends State<LoginPage> {
 // Use the controller in your password container
                           Container(
                             padding: EdgeInsets.fromLTRB(
-                                3 * fem, 4 * fem, 3 * fem, 3 * fem),
+                                14 * fem, 4 * fem, 3 * fem, 3 * fem),
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: grey,
