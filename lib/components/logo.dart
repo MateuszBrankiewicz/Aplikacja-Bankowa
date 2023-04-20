@@ -82,3 +82,58 @@ class VectorBackgroundLogo extends StatelessWidget {
     );
   }
 }
+
+class LogoHomePage extends StatelessWidget {
+  final double fem;
+  final Widget child;
+
+  const LogoHomePage({super.key, required this.fem, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        // Vector BG
+        Positioned(
+          left: 0 * fem,
+          top: 0 * fem,
+          child: Align(
+            child: SizedBox(
+              width: 739.83 * fem,
+              height: 591.64 * fem,
+              child: Image.asset(
+                './lib/images/home_bg.png',
+                width: 739.83 * fem,
+                height: 591.64 * fem,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 77 * fem,
+          top: 13 * fem,
+          child: Container(
+            width: 208.14 * fem,
+            height: 46 * fem,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  margin:
+                      EdgeInsets.fromLTRB(0 * fem, 0 * fem, 3 * fem, 1 * fem),
+                  width: 41 * fem,
+                  height: 45 * fem,
+                  child: Image.asset(
+                    './lib/images/home_logo.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Container(child: child),
+      ],
+    );
+  }
+}
