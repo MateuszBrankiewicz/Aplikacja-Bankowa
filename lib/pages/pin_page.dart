@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../components/logo.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 const white = Color(0xfffefefe);
 const lightRed = Color(0xffc24646);
@@ -123,14 +124,61 @@ class _PinInputScreenState extends State<PinInputScreen> {
     });
   }
 
-  void _submitPin() {
+  Future<bool> checkPin(String pin) async {
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInAnonymously();
+    if (userCredential.user != null) {
+      //Replace this with your own code to check if the PIN is correct
+      if (pin == "1234") {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void _submitPin() async {
+    bool isCorrect = await checkPin(_pin);
     setState(() {
       _pin = _pinController.text;
       _pinController.clear();
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Wprowadzony PIN: $_pin")),
-    );
+
+    if (isCorrect) {
+      // ignore: use_build_context_synchronously
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Logowanie'),
+              content: Text("udalo ci sie zalogowac"),
+              actions: [
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
+    } else {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Logowanie'),
+              content: Text("Wprowadz poprawny pin"),
+              actions: [
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
+    }
   }
 
   @override
