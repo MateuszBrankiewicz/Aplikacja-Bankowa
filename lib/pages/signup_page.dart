@@ -523,18 +523,7 @@ class _SignupPageState extends State<SignupPage> {
                                       color: white,
                                     ),
                                   ),
-                                )
-                                    // child: ElevatedButton(
-                                    //   onpressed:
-                                    //   'Sign In',
-                                    //   style: GoogleFonts.leagueSpartan(
-                                    //     fontSize: 18 * ffem,
-                                    //     fontWeight: FontWeight.w500,
-                                    //     height: 0.92 * ffem / fem,
-                                    //     color: white,
-                                    //   ),
-                                    // ),
-                                    ),
+                                )),
                               ),
                             ]),
                       ),

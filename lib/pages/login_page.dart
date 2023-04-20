@@ -51,11 +51,11 @@ class _LoginPageState extends State<LoginPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Błąd logowania'),
+            title: const Text('Błąd logowania'),
             content: Text(errorMessage),
             actions: [
               TextButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -65,16 +65,16 @@ class _LoginPageState extends State<LoginPage> {
         },
       );
     } catch (e) {
-      String errorMessage = e.toString() ?? 'Wystąpił nieznany błąd.';
+      String errorMessage = e.toString();
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Błąd logowania'),
+            title: const Text('Błąd logowania'),
             content: Text(errorMessage),
             actions: [
               TextButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
