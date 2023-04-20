@@ -1,4 +1,108 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../components/logo.dart';
+
+const white = Color(0xfffefefe);
+const lightRed = Color(0xffc24646);
+const darkRed = Color(0xff953333);
+const grey = Color(0x99fefefe);
+const darkGrey = Color(0xff395263);
+
+//Custom Keyboard
+class NumberKeyboard extends StatelessWidget {
+  final Function(String) onKeyPressed;
+
+  const NumberKeyboard({super.key, required this.onKeyPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    List<String> numbers = [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '',
+      '0',
+      '<'
+    ];
+    double baseWidth = 375;
+    double fem = MediaQuery.of(context).size.width / baseWidth;
+    // double ffem = fem * 0.97;
+    return SizedBox(
+      height: 300 * fem,
+      width: 240 * fem, // set the height of the number keyboard
+      child: GridView.count(
+        crossAxisSpacing: 25 * fem,
+        mainAxisSpacing: 7 * fem,
+        crossAxisCount: 3,
+        children: numbers.map((number) {
+          return Container(
+            decoration: BoxDecoration(
+              color: white, // set the background color to white
+              borderRadius: BorderRadius.circular(
+                  80 * fem), // set the border radius to 30
+            ),
+            child: TextButton(
+              child: number == '<'
+                  ? const Icon(
+                      Icons.backspace_outlined,
+                      color: darkGrey,
+                    )
+                  : Text(
+                      number,
+                      style: TextStyle(fontSize: 38 * fem, color: darkGrey),
+                    ),
+              onPressed: () => onKeyPressed(number),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+// Pin widget
+
+class PinWidget extends StatelessWidget {
+  final String pin;
+
+  const PinWidget({Key? key, required this.pin}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    double baseWidth = 375;
+    double fem = MediaQuery.of(context).size.width / baseWidth;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildDot(pin.length >= 1, fem),
+        _buildDot(pin.length >= 2, fem),
+        _buildDot(pin.length >= 3, fem),
+        _buildDot(pin.length >= 4, fem),
+      ],
+    );
+  }
+
+  Widget _buildDot(bool filled, double fem) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4.0),
+      width: 30 * fem,
+      height: 30 * fem,
+      decoration: BoxDecoration(
+        color: filled ? darkGrey : grey,
+        border: filled
+            ? Border.all(color: grey, width: 3 * fem)
+            : Border.all(color: grey, width: 3 * fem),
+        borderRadius: BorderRadius.circular(50 * fem),
+      ),
+    );
+  }
+}
 
 class PinInputScreen extends StatefulWidget {
   @override
@@ -8,6 +112,16 @@ class PinInputScreen extends StatefulWidget {
 class _PinInputScreenState extends State<PinInputScreen> {
   final TextEditingController _pinController = TextEditingController();
   String _pin = "";
+
+  void _onKeyPressed(String value) {
+    setState(() {
+      if (value == '<') {
+        _pin = _pin.substring(0, _pin.length - 1);
+      } else {
+        _pin += value;
+      }
+    });
+  }
 
   void _submitPin() {
     setState(() {
@@ -21,32 +135,75 @@ class _PinInputScreenState extends State<PinInputScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double baseWidth = 375;
+    double fem = MediaQuery.of(context).size.width / baseWidth;
+    double ffem = fem * 0.97;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Wprowadź kod PIN"),
-      ),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextField(
-                controller: _pinController,
-                maxLength: 4,
-                keyboardType: TextInputType.number,
-                obscureText: true,
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: "Wprowadź kod PIN",
-                ),
+      body: Container(
+        width: double.infinity,
+        height: 800 * fem,
+        decoration: const BoxDecoration(
+            gradient: LinearGradient(
+          colors: <Color>[lightRed, darkRed],
+          begin: Alignment(0, 0.546),
+          end: Alignment(0, 1),
+          stops: <double>[0, 1],
+        )),
+        child: VectorBackgroundLogo(
+          fem: fem,
+          child: Padding(
+            padding: EdgeInsets.all(16 * fem),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(
+                    height: 160 * fem,
+                  ),
+                  Text(
+                    'Enter your pin!',
+                    style: GoogleFonts.leagueSpartan(
+                        fontSize: 40 * ffem,
+                        fontWeight: FontWeight.w500,
+                        height: 0.92 * ffem / fem,
+                        color: white),
+                  ),
+                  SizedBox(
+                    height: 12 * fem,
+                  ),
+                  PinWidget(pin: _pin),
+                  NumberKeyboard(onKeyPressed: _onKeyPressed),
+                  SizedBox(
+                    height: 10 * fem,
+                  ),
+                  Container(
+                    width: 180 * fem,
+                    height: 38 * fem,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: darkGrey, width: 3 * fem),
+                      borderRadius: BorderRadius.circular(14 * fem),
+                    ),
+                    child: ElevatedButton(
+                      onPressed: _submitPin,
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: grey,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10 * fem))),
+                      child: Text(
+                        "Confirm",
+                        style: GoogleFonts.leagueSpartan(
+                          fontSize: 18 * ffem,
+                          fontWeight: FontWeight.w500,
+                          height: 0.92 * ffem / fem,
+                          color: white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: _submitPin,
-                child: Text("Submit"),
-              ),
-            ],
+            ),
           ),
         ),
       ),
