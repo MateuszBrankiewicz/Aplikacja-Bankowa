@@ -1,4 +1,6 @@
+import 'package:appbank/pages/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class RecentTransactionsWidget extends StatelessWidget {
   final List<Transaction> transactions;
@@ -7,88 +9,117 @@ class RecentTransactionsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Colors.blue[800]!, Colors.blue[400]!],
-        ),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      padding: EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Last Transactions',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
-              Text(
-                'More',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
-            ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment(1.058, -0.003),
+            end: Alignment(-0.933, -0.003),
+            colors: <Color>[Color(0x70f7f7f7), Color(0x35f7f7f7)],
+            stops: <double>[0.073, 0.536],
           ),
-          SizedBox(height: 16),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: ClampingScrollPhysics(),
-            itemCount: transactions.length,
-            itemBuilder: (context, index) {
-              final transaction = transactions[index];
-              final isNegative = transaction.amount < 0;
-              final amountText =
-                  '${isNegative ? '-' : ''}\$${transaction.amount.abs()}';
-
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.only(top: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${transaction.firstName} ${transaction.lastName}',
-                    style: TextStyle(
-                      color: Colors.white,
+                    'Last Transactions',
+                    style: GoogleFonts.leagueSpartan(
+                      color: white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 22,
                     ),
                   ),
-                  SizedBox(height: 4),
                   Text(
-                    transaction.description,
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    amountText,
-                    style: TextStyle(
-                      color: isNegative ? Colors.red : Colors.green,
+                    'More',
+                    style: GoogleFonts.leagueSpartan(
+                      color: white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 22,
                     ),
                   ),
                 ],
-              );
-            },
-            separatorBuilder: (context, index) => Divider(
-              height: 16,
-              color: Colors.white70,
+              ),
             ),
-          ),
-        ],
+            SizedBox(height: 16),
+            Container(
+              height: 190,
+              child: Expanded(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  physics: const ClampingScrollPhysics(),
+                  itemCount: 4,
+                  itemBuilder: (context, index) {
+                    final transaction = transactions[index];
+                    final isNegative = transaction.amount < 0;
+                    final amountText =
+                        '${isNegative ? '-' : ''}${transaction.amount.abs()}\$';
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${transaction.firstName} ${transaction.lastName}',
+                                  style: GoogleFonts.leagueSpartan(
+                                    color: white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  transaction.description,
+                                  style: GoogleFonts.leagueSpartan(
+                                    color: Colors.white70,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              amountText,
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                color:
+                                    isNegative ? darkGrey : Color(0xff1fe9ad),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 21,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) => Divider(
+                    height: 24,
+                    color: lightRed,
+                    thickness: 3,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

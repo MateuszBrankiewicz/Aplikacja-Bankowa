@@ -42,11 +42,13 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: white,
-        selectedFontSize: 15,
+        selectedFontSize: 18,
         iconSize: 28,
-        unselectedFontSize: 15,
-        selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
-        unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w500),
+        unselectedFontSize: 18,
+        selectedLabelStyle:
+            GoogleFonts.leagueSpartan(fontWeight: FontWeight.bold),
+        unselectedLabelStyle:
+            GoogleFonts.leagueSpartan(fontWeight: FontWeight.w500),
         unselectedItemColor: darkGrey,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -144,21 +146,27 @@ class HomeScreen extends StatelessWidget {
                 transactions: [
                   Transaction(
                     firstName: 'John',
-                    lastName: 'Doe',
-                    description: 'Grocery shopping',
-                    amount: -50.0,
-                  ),
-                  Transaction(
-                    firstName: 'Jane',
-                    lastName: 'Doe',
-                    description: 'Gas refill',
-                    amount: -30.0,
-                  ),
-                  Transaction(
-                    firstName: 'Alice',
                     lastName: 'Smith',
+                    description: 'Grocery shopping',
+                    amount: 30.00,
+                  ),
+                  Transaction(
+                    firstName: 'Amanda',
+                    lastName: 'Black',
+                    description: 'Gas refill',
+                    amount: -15.40,
+                  ),
+                  Transaction(
+                    firstName: 'Shop',
+                    lastName: '',
+                    description: 'Groccery',
+                    amount: -2.90,
+                  ),
+                  Transaction(
+                    firstName: 'Walter',
+                    lastName: 'White',
                     description: 'Salary',
-                    amount: 1000.0,
+                    amount: 1280.00,
                   ),
                 ],
               )
