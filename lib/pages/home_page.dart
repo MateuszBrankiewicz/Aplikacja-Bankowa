@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:appbank/components/logo.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:appbank/components/transactions.dart';
+import 'package:intl/intl.dart';
 
 const white = Color(0xfffefefe);
 const lightRed = Color(0xffc24646);
@@ -162,12 +163,6 @@ class HomeScreen extends StatelessWidget {
                     description: 'Groccery',
                     amount: -2.90,
                   ),
-                  Transaction(
-                    firstName: 'Walter',
-                    lastName: 'White',
-                    description: 'Salary',
-                    amount: 1280.00,
-                  ),
                 ],
               )
             ],
@@ -187,11 +182,188 @@ class PaymentsScreen extends StatelessWidget {
   }
 }
 
+//History page
 class HistoryScreen extends StatelessWidget {
+  final List<Map<String, dynamic>> transactions = [
+    {
+      'date': DateTime(2023, 4, 1),
+      'type': 'blik',
+      'description': 'Grocery shopping',
+      'name': 'John Smith',
+      'account': '123456789',
+      'amount': 30.0,
+    },
+    {
+      'date': DateTime(2023, 4, 1),
+      'type': 'przelew',
+      'description': 'Gas refill',
+      'name': 'Amanda Black',
+      'account': '987654321',
+      'amount': -15.40,
+    },
+    {
+      'date': DateTime(2023, 4, 2),
+      'type': 'blik',
+      'description': 'Groccery',
+      'name': 'Shop',
+      'account': '456789123',
+      'amount': -2.90,
+    },
+    {
+      'date': DateTime(2023, 4, 2),
+      'type': 'przelew',
+      'description': 'Salary',
+      'name': 'Walter White',
+      'account': '321654987',
+      'amount': 1280.00,
+    },
+    {
+      'date': DateTime(2023, 4, 3),
+      'type': 'blik',
+      'description': 'TV bought',
+      'name': 'TV shop',
+      'account': '789123456',
+      'amount': 750.0,
+    },
+    {
+      'date': DateTime(2023, 4, 4),
+      'type': 'przelew',
+      'description': 'Food tip',
+      'name': 'Restaurant',
+      'account': '654987321',
+      'amount': 12.50,
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('History Screen'),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment(0, 0.546),
+          end: Alignment(0, 1),
+          colors: <Color>[lightRed, darkRed],
+          stops: <double>[0, 1],
+        ),
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.fromLTRB(28, 28, 28, 22),
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'History',
+              style: GoogleFonts.leagueSpartan(
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+                color: white,
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: transactions.length,
+              itemBuilder: (context, index) {
+                final transaction = transactions[index];
+                final currentDate = transaction['date'] as DateTime;
+                final formatter = DateFormat('yyyy-MM-dd');
+                final formattedDate = formatter.format(currentDate);
+                final isNegative = transaction['amount'] < 0;
+                final amountText =
+                    '${isNegative ? '-' : ''}${transaction['amount'].abs()}\$';
+                bool showDivider = true;
+
+                if (index > 0) {
+                  final previousDate =
+                      transactions[index - 1]['date'] as DateTime;
+                  showDivider = currentDate != previousDate;
+                }
+
+                return Column(
+                  children: [
+                    if (showDivider)
+                      Container(
+                        color: grey,
+                        padding: EdgeInsets.fromLTRB(32, 8, 32, 8),
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          formattedDate,
+                          style: GoogleFonts.leagueSpartan(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            color: darkGrey,
+                          ),
+                        ),
+                      ),
+                    Container(
+                      padding: EdgeInsets.all(16.0),
+                      decoration: const BoxDecoration(
+                        border: Border(
+                            top: BorderSide(
+                              color: grey,
+                              width: 1,
+                            ),
+                            bottom: BorderSide(
+                              color: grey,
+                              width: 1,
+                            )),
+                      ),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            './lib/images/${transaction['type']}.png',
+                            width: 25,
+                            height: 25,
+                          ),
+                          SizedBox(width: 16.0),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                transaction['name'],
+                                style: GoogleFonts.leagueSpartan(
+                                  fontSize: 24,
+                                  color: white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 8.0),
+                              Text(
+                                transaction['description'],
+                                style: GoogleFonts.leagueSpartan(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                    color: white),
+                              ),
+                              SizedBox(height: 8.0),
+                              Text(
+                                transaction['account'],
+                                style: GoogleFonts.leagueSpartan(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: grey),
+                              ),
+                            ],
+                          ),
+                          Spacer(),
+                          Text(
+                            amountText,
+                            style: GoogleFonts.leagueSpartan(
+                              color: isNegative ? white : Color(0xff1fe9ad),
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
