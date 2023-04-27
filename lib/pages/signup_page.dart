@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:appbank/pages/login_page.dart';
-import 'package:appbank/pages/pin_page.dart';
+import 'package:appbank/pages/pin_registerp.dart';
 import 'package:flutter/material.dart';
 import 'package:appbank/components/my_button.dart';
 import 'package:appbank/components/my_textfield.dart';
@@ -107,8 +107,8 @@ class _SignupPageState extends State<SignupPage> {
           firstName, lastName, email, password, confirmPassword);
 
       if (isRegistered) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => PinInputScreen()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => PinInputScreenR()));
       } else {
         // Registration failed
         // Show an error message

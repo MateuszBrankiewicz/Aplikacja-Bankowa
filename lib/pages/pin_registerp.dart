@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:appbank/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -107,12 +109,12 @@ class PinWidget extends StatelessWidget {
   }
 }
 
-class PinInputScreen extends StatefulWidget {
+class PinInputScreenR extends StatefulWidget {
   @override
-  _PinInputScreenState createState() => _PinInputScreenState();
+  _PinInputScreenRState createState() => _PinInputScreenRState();
 }
 
-class _PinInputScreenState extends State<PinInputScreen> {
+class _PinInputScreenRState extends State<PinInputScreenR> {
   final TextEditingController _pinController = TextEditingController();
   String _pin = "";
 
@@ -126,77 +128,79 @@ class _PinInputScreenState extends State<PinInputScreen> {
     });
   }
 
-  Future<bool> checkPin(String pin, String userId) async {
-    print('PIN przed zapisaniem do bazy danych: $pin');
-    UserCredential userCredential =
-        await FirebaseAuth.instance.signInAnonymously();
-    if (userCredential.user != null) {
-      DocumentSnapshot userData = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-      if (userData.exists) {
-        String? dbPin = userData.get('pin');
-        if (dbPin != null && pin == dbPin) {
-          return true;
-        }
-      }
+  Future<bool> checkPin(String pin) async {
+    QuerySnapshot usersSnapshot =
+        await FirebaseFirestore.instance.collection('users').get();
+    List<QueryDocumentSnapshot> usersDocs = usersSnapshot.docs;
+    if (usersDocs.isNotEmpty) {
+      // Check if any user has the entered PIN
+      return usersDocs.any((userDoc) =>
+          userDoc.exists &&
+          userDoc.data() != null &&
+          (userDoc.data() as Map<String, dynamic>).containsKey('pin') &&
+          (userDoc.data() as Map<String, dynamic>)['pin'] == pin);
     }
     return false;
   }
 
-  void _submitPin() async {
-    final userId = ModalRoute.of(context)!.settings.arguments as String;
-    print('PIN przed zapisaniem do bazy danych: $userId');
-
+  Future<void> _submitPin() async {
     _pinController.text = _pin;
     String pin = _pinController.text;
-    bool isCorrect = await checkPin(_pin, userId);
+
+    print('PIN przed zapisaniem do bazy danych: $pin');
+    // Insert the user's PIN into the database
+    await FirebaseFirestore.instance.collection('users').add({
+      'pin': pin,
+    });
+
     setState(() {
       _pinController.clear();
     });
 
+    bool isCorrect = await checkPin(pin);
+
     if (isCorrect) {
-      // ignore: use_build_context_synchronously
+      // Show success dialog and navigate to the home page
       showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Logowanie'),
-              content: Text("udalo ci sie zalogowac"),
-              actions: [
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          });
-      if (isCorrect) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
-      }
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Logowanie'),
+            content: const Text('Udało ci się zalogować.'),
+            actions: [
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
     } else {
+      // Show error dialog
       showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Logowanie'),
-              content: Text("Wprowadz poprawny pin"),
-              actions: [
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          });
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Logowanie'),
+            content: const Text('Wprowadź poprawny PIN.'),
+            actions: [
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
