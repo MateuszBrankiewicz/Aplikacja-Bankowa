@@ -19,10 +19,8 @@ class RecentTransactionsWidget extends StatelessWidget {
             colors: <Color>[Color(0x70f7f7f7), Color(0x35f7f7f7)],
             stops: <double>[0.073, 0.536],
           ),
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+          borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
-        padding: const EdgeInsets.only(top: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -35,29 +33,32 @@ class RecentTransactionsWidget extends StatelessWidget {
                     'Last Transactions',
                     style: GoogleFonts.leagueSpartan(
                       color: white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 20,
                     ),
                   ),
-                  Text(
-                    'More',
-                    style: GoogleFonts.leagueSpartan(
-                      color: white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
+                  TextButton(
+                    onPressed: () => {},
+                    child: Text(
+                      'More',
+                      style: GoogleFonts.leagueSpartan(
+                        color: white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 8),
             Container(
-              height: 190,
+              height: 186,
               child: Expanded(
                 child: ListView.separated(
                   shrinkWrap: true,
                   physics: const ClampingScrollPhysics(),
-                  itemCount: 4,
+                  itemCount: 3,
                   itemBuilder: (context, index) {
                     final transaction = transactions[index];
                     final isNegative = transaction.amount < 0;
@@ -79,15 +80,15 @@ class RecentTransactionsWidget extends StatelessWidget {
                                   style: GoogleFonts.leagueSpartan(
                                     color: white,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 20,
+                                    fontSize: 22,
                                   ),
                                 ),
-                                SizedBox(height: 4),
+                                SizedBox(height: 6),
                                 Text(
                                   transaction.description,
                                   style: GoogleFonts.leagueSpartan(
                                     color: Colors.white70,
-                                    fontSize: 18,
+                                    fontSize: 20,
                                   ),
                                 ),
                               ],
@@ -102,7 +103,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                                 color:
                                     isNegative ? darkGrey : Color(0xff1fe9ad),
                                 fontWeight: FontWeight.bold,
-                                fontSize: 21,
+                                fontSize: 22,
                               ),
                             ),
                           ),
