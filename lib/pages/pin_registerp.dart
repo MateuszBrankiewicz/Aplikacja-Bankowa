@@ -146,12 +146,13 @@ class _PinInputScreenRState extends State<PinInputScreenR> {
   Future<void> _submitPin() async {
     _pinController.text = _pin;
     String pin = _pinController.text;
-
+    User? user = FirebaseAuth.instance.currentUser;
+    String userId = user!.uid;
     print('PIN przed zapisaniem do bazy danych: $pin');
     // Insert the user's PIN into the database
-    await FirebaseFirestore.instance.collection('users').add({
-      'pin': pin,
-    });
+    await FirebaseFirestore.instance
+        .collection('users')
+        .add({'pin': pin, 'userId': userId});
 
     setState(() {
       _pinController.clear();

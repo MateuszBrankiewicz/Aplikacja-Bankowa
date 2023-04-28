@@ -126,78 +126,68 @@ class _PinInputScreenState extends State<PinInputScreen> {
     });
   }
 
-  Future<bool> checkPin(String pin, String userId) async {
-    print('PIN przed zapisaniem do bazy danych: $pin');
-    UserCredential userCredential =
-        await FirebaseAuth.instance.signInAnonymously();
-    if (userCredential.user != null) {
-      DocumentSnapshot userData = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-      if (userData.exists) {
-        String? dbPin = userData.get('pin');
-        if (dbPin != null && pin == dbPin) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  void _submitPin() async {
-    final userId = ModalRoute.of(context)!.settings.arguments as String;
-    print('PIN przed zapisaniem do bazy danych: $userId');
-
+  Future<void> _submitPin() async {
     _pinController.text = _pin;
     String pin = _pinController.text;
-    bool isCorrect = await checkPin(_pin, userId);
+
+    print('PIN przed sprawdzeniem w bazie danych: $pin');
+    User? user = FirebaseAuth.instance.currentUser;
+    String userId = user!.uid;
+    print('PIN przed sprawdzeniem w bazie danych: $userId');
+    // Query the database to check if the user's PIN exists
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('pin', isEqualTo: pin)
+        .where('userId', isEqualTo: userId)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      // Show success dialog and navigate to the home page
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Logowanie'),
+            content: const Text('Udało ci się zalogować.'),
+            actions: [
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } else {
+      // Show error dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Logowanie'),
+            content: const Text('Wprowadź poprawny PIN.'),
+            actions: [
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     setState(() {
       _pinController.clear();
     });
-
-    if (isCorrect) {
-      // ignore: use_build_context_synchronously
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Logowanie'),
-              content: Text("udalo ci sie zalogowac"),
-              actions: [
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          });
-      if (isCorrect) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
-      }
-    } else {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Logowanie'),
-              content: Text("Wprowadz poprawny pin"),
-              actions: [
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          });
-    }
   }
 
   @override
