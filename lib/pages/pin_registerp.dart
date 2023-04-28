@@ -150,10 +150,12 @@ class _PinInputScreenRState extends State<PinInputScreenR> {
     String userId = user!.uid;
     print('PIN przed zapisaniem do bazy danych: $pin');
     // Insert the user's PIN into the database
-    await FirebaseFirestore.instance
-        .collection('users')
-        .add({'pin': pin, 'userId': userId});
+    // await FirebaseFirestore.instance.collection('users').add({'pin': pin});
+    DocumentReference userDocRef =
+        FirebaseFirestore.instance.collection('users').doc(userId);
 
+// Add the 'pin' field to the user document
+    userDocRef.set({'pin': pin});
     setState(() {
       _pinController.clear();
     });

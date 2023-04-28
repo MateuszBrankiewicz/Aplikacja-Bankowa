@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -41,4 +42,20 @@ Future<bool> registerUser(
       throw Exception('Registration failed. Please try again later.');
     }
   }
+}
+
+Future<String> incrementNumber() async {
+  final firestoreInstance = FirebaseFirestore.instance;
+  final collectionRef = firestoreInstance.collection('numbers');
+  final snapshot =
+      await collectionRef.orderBy('value', descending: true).limit(1).get();
+  final lastValue = snapshot.docs.first.data()['value'];
+  int currentValue = 0;
+  if (lastValue != null) {
+    currentValue = lastValue + 1;
+  } else {
+    currentValue = 1;
+  }
+  final newValue = '0'.padRight(11, '0');
+  return newValue;
 }

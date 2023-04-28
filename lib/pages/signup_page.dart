@@ -3,11 +3,10 @@
 import 'package:appbank/pages/login_page.dart';
 import 'package:appbank/pages/pin_registerp.dart';
 import 'package:flutter/material.dart';
-import 'package:appbank/components/my_button.dart';
-import 'package:appbank/components/my_textfield.dart';
-import 'package:appbank/components/logo.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:appbank/firebase/checkRegistation.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
@@ -107,6 +106,15 @@ class _SignupPageState extends State<SignupPage> {
           firstName, lastName, email, password, confirmPassword);
 
       if (isRegistered) {
+        User? user = FirebaseAuth.instance.currentUser;
+        String userId = user!.uid;
+        String AccNumber = incrementNumber().toString();
+        await FirebaseFirestore.instance.collection('users').add({
+          'userId': userId,
+          'First Name': firstName,
+          'Last Name': lastName,
+          'Bank account number': AccNumber,
+        });
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => PinInputScreenR()));
       } else {
