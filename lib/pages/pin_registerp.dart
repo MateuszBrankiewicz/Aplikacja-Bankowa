@@ -155,7 +155,7 @@ class _PinInputScreenRState extends State<PinInputScreenR> {
         FirebaseFirestore.instance.collection('users').doc(userId);
 
 // Add the 'pin' field to the user document
-    userDocRef.set({'pin': pin});
+    userDocRef.update({'pin': pin});
     setState(() {
       _pinController.clear();
     });

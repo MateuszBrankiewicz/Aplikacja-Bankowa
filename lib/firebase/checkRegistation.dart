@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
+import 'package:fixnum/fixnum.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -44,18 +46,27 @@ Future<bool> registerUser(
   }
 }
 
-Future<String> incrementNumber() async {
-  final firestoreInstance = FirebaseFirestore.instance;
-  final collectionRef = firestoreInstance.collection('numbers');
-  final snapshot =
-      await collectionRef.orderBy('value', descending: true).limit(1).get();
-  final lastValue = snapshot.docs.first.data()['value'];
-  int currentValue = 0;
-  if (lastValue != null) {
-    currentValue = lastValue + 1;
-  } else {
-    currentValue = 1;
+Future<String> numAccGenerator(String userId) async {
+  final collectionRef = FirebaseFirestore.instance.collection('numbers');
+
+  String newNumber = '';
+  bool numberExists = true;
+
+  while (numberExists) {
+    final number =
+        Int64.fromInts(Random().nextInt(100000000), Random().nextInt(100000));
+    newNumber = number.toString().padLeft(11, '0');
+    final snapshot = await collectionRef
+        .doc(userId)
+        .collection('users')
+        .doc('Bank Account Number')
+        .get();
+    numberExists = snapshot.exists;
   }
-  final newValue = '0'.padRight(11, '0');
-  return newValue;
+
+  // await collectionRef.doc(userId).collection('users').doc(newNumber).set({
+  //   'createdAt': FieldValue.serverTimestamp(),
+  // });
+
+  return newNumber;
 }

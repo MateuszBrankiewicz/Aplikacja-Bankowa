@@ -4,6 +4,8 @@ import 'package:appbank/components/logo.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:appbank/components/transactions.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 const white = Color(0xfffefefe);
 const lightRed = Color(0xffc24646);
@@ -18,9 +20,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-
+  User? user;
+  String userId = '';
   static final List<Widget> _widgetOptions = <Widget>[
-    HomeScreen(),
+    HomeScreen(userId: ''),
     PaymentsScreen(),
     HistoryScreen(),
     ProfileScreen(),
@@ -77,7 +80,64 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+// class HomeScreen extends StatelessWidget {
+//   Future<void> getUserData(String userId) async {
+//     final userData =
+//         await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+//     if (userData.exists) {
+//       final firstName = userData.data()!['First Name'];
+//       final lastName = userData.data()!['Last Name'];
+//       final numAcc = userData.data()!['Bank account number'];
+
+//       print('Name: $firstName');
+//       print('Age: $lastName');
+//       print('Email: $numAcc');
+//     } else {
+//       print('User with ID $userId does not exist.');
+//     }
+//   }
+class HomeScreen extends StatefulWidget {
+  final String userId;
+
+  const HomeScreen({Key? key, required this.userId}) : super(key: key);
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String firstName = '';
+  String lastName = '';
+  String numAcc = '';
+
+  @override
+  void initState() {
+    super.initState();
+    getUserData(widget.userId);
+  }
+
+  Future<void> getUserData(String userId) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    String userId = user!.uid;
+
+    final userData = await FirebaseFirestore.instance
+        .collection('users')
+        .where('userId', isEqualTo: userId)
+        .get();
+
+    if (userData.docs.isNotEmpty) {
+      final userDoc = userData.docs.first;
+      setState(() {
+        firstName = userDoc['First Name'];
+        lastName = userDoc['Last Name'];
+        numAcc = userDoc['Bank account number'];
+      });
+    } else {
+      print('User with ID $userId does not exist.');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double baseWidth = 375;
@@ -116,12 +176,12 @@ class HomeScreen extends StatelessWidget {
                 height: 80,
               ),
 
-              //Credit Card
-              const Padding(
+              //Credit Ca rd
+              Padding(
                   padding: EdgeInsets.fromLTRB(36, 0, 36, 0),
                   child: CreditCardWidget(
-                    cardHolder: "12",
-                    cardNumber: "1234",
+                    cardHolder: firstName + " " + lastName,
+                    cardNumber: numAcc,
                     expiryDate: "2025",
                   )),
 
@@ -143,21 +203,22 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
               ),
+              //TO DO !!!!
               RecentTransactionsWidget(
-                transactions: [
-                  Transaction(
+                tranzakcje: [
+                  Tranzakcja(
                     firstName: 'John',
                     lastName: 'Smith',
                     description: 'Grocery shopping',
                     amount: 30.00,
                   ),
-                  Transaction(
+                  Tranzakcja(
                     firstName: 'Amanda',
                     lastName: 'Black',
                     description: 'Gas refill',
                     amount: -15.40,
                   ),
-                  Transaction(
+                  Tranzakcja(
                     firstName: 'Shop',
                     lastName: '',
                     description: 'Groccery',
@@ -184,7 +245,7 @@ class PaymentsScreen extends StatelessWidget {
 
 //History page
 class HistoryScreen extends StatelessWidget {
-  final List<Map<String, dynamic>> transactions = [
+  final List<Map<String, dynamic>> tranzakcje = [
     {
       'date': DateTime(2023, 4, 1),
       'type': 'blik',
@@ -262,20 +323,20 @@ class HistoryScreen extends StatelessWidget {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: transactions.length,
+              itemCount: tranzakcje.length,
               itemBuilder: (context, index) {
-                final transaction = transactions[index];
-                final currentDate = transaction['date'] as DateTime;
+                final tranzakcja = tranzakcje[index];
+                final currentDate = tranzakcja['date'] as DateTime;
                 final formatter = DateFormat('yyyy-MM-dd');
                 final formattedDate = formatter.format(currentDate);
-                final isNegative = transaction['amount'] < 0;
+                final isNegative = tranzakcja['amount'] < 0;
                 final amountText =
-                    '${isNegative ? '-' : ''}${transaction['amount'].abs()}\$';
+                    '${isNegative ? '-' : ''}${tranzakcja['amount'].abs()}\$';
                 bool showDivider = true;
 
                 if (index > 0) {
                   final previousDate =
-                      transactions[index - 1]['date'] as DateTime;
+                      tranzakcje[index - 1]['date'] as DateTime;
                   showDivider = currentDate != previousDate;
                 }
 
@@ -311,7 +372,7 @@ class HistoryScreen extends StatelessWidget {
                       child: Row(
                         children: [
                           Image.asset(
-                            './lib/images/${transaction['type']}.png',
+                            './lib/images/${tranzakcja['type']}.png',
                             width: 25,
                             height: 25,
                           ),
@@ -320,7 +381,7 @@ class HistoryScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                transaction['name'],
+                                tranzakcja['name'],
                                 style: GoogleFonts.leagueSpartan(
                                   fontSize: 24,
                                   color: white,
@@ -329,7 +390,7 @@ class HistoryScreen extends StatelessWidget {
                               ),
                               SizedBox(height: 8.0),
                               Text(
-                                transaction['description'],
+                                tranzakcja['description'],
                                 style: GoogleFonts.leagueSpartan(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w500,
@@ -337,7 +398,7 @@ class HistoryScreen extends StatelessWidget {
                               ),
                               SizedBox(height: 8.0),
                               Text(
-                                transaction['account'],
+                                tranzakcja['account'],
                                 style: GoogleFonts.leagueSpartan(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w500,

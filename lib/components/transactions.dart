@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class RecentTransactionsWidget extends StatelessWidget {
-  final List<Transaction> transactions;
+  final List<Tranzakcja> tranzakcje;
 
-  RecentTransactionsWidget({required this.transactions});
+  RecentTransactionsWidget({required this.tranzakcje});
 
   @override
   Widget build(BuildContext context) {
@@ -60,10 +60,10 @@ class RecentTransactionsWidget extends StatelessWidget {
                   physics: const ClampingScrollPhysics(),
                   itemCount: 3,
                   itemBuilder: (context, index) {
-                    final transaction = transactions[index];
-                    final isNegative = transaction.amount < 0;
+                    final tranzakcja = tranzakcje[index];
+                    final isNegative = tranzakcja.amount < 0;
                     final amountText =
-                        '${isNegative ? '-' : ''}${transaction.amount.abs()}\$';
+                        '${isNegative ? '-' : ''}${tranzakcja.amount.abs()}\$';
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -76,7 +76,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '${transaction.firstName} ${transaction.lastName}',
+                                  '${tranzakcja.firstName} ${tranzakcja.lastName}',
                                   style: GoogleFonts.leagueSpartan(
                                     color: white,
                                     fontWeight: FontWeight.bold,
@@ -85,7 +85,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                                 ),
                                 SizedBox(height: 6),
                                 Text(
-                                  transaction.description,
+                                  tranzakcja.description,
                                   style: GoogleFonts.leagueSpartan(
                                     color: Colors.white70,
                                     fontSize: 20,
@@ -126,13 +126,13 @@ class RecentTransactionsWidget extends StatelessWidget {
   }
 }
 
-class Transaction {
+class Tranzakcja {
   final String firstName;
   final String lastName;
   final String description;
   final double amount;
 
-  Transaction({
+  Tranzakcja({
     required this.firstName,
     required this.lastName,
     required this.description,

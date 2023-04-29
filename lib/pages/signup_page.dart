@@ -108,12 +108,12 @@ class _SignupPageState extends State<SignupPage> {
       if (isRegistered) {
         User? user = FirebaseAuth.instance.currentUser;
         String userId = user!.uid;
-        String AccNumber = incrementNumber().toString();
+        String accNumber = await numAccGenerator(userId);
         await FirebaseFirestore.instance.collection('users').add({
           'userId': userId,
           'First Name': firstName,
           'Last Name': lastName,
-          'Bank account number': AccNumber,
+          'Bank account number': accNumber,
         });
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => PinInputScreenR()));
