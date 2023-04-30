@@ -110,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String firstName = '';
   String lastName = '';
   String numAcc = '';
-
+  String expires = '';
   @override
   void initState() {
     super.initState();
@@ -132,6 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
         firstName = userDoc['First Name'];
         lastName = userDoc['Last Name'];
         numAcc = userDoc['Bank account number'];
+        expires = userDoc['expires'];
       });
     } else {
       print('User with ID $userId does not exist.');
@@ -182,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: CreditCardWidget(
                     cardHolder: firstName + " " + lastName,
                     cardNumber: numAcc,
-                    expiryDate: "2025",
+                    expiryDate: expires,
                   )),
 
               //Payment Methods

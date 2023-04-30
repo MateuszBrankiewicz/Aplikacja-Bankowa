@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:appbank/firebase/checkRegistation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:core';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
@@ -109,11 +110,15 @@ class _SignupPageState extends State<SignupPage> {
         User? user = FirebaseAuth.instance.currentUser;
         String userId = user!.uid;
         String accNumber = await numAccGenerator(userId);
+        final currentYear = DateTime.now().year + 5;
         await FirebaseFirestore.instance.collection('users').add({
           'userId': userId,
           'First Name': firstName,
           'Last Name': lastName,
           'Bank account number': accNumber,
+          'pin': '',
+          'account balance': '0',
+          'expires': currentYear.toString()
         });
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => PinInputScreenR()));
