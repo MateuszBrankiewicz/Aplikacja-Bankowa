@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">951578864417-ho0rue6tp76dsgtackhc57j0h5jmkvgd.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">951578864417</string>
+    <string name="google_api_key" translatable="false">AIzaSyBdYJ6jCVHYn3QFLlGXPywngGcLnFe4UHw</string>
+    <string name="google_app_id" translatable="false">1:951578864417:android:225a11fe69240d192d6c60</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBdYJ6jCVHYn3QFLlGXPywngGcLnFe4UHw</string>
+    <string name="google_storage_bucket" translatable="false">aplikacja-bankowa-a4bc7.appspot.com</string>
+    <string name="project_id" translatable="false">aplikacja-bankowa-a4bc7</string>
+</resources>
