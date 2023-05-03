@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:appbank/firebase/authentication.dart';
 import 'package:appbank/pages/pin_page.dart';
-import 'package:appbank/pages/pin_registerp.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginPage extends StatefulWidget {

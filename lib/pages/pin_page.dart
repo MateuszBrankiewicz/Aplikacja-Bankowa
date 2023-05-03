@@ -126,6 +126,69 @@ class _PinInputScreenState extends State<PinInputScreen> {
     });
   }
 
+  // Future<void> _submitPin() async {
+  //   _pinController.text = _pin;
+  //   String pin = _pinController.text;
+
+  //   print('PIN przed sprawdzeniem w bazie danych: $pin');
+  //   User? user = FirebaseAuth.instance.currentUser;
+  //   String userId = user!.uid;
+  //   print('PIN przed sprawdzeniem w bazie danych: $userId');
+  //   // Query the database to check if the user's PIN exists
+  //   QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .where('pin', isEqualTo: pin)
+  //       .where('userId', isEqualTo: userId)
+  //       .get();
+
+  //   if (querySnapshot.docs.isNotEmpty) {
+  //     // Show success dialog and navigate to the home page
+  //     showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return AlertDialog(
+  //           title: const Text('Logowanie'),
+  //           content: const Text('Udało ci się zalogować.'),
+  //           actions: [
+  //             TextButton(
+  //               child: const Text('OK'),
+  //               onPressed: () {
+  //                 Navigator.of(context).pop();
+  //               },
+  //             ),
+  //           ],
+  //         );
+  //       },
+  //     );
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => HomePage()),
+  //     );
+  //   } else {
+  //     // Show error dialog
+  //     showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return AlertDialog(
+  //           title: const Text('Logowanie'),
+  //           content: const Text('Wprowadź poprawny PIN.'),
+  //           actions: [
+  //             TextButton(
+  //               child: const Text('OK'),
+  //               onPressed: () {
+  //                 Navigator.of(context).pop();
+  //               },
+  //             ),
+  //           ],
+  //         );
+  //       },
+  //     );
+  //   }
+
+  //   setState(() {
+  //     _pinController.clear();
+  //   });
+  // }
   Future<void> _submitPin() async {
     _pinController.text = _pin;
     String pin = _pinController.text;
@@ -134,57 +197,100 @@ class _PinInputScreenState extends State<PinInputScreen> {
     User? user = FirebaseAuth.instance.currentUser;
     String userId = user!.uid;
     print('PIN przed sprawdzeniem w bazie danych: $userId');
-    // Query the database to check if the user's PIN exists
+
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('users')
-        .where('pin', isEqualTo: pin)
         .where('userId', isEqualTo: userId)
         .get();
 
     if (querySnapshot.docs.isNotEmpty) {
-      // Show success dialog and navigate to the home page
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Logowanie'),
-            content: const Text('Udało ci się zalogować.'),
-            actions: [
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    } else {
-      // Show error dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Logowanie'),
-            content: const Text('Wprowadź poprawny PIN.'),
-            actions: [
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
+      DocumentSnapshot docSnapshot = querySnapshot.docs[0];
+      String docId = docSnapshot.id;
+      Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
+      bool hasPin = data.containsKey('pin') && data['pin'].isNotEmpty;
 
+      if (hasPin) {
+        // Check if the entered PIN matches the stored PIN
+        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('pin', isEqualTo: pin)
+            .where('userId', isEqualTo: userId)
+            .get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          // Show success dialog and navigate to the home page
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Logowanie'),
+                content: const Text('Udało ci się zalogować.'),
+                actions: [
+                  TextButton(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+        } else {
+          // Show error dialog
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Logowanie'),
+                content: const Text('Wprowadź poprawny PIN.'),
+                actions: [
+                  TextButton(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      } else {
+        // Insert the user's PIN into the database
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(docId)
+            .update({'pin': pin}); // specify the new pin value
+
+        // Show success dialog and navigate to the home page
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Logowanie'),
+              content: const Text('Udało ci się zalogować.'),
+              actions: [
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      }
+    }
     setState(() {
       _pinController.clear();
     });
