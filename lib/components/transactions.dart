@@ -1,6 +1,7 @@
 import 'package:appbank/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:appbank/components/colors.dart';
 
 class RecentTransactionsWidget extends StatelessWidget {
   final List<Tranzakcja> tranzakcje;
@@ -32,7 +33,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                   Text(
                     'Last Transactions',
                     style: GoogleFonts.leagueSpartan(
-                      color: white,
+                      color: AppColors.white,
                       fontWeight: FontWeight.w500,
                       fontSize: 20,
                     ),
@@ -42,7 +43,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                     child: Text(
                       'More',
                       style: GoogleFonts.leagueSpartan(
-                        color: white,
+                        color: AppColors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 22,
                       ),
@@ -78,7 +79,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                                 Text(
                                   '${tranzakcja.firstName} ${tranzakcja.lastName}',
                                   style: GoogleFonts.leagueSpartan(
-                                    color: white,
+                                    color: AppColors.white,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 22,
                                   ),
@@ -100,8 +101,9 @@ class RecentTransactionsWidget extends StatelessWidget {
                               amountText,
                               textAlign: TextAlign.right,
                               style: TextStyle(
-                                color:
-                                    isNegative ? darkGrey : Color(0xff1fe9ad),
+                                color: isNegative
+                                    ? AppColors.darkGrey
+                                    : Color(0xff1fe9ad),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 22,
                               ),
@@ -113,7 +115,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                   },
                   separatorBuilder: (context, index) => Divider(
                     height: 24,
-                    color: lightRed,
+                    color: AppColors.lightRed,
                     thickness: 3,
                   ),
                 ),

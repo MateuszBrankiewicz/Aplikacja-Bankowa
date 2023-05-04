@@ -1,10 +1,14 @@
+import 'package:appbank/components/fonts.dart';
+import 'package:appbank/components/my_button.dart';
 import 'package:appbank/pages/signup_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:appbank/firebase/authentication.dart';
 import 'package:appbank/pages/pin_page.dart';
 import 'package:appbank/pages/pin_registerp.dart';
+import 'package:appbank/components/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:appbank/components/form_input.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -33,8 +37,6 @@ class _LoginPageState extends State<LoginPage> {
         email: _email,
         password: _password,
       );
-      print("zalogowano");
-      // ignore: use_build_context_synchronously
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => PinInputScreen()),
@@ -42,21 +44,35 @@ class _LoginPageState extends State<LoginPage> {
     } on FirebaseAuthException catch (e) {
       String errorMessage = '';
       if (e.code == 'user-not-found') {
-        errorMessage = e.message ?? 'Nie ma użytkownika o podanym e-mailu.';
+        errorMessage = 'User not found!';
       } else if (e.code == 'wrong-password') {
-        errorMessage = e.message ?? 'Podaj poprawne haslo.';
+        errorMessage = 'Invalid password!';
+      } else if (e.code == 'invalid-email') {
+        errorMessage = 'Invalid email!';
       } else {
-        errorMessage = e.message ?? 'Wystąpił nieznany błąd.';
+        errorMessage = 'Email and Password fields are required!';
       }
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Błąd logowania'),
-            content: Text(errorMessage),
+            backgroundColor: AppColors.white,
+            title: Center(
+              child: Text(
+                'Signup error!',
+                style: AppFonts.h2,
+              ),
+            ),
+            content: Text(
+              errorMessage,
+              style: AppFonts.errorText,
+            ),
             actions: [
               TextButton(
-                child: const Text('OK'),
+                child: Text(
+                  'Try again',
+                  style: AppFonts.buttonText,
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -71,11 +87,11 @@ class _LoginPageState extends State<LoginPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Błąd logowania'),
+            title: const Text('Signup error'),
             content: Text(errorMessage),
             actions: [
               TextButton(
-                child: const Text('OK'),
+                child: const Text('Try again'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -92,10 +108,6 @@ class _LoginPageState extends State<LoginPage> {
     double baseWidth = 375;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
-    const white = Color(0xfffefefe);
-    const lightRed = Color(0xffc24646);
-    const darkRed = Color(0xff953333);
-    const grey = Color(0x99fefefe);
     return Material(
       child: Container(
         width: double.infinity,
@@ -104,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
             gradient: LinearGradient(
           begin: Alignment(0, 0.546),
           end: Alignment(0, 1),
-          colors: <Color>[lightRed, darkRed],
+          colors: <Color>[AppColors.lightRed, AppColors.darkRed],
           stops: <double>[0, 1],
         )),
         child: Stack(
@@ -164,7 +176,7 @@ class _LoginPageState extends State<LoginPage> {
                                 fontSize: 24 * ffem,
                                 fontWeight: FontWeight.w700,
                                 height: 1.7925 * ffem / fem,
-                                color: white,
+                                color: AppColors.white,
                               ),
                             ),
                           ),
@@ -180,107 +192,43 @@ class _LoginPageState extends State<LoginPage> {
               right: 13 * fem,
               top: 277 * fem,
               child: SizedBox(
-                width: 330 * fem,
-                height: 300 * fem,
                 child: Column(
                   key: _formKey,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      padding: EdgeInsets.fromLTRB(
-                          0 * fem, 0 * fem, 0 * fem, 18 * fem),
-                      width: double.infinity,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.fromLTRB(
-                                6.36 * fem, 0 * fem, 0 * fem, 0 * fem),
-                            child: Text(
-                              'Hi there!',
-                              style: GoogleFonts.leagueSpartan(
-                                fontSize: 40 * ffem,
-                                fontWeight: FontWeight.w500,
-                                height: 0.92 * ffem / fem,
-                                color: white,
-                              ),
-                            ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.fromLTRB(
+                              6.5 * fem, 0 * fem, 0 * fem, 0 * fem),
+                          child: Text(
+                            'Hi there!',
+                            style: AppFonts.h1,
                           ),
-                          SizedBox(
-                            height: 18 * fem,
-                          ),
-                          Container(
-                            padding: EdgeInsets.fromLTRB(
-                                14 * fem, 4 * fem, 3 * fem, 3 * fem),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: grey,
-                              borderRadius: BorderRadius.circular(11 * fem),
-                            ),
-                            child: TextFormField(
-                              controller: usernameController,
-                              obscureText: false,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: 'Email',
-                                hintStyle: GoogleFonts.leagueSpartan(
-                                  fontSize: 23 * ffem,
-                                  fontWeight: FontWeight.w400,
-                                  height: 0.92 * ffem / fem,
-                                  color: white.withOpacity(0.5),
-                                ),
-                              ),
-                              style: GoogleFonts.leagueSpartan(
-                                fontSize: 23 * ffem,
-                                fontWeight: FontWeight.w400,
-                                height: 0.92 * ffem / fem,
-                                color: white,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 18 * fem,
-                          ),
-
-                          // Define a controller for the password text field
-
-// Use the controller in your password container
-                          Container(
-                            padding: EdgeInsets.fromLTRB(
-                                14 * fem, 4 * fem, 3 * fem, 3 * fem),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: grey,
-                              borderRadius: BorderRadius.circular(11 * fem),
-                            ),
-                            child: TextFormField(
-                              controller: passwordController,
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: 'Password',
-                                hintStyle: GoogleFonts.leagueSpartan(
-                                  fontSize: 23 * ffem,
-                                  fontWeight: FontWeight.w400,
-                                  height: 0.92 * ffem / fem,
-                                  color: white.withOpacity(0.5),
-                                ),
-                              ),
-                              style: GoogleFonts.leagueSpartan(
-                                fontSize: 23 * ffem,
-                                fontWeight: FontWeight.w400,
-                                height: 0.92 * ffem / fem,
-                                color: white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                        SizedBox(
+                          height: 18 * fem,
+                        ),
+                        InputForm(
+                          controller: usernameController,
+                          hintText: 'Email',
+                          icon: Icons.person,
+                          obscure: false,
+                        ),
+                        SizedBox(
+                          height: 18 * fem,
+                        ),
+                        InputForm(
+                          controller: passwordController,
+                          hintText: 'Password',
+                          icon: Icons.lock,
+                          obscure: true,
+                        ),
+                      ],
                     ),
                     Container(
-                      margin: EdgeInsets.fromLTRB(
-                          0 * fem, 0 * fem, 0 * fem, 10 * fem),
-                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(vertical: 16 * fem),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -293,50 +241,14 @@ class _LoginPageState extends State<LoginPage> {
                                       builder: (context) => const SignupPage()),
                                 );
                               },
-                              child: (Text(
-                                'Sign Up',
-                                style: TextStyle(
-                                  fontFamily: 'League Spartan',
-                                  fontSize: 18 * ffem,
-                                  fontWeight: FontWeight.w500,
-                                  height: 0.92 * ffem / fem,
-                                  color: white,
-                                ),
-                              ))),
-                          Text(
-                            'Forgot password?',
-                            style: GoogleFonts.leagueSpartan(
-                              fontSize: 18 * ffem,
-                              fontWeight: FontWeight.w500,
-                              height: 0.92 * ffem / fem,
-                              color: white,
-                            ),
-                          ),
+                              child: (Text('Sign up', style: AppFonts.p))),
+                          Text('Forgot password?', style: AppFonts.p),
                         ],
                       ),
                     ),
-                    InkWell(
-                      onTap: () => _signInWithEmailAndPassword(),
-                      child: Container(
-                        width: double.infinity,
-                        height: 48 * fem,
-                        decoration: BoxDecoration(
-                          color: white,
-                          borderRadius: BorderRadius.circular(11 * fem),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Sign in',
-                            style: GoogleFonts.leagueSpartan(
-                              fontSize: 18 * ffem,
-                              fontWeight: FontWeight.w500,
-                              height: 0.92 * ffem / fem,
-                              color: lightRed,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    CustomButton(
+                        text: 'Sign in',
+                        onPressed: _signInWithEmailAndPassword),
                   ],
                 ),
               ),

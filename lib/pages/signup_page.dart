@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:appbank/pages/login_page.dart';
 import 'package:appbank/pages/pin_registerp.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +6,10 @@ import 'package:appbank/firebase/checkRegistation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:core';
+
+import 'package:appbank/components/colors.dart';
+import 'package:appbank/components/fonts.dart';
+import 'package:appbank/components/my_button.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
@@ -141,409 +143,330 @@ class _SignupPageState extends State<SignupPage> {
     const darkGrey = Color(0xff395263);
 
     return Material(
-        child: Container(
-            width: double.infinity,
-            height: 800 * fem,
-            decoration: const BoxDecoration(
-                gradient: LinearGradient(
-              begin: Alignment(0, 0.546),
-              end: Alignment(0, 1),
-              colors: <Color>[lightRed, darkRed],
-              stops: <double>[0, 1],
-            )),
-            child: Stack(children: [
-              //Vector BG
-              Positioned(
-                left: 0 * fem,
-                top: 0 * fem,
-                child: Align(
-                  child: FittedBox(
-                    child: Image.asset(
-                      './lib/images/vector_bg.png',
-                      width: 630.91 * fem,
-                      height: 356 * fem,
-                      fit: BoxFit.fill,
-                    ),
+      child: Container(
+        width: double.infinity,
+        height: 800 * fem,
+        decoration: const BoxDecoration(
+            gradient: LinearGradient(
+          begin: Alignment(0, 0.546),
+          end: Alignment(0, 1),
+          colors: <Color>[lightRed, darkRed],
+          stops: <double>[0, 1],
+        )),
+        child: Stack(
+          children: [
+            //Vector BG
+            Positioned(
+              left: 0 * fem,
+              top: 0 * fem,
+              child: Align(
+                child: FittedBox(
+                  child: Image.asset(
+                    './lib/images/vector_bg.png',
+                    width: 630.91 * fem,
+                    height: 356 * fem,
+                    fit: BoxFit.fill,
                   ),
                 ),
               ),
-              Positioned(
-                left: 100 * fem,
-                top: 46 * fem,
+            ),
+            Positioned(
+              left: 100 * fem,
+              top: 46 * fem,
+              child: SizedBox(
+                width: 159 * fem,
+                height: 108 * fem,
                 child: SizedBox(
-                  width: 159 * fem,
-                  height: 108 * fem,
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: double.infinity,
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          //logo
-                          left: 36 * fem,
-                          top: 0 * fem,
-                          child: Align(
-                            child: SizedBox(
-                              width: 89 * fem,
-                              height: 89 * fem,
-                              child: Image.asset(
-                                './lib/images/logo.png',
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          // poloniabankDAi (2:7)
-                          left: 0 * fem,
-                          top: 64 * fem,
-                          child: Align(
-                            child: SizedBox(
-                              width: 159 * fem,
-                              height: 44 * fem,
-                              child: Text(
-                                'Polonia Bank',
-                                style: GoogleFonts.glegoo(
-                                  fontSize: 24 * ffem,
-                                  fontWeight: FontWeight.w700,
-                                  height: 1.7925 * ffem / fem,
-                                  color: white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 210 * fem,
-                child: SizedBox(
-                  width: 375 * fem,
-                  height: 401 * fem,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: Stack(
                     children: [
-                      Container(
-                        padding: EdgeInsets.fromLTRB(
-                            0 * fem, 0 * fem, 0 * fem, 36 * fem),
-                        width: double.infinity,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              margin: EdgeInsets.fromLTRB(
-                                  0 * fem, 0 * fem, 0 * fem, 18 * fem),
-                              width: double.infinity,
-                              height: 56 * fem,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(11 * fem),
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.fromLTRB(18 * fem,
-                                        0 * fem, 17.95 * fem, 0 * fem),
-                                    width: 156.53 * fem,
-                                    height: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: grey,
-                                      borderRadius:
-                                          BorderRadius.circular(11 * fem),
-                                    ),
-                                    child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 16 * fem),
-                                        child: TextFormField(
-                                          controller: _firstNameController,
-                                          obscureText: false,
-                                          decoration: InputDecoration(
-                                            contentPadding: EdgeInsets.only(
-                                                bottom: -14 * fem),
-                                            border: InputBorder.none,
-                                            hintText: 'First Name',
-                                            errorText: _firstNameError,
-                                            hintStyle:
-                                                GoogleFonts.leagueSpartan(
-                                              fontSize: 23 * ffem,
-                                              fontWeight: FontWeight.w400,
-                                              height: 0.92 * ffem / fem,
-                                              color: white.withOpacity(0.5),
-                                            ),
-                                          ),
-                                          style: GoogleFonts.leagueSpartan(
-                                            fontSize: 23 * ffem,
-                                            fontWeight: FontWeight.w400,
-                                            height: 0.92 * ffem / fem,
-                                            color: white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.fromLTRB(
-                                        0 * fem, 0 * fem, 17.95 * fem, 0 * fem),
-                                    width: 156.53 * fem,
-                                    height: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: grey,
-                                      borderRadius:
-                                          BorderRadius.circular(11 * fem),
-                                    ),
-                                    child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 16 * fem),
-                                        child: TextFormField(
-                                          controller: _lastNameController,
-                                          obscureText: false,
-                                          decoration: InputDecoration(
-                                            contentPadding: EdgeInsets.only(
-                                                bottom: -14 * fem),
-                                            border: InputBorder.none,
-                                            hintText: 'Last Name',
-                                            errorText: _lastNameError,
-                                            hintStyle:
-                                                GoogleFonts.leagueSpartan(
-                                              fontSize: 23 * ffem,
-                                              fontWeight: FontWeight.w400,
-                                              height: 0.92 * ffem / fem,
-                                              color: white.withOpacity(0.5),
-                                            ),
-                                          ),
-                                          style: GoogleFonts.leagueSpartan(
-                                            fontSize: 23 * ffem,
-                                            fontWeight: FontWeight.w400,
-                                            height: 0.92 * ffem / fem,
-                                            color: white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              margin: EdgeInsets.fromLTRB(
-                                  0 * fem, 0 * fem, 0 * fem, 17 * fem),
-                              width: 332.01 * fem,
-                              height: 56 * fem,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(11 * fem),
-                              ),
-                              child: Container(
-                                padding: EdgeInsets.fromLTRB(13.92 * fem,
-                                    18 * fem, 13.92 * fem, 16 * fem),
-                                width: double.infinity,
-                                height: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: grey,
-                                  borderRadius: BorderRadius.circular(11 * fem),
-                                ),
-                                child: TextFormField(
-                                  controller: _emailController,
-                                  obscureText: false,
-                                  decoration: InputDecoration(
-                                    contentPadding:
-                                        EdgeInsets.only(bottom: -4 * fem),
-                                    border: InputBorder.none,
-                                    hintText: 'Email',
-                                    errorText: _emailError,
-                                    hintStyle: GoogleFonts.leagueSpartan(
-                                      fontSize: 23 * ffem,
-                                      fontWeight: FontWeight.w400,
-                                      height: 0.92 * ffem / fem,
-                                      color: white.withOpacity(0.5),
-                                    ),
-                                  ),
-                                  style: GoogleFonts.leagueSpartan(
-                                    fontSize: 23 * ffem,
-                                    fontWeight: FontWeight.w400,
-                                    height: 0.92 * ffem / fem,
-                                    color: white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              margin: EdgeInsets.fromLTRB(
-                                  0 * fem, 0 * fem, 0 * fem, 18 * fem),
-                              width: 332.01 * fem,
-                              height: 56 * fem,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(11 * fem),
-                              ),
-                              child: Container(
-                                padding: EdgeInsets.fromLTRB(13.92 * fem,
-                                    18 * fem, 13.92 * fem, 16 * fem),
-                                width: double.infinity,
-                                height: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: grey,
-                                  borderRadius: BorderRadius.circular(11 * fem),
-                                ),
-                                child: TextFormField(
-                                  controller: _confirmPasswordController,
-                                  obscureText: true,
-                                  decoration: InputDecoration(
-                                    contentPadding:
-                                        EdgeInsets.only(bottom: -4 * fem),
-                                    border: InputBorder.none,
-                                    hintText: 'Password',
-                                    errorText: _confirmPasswordError,
-                                    hintStyle: GoogleFonts.leagueSpartan(
-                                      fontSize: 23 * ffem,
-                                      fontWeight: FontWeight.w400,
-                                      height: 0.92 * ffem / fem,
-                                      color: white.withOpacity(0.5),
-                                    ),
-                                  ),
-                                  style: GoogleFonts.leagueSpartan(
-                                    fontSize: 23 * ffem,
-                                    fontWeight: FontWeight.w400,
-                                    height: 0.92 * ffem / fem,
-                                    color: white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              width: 330 * fem,
-                              height: 56 * fem,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(11 * fem),
-                              ),
-                              child: Container(
-                                padding: EdgeInsets.fromLTRB(13.92 * fem,
-                                    18 * fem, 13.92 * fem, 16 * fem),
-                                width: double.infinity,
-                                height: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: grey,
-                                  borderRadius: BorderRadius.circular(11 * fem),
-                                ),
-                                child: TextFormField(
-                                  controller: _passwordController,
-                                  obscureText: true,
-                                  decoration: InputDecoration(
-                                    contentPadding:
-                                        EdgeInsets.only(bottom: -4 * fem),
-                                    border: InputBorder.none,
-                                    hintText: 'Confirm Password',
-                                    errorText: _confirmPasswordError,
-                                    hintStyle: GoogleFonts.leagueSpartan(
-                                      fontSize: 23 * ffem,
-                                      fontWeight: FontWeight.w400,
-                                      height: 0.92 * ffem / fem,
-                                      color: white.withOpacity(0.5),
-                                    ),
-                                  ),
-                                  style: GoogleFonts.leagueSpartan(
-                                    fontSize: 23 * ffem,
-                                    fontWeight: FontWeight.w400,
-                                    height: 0.92 * ffem / fem,
-                                    color: white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.fromLTRB(
-                            20 * fem, 0 * fem, 20 * fem, 18 * fem),
-                        width: double.infinity,
-                        height: 48 * fem,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(11 * fem),
-                        ),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(11.0)),
-                            backgroundColor: white,
-                          ),
-                          onPressed: signUp,
-                          child: Text(
-                            'Sign Up',
-                            style: GoogleFonts.leagueSpartan(
-                              fontSize: 18 * ffem,
-                              fontWeight: FontWeight.w500,
-                              height: 0.92 * ffem / fem,
-                              color: lightRed,
+                      Positioned(
+                        //logo
+                        left: 36 * fem,
+                        top: 0 * fem,
+                        child: Align(
+                          child: SizedBox(
+                            width: 89 * fem,
+                            height: 89 * fem,
+                            child: Image.asset(
+                              './lib/images/logo.png',
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.fromLTRB(
-                            50 * fem, 0 * fem, 61.36 * fem, 0 * fem),
-                        width: double.infinity,
-                        height: 22 * fem,
-                        child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                margin: EdgeInsets.fromLTRB(
-                                    30 * fem, 0 * fem, 2.28 * fem, 0 * fem),
-                                child: Text(
-                                  'Already a member?',
-                                  style: GoogleFonts.leagueSpartan(
-                                    fontSize: 18 * ffem,
-                                    fontWeight: FontWeight.w500,
-                                    height: 0.92 * ffem / fem,
-                                    color: white,
-                                  ),
-                                ),
+                      Positioned(
+                        // poloniabankDAi (2:7)
+                        left: 0 * fem,
+                        top: 64 * fem,
+                        child: Align(
+                          child: SizedBox(
+                            width: 159 * fem,
+                            height: 44 * fem,
+                            child: Text(
+                              'Polonia Bank',
+                              style: GoogleFonts.glegoo(
+                                fontSize: 24 * ffem,
+                                fontWeight: FontWeight.w700,
+                                height: 1.7925 * ffem / fem,
+                                color: white,
                               ),
-                              Container(
-                                width: 80 * fem,
-                                height: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: darkGrey,
-                                  borderRadius: BorderRadius.circular(6 * fem),
-                                ),
-                                child: Center(
-                                    child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(11.0)),
-                                    backgroundColor: darkGrey,
-                                  ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => LoginPage()));
-                                  },
-                                  child: Text(
-                                    'Sign In',
-                                    style: GoogleFonts.leagueSpartan(
-                                      fontSize: 18 * ffem,
-                                      fontWeight: FontWeight.w500,
-                                      height: 0.92 * ffem / fem,
-                                      color: white,
-                                    ),
-                                  ),
-                                )),
-                              ),
-                            ]),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
-            ])));
+            ),
+            Positioned(
+              top: 210 * fem,
+              child: SizedBox(
+                width: 375 * fem,
+                height: 401 * fem,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.fromLTRB(
+                          0 * fem, 0 * fem, 0 * fem, 18 * fem),
+                      width: double.infinity,
+                      height: 56 * fem,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(11 * fem),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.fromLTRB(
+                                18 * fem, 0 * fem, 17.95 * fem, 0 * fem),
+                            width: 156.53 * fem,
+                            height: double.infinity,
+                            decoration: BoxDecoration(
+                              color: grey,
+                              borderRadius: BorderRadius.circular(11 * fem),
+                            ),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding:
+                                    EdgeInsets.symmetric(horizontal: 16 * fem),
+                                child: TextFormField(
+                                  controller: _firstNameController,
+                                  obscureText: false,
+                                  decoration: InputDecoration(
+                                    contentPadding:
+                                        EdgeInsets.only(bottom: -14 * fem),
+                                    border: InputBorder.none,
+                                    hintText: 'First Name',
+                                    errorText: _firstNameError,
+                                    hintStyle: GoogleFonts.leagueSpartan(
+                                      fontSize: 23 * ffem,
+                                      fontWeight: FontWeight.w400,
+                                      height: 0.92 * ffem / fem,
+                                      color: white.withOpacity(0.5),
+                                    ),
+                                  ),
+                                  style: GoogleFonts.leagueSpartan(
+                                    fontSize: 23 * ffem,
+                                    fontWeight: FontWeight.w400,
+                                    height: 0.92 * ffem / fem,
+                                    color: white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.fromLTRB(
+                                0 * fem, 0 * fem, 17.95 * fem, 0 * fem),
+                            width: 156.53 * fem,
+                            height: double.infinity,
+                            decoration: BoxDecoration(
+                              color: grey,
+                              borderRadius: BorderRadius.circular(11 * fem),
+                            ),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding:
+                                    EdgeInsets.symmetric(horizontal: 16 * fem),
+                                child: TextFormField(
+                                  controller: _lastNameController,
+                                  obscureText: false,
+                                  decoration: InputDecoration(
+                                    contentPadding:
+                                        EdgeInsets.only(bottom: -14 * fem),
+                                    border: InputBorder.none,
+                                    hintText: 'Last Name',
+                                    errorText: _lastNameError,
+                                    hintStyle: GoogleFonts.leagueSpartan(
+                                      fontSize: 23 * ffem,
+                                      fontWeight: FontWeight.w400,
+                                      height: 0.92 * ffem / fem,
+                                      color: white.withOpacity(0.5),
+                                    ),
+                                  ),
+                                  style: GoogleFonts.leagueSpartan(
+                                    fontSize: 23 * ffem,
+                                    fontWeight: FontWeight.w400,
+                                    height: 0.92 * ffem / fem,
+                                    color: white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(
+                          0 * fem, 0 * fem, 0 * fem, 17 * fem),
+                      width: 332.01 * fem,
+                      height: 56 * fem,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(11 * fem),
+                      ),
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(
+                            13.92 * fem, 18 * fem, 13.92 * fem, 16 * fem),
+                        width: double.infinity,
+                        height: double.infinity,
+                        decoration: BoxDecoration(
+                          color: grey,
+                          borderRadius: BorderRadius.circular(11 * fem),
+                        ),
+                        child: TextFormField(
+                          controller: _emailController,
+                          obscureText: false,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.only(bottom: -4 * fem),
+                            border: InputBorder.none,
+                            hintText: 'Email',
+                            errorText: _emailError,
+                            hintStyle: GoogleFonts.leagueSpartan(
+                              fontSize: 23 * ffem,
+                              fontWeight: FontWeight.w400,
+                              height: 0.92 * ffem / fem,
+                              color: white.withOpacity(0.5),
+                            ),
+                          ),
+                          style: GoogleFonts.leagueSpartan(
+                            fontSize: 23 * ffem,
+                            fontWeight: FontWeight.w400,
+                            height: 0.92 * ffem / fem,
+                            color: white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(
+                          0 * fem, 0 * fem, 0 * fem, 18 * fem),
+                      width: 332.01 * fem,
+                      height: 56 * fem,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(11 * fem),
+                      ),
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(
+                            13.92 * fem, 18 * fem, 13.92 * fem, 16 * fem),
+                        width: double.infinity,
+                        height: double.infinity,
+                        decoration: BoxDecoration(
+                          color: grey,
+                          borderRadius: BorderRadius.circular(11 * fem),
+                        ),
+                        child: TextFormField(
+                          controller: _confirmPasswordController,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.only(bottom: -4 * fem),
+                            border: InputBorder.none,
+                            hintText: 'Password',
+                            errorText: _confirmPasswordError,
+                            hintStyle: GoogleFonts.leagueSpartan(
+                              fontSize: 23 * ffem,
+                              fontWeight: FontWeight.w400,
+                              height: 0.92 * ffem / fem,
+                              color: white.withOpacity(0.5),
+                            ),
+                          ),
+                          style: GoogleFonts.leagueSpartan(
+                            fontSize: 23 * ffem,
+                            fontWeight: FontWeight.w400,
+                            height: 0.92 * ffem / fem,
+                            color: white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 330 * fem,
+                      height: 56 * fem,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(11 * fem),
+                      ),
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(
+                            13.92 * fem, 18 * fem, 13.92 * fem, 16 * fem),
+                        width: double.infinity,
+                        height: double.infinity,
+                        decoration: BoxDecoration(
+                          color: grey,
+                          borderRadius: BorderRadius.circular(11 * fem),
+                        ),
+                        child: TextFormField(
+                          controller: _passwordController,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.only(bottom: -4 * fem),
+                            border: InputBorder.none,
+                            hintText: 'Confirm Password',
+                            errorText: _confirmPasswordError,
+                            hintStyle: GoogleFonts.leagueSpartan(
+                              fontSize: 23 * ffem,
+                              fontWeight: FontWeight.w400,
+                              height: 0.92 * ffem / fem,
+                              color: white.withOpacity(0.5),
+                            ),
+                          ),
+                          style: GoogleFonts.leagueSpartan(
+                            fontSize: 23 * ffem,
+                            fontWeight: FontWeight.w400,
+                            height: 0.92 * ffem / fem,
+                            color: white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 16 * fem),
+                      alignment: Alignment.centerLeft,
+                      child: TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginPage()),
+                            );
+                          },
+                          child: (Text('Already a member? Sign in',
+                              style: AppFonts.p))),
+                    ),
+                    CustomButton(text: 'Sign Up', onPressed: signUp),
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

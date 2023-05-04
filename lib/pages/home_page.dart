@@ -6,12 +6,66 @@ import 'package:appbank/components/transactions.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:appbank/pages/payments_screens.dart';
+import 'package:appbank/components/colors.dart';
 
-const white = Color(0xfffefefe);
-const lightRed = Color(0xffc24646);
-const darkRed = Color(0xff953333);
-const grey = Color(0x99fefefe);
-const darkGrey = Color(0xff395263);
+class PaymentShortcut extends StatelessWidget {
+  final String image;
+  final String label;
+  final double size;
+  final Widget destPage;
+
+  PaymentShortcut({
+    Key? key,
+    required this.image,
+    required this.size,
+    required this.label,
+    required this.destPage,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    double baseWidth = 375;
+    double fem = MediaQuery.of(context).size.width / baseWidth;
+    double ffem = fem * 0.97;
+    return GestureDetector(
+      onTap: () => {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => destPage),
+        )
+      },
+      child: Column(
+        children: [
+          Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                color: AppColors.darkGrey,
+                borderRadius: BorderRadius.circular(40),
+              ),
+              child: Center(
+                child: Image(
+                  image: AssetImage(image),
+                  width: size / 2.5,
+                  height: size / 2.5,
+                ),
+              )),
+          SizedBox(height: 8),
+          Text(
+            label,
+            style: GoogleFonts.leagueSpartan(
+              fontSize: 18 * ffem,
+              fontWeight: FontWeight.w500,
+              height: 0.92 * ffem / fem,
+              color: AppColors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class HomePage extends StatefulWidget {
   @override
@@ -45,7 +99,7 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        backgroundColor: white,
+        backgroundColor: AppColors.white,
         selectedFontSize: 18,
         iconSize: 28,
         unselectedFontSize: 18,
@@ -53,7 +107,7 @@ class _HomePageState extends State<HomePage> {
             GoogleFonts.leagueSpartan(fontWeight: FontWeight.bold),
         unselectedLabelStyle:
             GoogleFonts.leagueSpartan(fontWeight: FontWeight.w500),
-        unselectedItemColor: darkGrey,
+        unselectedItemColor: AppColors.darkGrey,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -188,19 +242,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
               //Payment Methods
               Padding(
-                padding: EdgeInsets.all(16 * fem),
+                padding: EdgeInsets.symmetric(
+                    horizontal: 32 * fem, vertical: 14 * fem),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
+                  children: [
                     PaymentShortcut(
-                        image: './lib/images/blik.png', label: 'BLIK'),
+                      size: 66,
+                      image: './lib/images/blik.png',
+                      label: 'BLIK',
+                      destPage: BLIKPayment(),
+                    ),
                     PaymentShortcut(
-                        image: './lib/images/przelew.png', label: 'Transfer'),
+                      size: 66,
+                      image: './lib/images/przelew.png',
+                      label: 'Transfer',
+                      destPage: TransferPayment(),
+                    ),
                     PaymentShortcut(
-                        image: './lib/images/contactless.png',
-                        label: 'Contactless'),
-                    PaymentShortcut(
-                        image: './lib/images/more.png', label: 'More'),
+                      size: 66,
+                      image: './lib/images/contactless.png',
+                      label: 'Contactless',
+                      destPage: ContactlessPayment(),
+                    ),
                   ],
                 ),
               ),
@@ -235,11 +299,65 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+//IN PROGRESS
 class PaymentsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Payments Screen'),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment(0, 0.546),
+          end: Alignment(0, 1),
+          colors: <Color>[lightRed, darkRed],
+          stops: <double>[0, 1],
+        ),
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(32),
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'Payments',
+              style: GoogleFonts.leagueSpartan(
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+                color: AppColors.white,
+              ),
+            ),
+          ),
+          Container(
+            color: grey.withAlpha(50),
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.all(32),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  PaymentShortcut(
+                    size: 70,
+                    image: './lib/images/blik.png',
+                    label: 'BLIK',
+                    destPage: BLIKPayment(),
+                  ),
+                  PaymentShortcut(
+                    size: 70,
+                    image: './lib/images/przelew.png',
+                    label: 'Transfer',
+                    destPage: TransferPayment(),
+                  ),
+                  PaymentShortcut(
+                    size: 70,
+                    image: './lib/images/contactless.png',
+                    label: 'Contactless',
+                    destPage: ContactlessPayment(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -318,7 +436,7 @@ class HistoryScreen extends StatelessWidget {
               style: GoogleFonts.leagueSpartan(
                 fontSize: 40,
                 fontWeight: FontWeight.bold,
-                color: white,
+                color: AppColors.white,
               ),
             ),
           ),
@@ -353,7 +471,7 @@ class HistoryScreen extends StatelessWidget {
                           style: GoogleFonts.leagueSpartan(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
-                            color: darkGrey,
+                            color: AppColors.darkGrey,
                           ),
                         ),
                       ),
@@ -385,7 +503,7 @@ class HistoryScreen extends StatelessWidget {
                                 tranzakcja['name'],
                                 style: GoogleFonts.leagueSpartan(
                                   fontSize: 24,
-                                  color: white,
+                                  color: AppColors.white,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -395,7 +513,7 @@ class HistoryScreen extends StatelessWidget {
                                 style: GoogleFonts.leagueSpartan(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w500,
-                                    color: white),
+                                    color: AppColors.white),
                               ),
                               SizedBox(height: 8.0),
                               Text(
@@ -411,7 +529,9 @@ class HistoryScreen extends StatelessWidget {
                           Text(
                             amountText,
                             style: GoogleFonts.leagueSpartan(
-                              color: isNegative ? white : Color(0xff1fe9ad),
+                              color: isNegative
+                                  ? AppColors.white
+                                  : Color(0xff1fe9ad),
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
@@ -503,7 +623,7 @@ class CreditCardWidget extends StatelessWidget {
                   Text(
                     cardHolder.toUpperCase(),
                     style: TextStyle(
-                      color: white,
+                      color: AppColors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -514,70 +634,19 @@ class CreditCardWidget extends StatelessWidget {
                 children: [
                   Text(
                     'Expires',
-                    style: TextStyle(color: white),
+                    style: TextStyle(color: AppColors.white),
                   ),
                   SizedBox(height: 4),
                   Text(
                     expiryDate,
                     style: TextStyle(
-                      color: white,
+                      color: AppColors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class PaymentShortcut extends StatelessWidget {
-  final String image;
-  final String label;
-  final VoidCallback? onTap;
-
-  const PaymentShortcut({
-    Key? key,
-    required this.image,
-    required this.label,
-    this.onTap,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    double baseWidth = 375;
-    double fem = MediaQuery.of(context).size.width / baseWidth;
-    double ffem = fem * 0.97;
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: darkGrey,
-                borderRadius: BorderRadius.circular(40),
-              ),
-              child: Center(
-                child: Image(
-                  image: AssetImage(image),
-                  width: 22,
-                  height: 22,
-                ),
-              )),
-          SizedBox(height: 8),
-          Text(
-            label,
-            style: GoogleFonts.leagueSpartan(
-              fontSize: 18 * ffem,
-              fontWeight: FontWeight.w500,
-              height: 0.92 * ffem / fem,
-              color: white,
-            ),
           ),
         ],
       ),
