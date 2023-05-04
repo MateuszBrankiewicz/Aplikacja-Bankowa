@@ -1,8 +1,8 @@
 import 'package:appbank/pages/login_page.dart';
-import 'package:appbank/pages/pin_registerp.dart';
+import 'package:appbank/pages/pin_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:appbank/firebase/checkRegistation.dart';
+import 'package:appbank/firebase/Registration.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:core';
@@ -122,8 +122,8 @@ class _SignupPageState extends State<SignupPage> {
           'account balance': '0',
           'expires': currentYear.toString()
         });
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => PinInputScreenR()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => PinInputScreen()));
       } else {
         // Registration failed
         // Show an error message
