@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:google_fonts/google_fonts.dart';
 import 'package:appbank/components/transactions.dart';
 import 'package:intl/intl.dart';
@@ -126,7 +125,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: darkRed,
+        selectedItemColor: AppColors.darkRed,
         onTap: _onItemTapped,
       ),
     );
@@ -202,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
           gradient: LinearGradient(
         begin: Alignment(0, 0.546),
         end: Alignment(0, 1),
-        colors: <Color>[lightRed, darkRed],
+        colors: <Color>[AppColors.lightRed, AppColors.darkRed],
         stops: <double>[0, 1],
       )),
       child: Stack(
@@ -307,7 +306,7 @@ class PaymentsScreen extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment(0, 0.546),
           end: Alignment(0, 1),
-          colors: <Color>[lightRed, darkRed],
+          colors: <Color>[AppColors.lightRed, AppColors.darkRed],
           stops: <double>[0, 1],
         ),
       ),
@@ -326,7 +325,7 @@ class PaymentsScreen extends StatelessWidget {
             ),
           ),
           Container(
-            color: grey.withAlpha(50),
+            color: AppColors.grey.withAlpha(50),
             alignment: Alignment.centerLeft,
             child: Padding(
               padding: EdgeInsets.all(32),
@@ -421,7 +420,7 @@ class HistoryScreen extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment(0, 0.546),
           end: Alignment(0, 1),
-          colors: <Color>[lightRed, darkRed],
+          colors: <Color>[AppColors.lightRed, AppColors.darkRed],
           stops: <double>[0, 1],
         ),
       ),
@@ -462,7 +461,7 @@ class HistoryScreen extends StatelessWidget {
                   children: [
                     if (showDivider)
                       Container(
-                        color: grey,
+                        color: AppColors.grey,
                         padding: EdgeInsets.fromLTRB(32, 8, 32, 8),
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -479,11 +478,11 @@ class HistoryScreen extends StatelessWidget {
                       decoration: const BoxDecoration(
                         border: Border(
                             top: BorderSide(
-                              color: grey,
+                              color: AppColors.grey,
                               width: 1,
                             ),
                             bottom: BorderSide(
-                              color: grey,
+                              color: AppColors.grey,
                               width: 1,
                             )),
                       ),
@@ -520,7 +519,7 @@ class HistoryScreen extends StatelessWidget {
                                 style: GoogleFonts.leagueSpartan(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w500,
-                                    color: grey),
+                                    color: AppColors.grey),
                               ),
                             ],
                           ),
