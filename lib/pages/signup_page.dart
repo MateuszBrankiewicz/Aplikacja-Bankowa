@@ -136,11 +136,6 @@ class _SignupPageState extends State<SignupPage> {
     double baseWidth = 375;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
-    const white = Color(0xfffefefe);
-    const lightRed = Color(0xffc24646);
-    const darkRed = Color(0xff953333);
-    const grey = Color(0x99fefefe);
-    const darkGrey = Color(0xff395263);
 
     return Material(
       child: Container(
@@ -150,7 +145,7 @@ class _SignupPageState extends State<SignupPage> {
             gradient: LinearGradient(
           begin: Alignment(0, 0.546),
           end: Alignment(0, 1),
-          colors: <Color>[lightRed, darkRed],
+          colors: <Color>[AppColors.lightRed, AppColors.darkRed],
           stops: <double>[0, 1],
         )),
         child: Stack(
@@ -446,7 +441,8 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(vertical: 16 * fem),
+                      padding:
+                          EdgeInsets.fromLTRB(16 * fem, 16 * fem, 16 * fem, 0),
                       alignment: Alignment.centerLeft,
                       child: TextButton(
                           onPressed: () {
@@ -459,7 +455,10 @@ class _SignupPageState extends State<SignupPage> {
                           child: (Text('Already a member? Sign in',
                               style: AppFonts.p))),
                     ),
-                    CustomButton(text: 'Sign Up', onPressed: signUp),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16 * fem),
+                      child: CustomButton(text: 'Sign Up', onPressed: signUp),
+                    ),
                   ],
                 ),
               ),

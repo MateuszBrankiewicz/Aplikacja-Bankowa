@@ -164,6 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String lastName = '';
   String numAcc = '';
   String expires = '';
+  String balance = '';
   @override
   void initState() {
     super.initState();
@@ -184,6 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
         lastName = userDoc?['Last Name'];
         numAcc = userDoc?['Bank account number'];
         expires = userDoc?['expires'];
+        balance = userDoc?['account balance'];
       });
     } else {
       print('User with ID $userId does not exist.');
@@ -231,6 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Padding(
                   padding: EdgeInsets.fromLTRB(32, 0, 32, 0),
                   child: CreditCardWidget(
+                    currentBalance: balance,
                     cardHolder: firstName + " " + lastName,
                     cardNumber: numAcc,
                     expiryDate: expires,
@@ -562,12 +565,14 @@ class CreditCardWidget extends StatelessWidget {
   final String cardHolder;
   final String cardNumber;
   final String expiryDate;
+  final String currentBalance;
 
   const CreditCardWidget({
     Key? key,
     required this.cardHolder,
     required this.cardNumber,
     required this.expiryDate,
+    required this.currentBalance,
   }) : super(key: key);
 
   @override
@@ -597,10 +602,22 @@ class CreditCardWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(
-                Icons.credit_card_outlined,
-                color: AppColors.white,
-                size: 21,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.credit_card,
+                    color: AppColors.white,
+                    size: 20,
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    'BALANCE: ' + currentBalance + '\$',
+                    style: AppFonts.cardH1,
+                  ),
+                ],
               ),
               Text(
                 'VISA',
