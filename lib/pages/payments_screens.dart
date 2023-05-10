@@ -72,53 +72,53 @@ class TransferPayment extends StatelessWidget {
         ),
         child: Padding(
           padding: EdgeInsets.all(16),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            SizedBox(height: 16),
-            InputForm(
-              controller: TextEditingController(text: transfer.sender),
-              hintText: 'Wpisz nazwe odbiorcy',
-              icon: Icons.person,
-              obscure: false,
-              onChanged: (value) {
-                transfer.sender = value;
-              },
-            ),
-            SizedBox(height: 32),
-            InputForm(
-              controller: TextEditingController(text: transfer.accNumber),
-              hintText: 'Wpisz numer rachunku',
-              icon: Icons.wallet_rounded,
-              obscure: false,
-              onChanged: (value) {
-                transfer.accNumber = value;
-              },
-            ),
-            SizedBox(height: 48),
-            InputForm(
-              controller:
-                  TextEditingController(text: transfer.amount.toString()),
-              hintText: 'Wpisz kwote',
-              icon: Icons.monetization_on_outlined,
-              obscure: false,
-              onChanged: (value) {
-                transfer.amount = double.parse(value);
-              },
-            ),
-            SizedBox(height: 16),
-            InputForm(
-              controller: TextEditingController(text: transfer.title),
-              hintText: 'Podaj tytul',
-              icon: Icons.view_agenda,
-              obscure: false,
-              onChanged: (value) {
-                transfer.title = value;
-              },
-            ),
-            SizedBox(height: 48),
-            CustomButton(
-                text: 'Next', onPressed: () => {wykonajPrzelew(transfer)}),
-          ]),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(height: 16),
+                InputForm(
+                  controller: TextEditingController(text: transfer.sender),
+                  hintText: 'Wpisz nazwe odbiorcy',
+                  icon: Icons.person,
+                  obscure: false,
+                  onChanged: (value) {
+                    transfer.sender = value;
+                  },
+                ),
+                InputForm(
+                  controller: TextEditingController(text: transfer.accNumber),
+                  hintText: 'Wpisz numer rachunku',
+                  icon: Icons.wallet_rounded,
+                  obscure: false,
+                  onChanged: (value) {
+                    transfer.accNumber = value;
+                  },
+                ),
+                SizedBox(height: 16),
+                InputForm(
+                  controller:
+                      TextEditingController(text: transfer.amount.toString()),
+                  hintText: 'Wpisz kwote',
+                  icon: Icons.monetization_on_outlined,
+                  obscure: false,
+                  onChanged: (value) {
+                    transfer.amount = double.parse(value);
+                  },
+                ),
+                InputForm(
+                  controller: TextEditingController(text: transfer.title),
+                  hintText: 'Podaj tytul przelewu',
+                  icon: Icons.view_agenda,
+                  obscure: false,
+                  onChanged: (value) {
+                    transfer.title = value;
+                  },
+                ),
+                SizedBox(height: 48),
+                CustomButton(
+                    text: 'Next', onPressed: () => {wykonajPrzelew(transfer)}),
+              ]),
         ),
       ),
     );

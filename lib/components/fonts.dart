@@ -52,4 +52,25 @@ class AppFonts {
     height: 1,
     color: AppColors.lightGrey,
   );
+
+  static final TextStyle cardH2 = GoogleFonts.leagueSpartan(
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    height: 1,
+    color: AppColors.grey,
+  );
+
+  static final TextStyle cardH1 = GoogleFonts.leagueSpartan(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    height: 1,
+    color: AppColors.white,
+  );
+
+  static final TextStyle cardNumber = GoogleFonts.leagueSpartan(
+    fontSize: 22,
+    fontWeight: FontWeight.w600,
+    height: 1,
+    color: AppColors.white,
+  );
 }

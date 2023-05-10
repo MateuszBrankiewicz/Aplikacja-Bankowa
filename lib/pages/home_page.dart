@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:appbank/pages/payments_screens.dart';
 import 'package:appbank/components/colors.dart';
+import 'package:appbank/components/fonts.dart';
 
 class PaymentShortcut extends StatelessWidget {
   final String image;
@@ -223,19 +224,20 @@ class _HomeScreenState extends State<HomeScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(
-                height: 80,
+              SizedBox(
+                height: 60,
               ),
-
               //Credit Ca rd
               Padding(
-                  padding: EdgeInsets.fromLTRB(36, 0, 36, 0),
+                  padding: EdgeInsets.fromLTRB(32, 0, 32, 0),
                   child: CreditCardWidget(
                     cardHolder: firstName + " " + lastName,
                     cardNumber: numAcc,
                     expiryDate: expires,
                   )),
-
+              SizedBox(
+                height: 15,
+              ),
               //Payment Methods
               Padding(
                 padding: EdgeInsets.symmetric(
@@ -570,76 +572,81 @@ class CreditCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String formattedcardNumber = cardNumber.replaceAllMapped(
+        RegExp(r'^(\d{4})(\d{4})(\d{4})(\d{4})(\d+)$'),
+        (Match match) =>
+            '${match[1]} ${match[2]} ${match[3]} ${match[4]} ${match[5]}');
+
     return Container(
-      padding: EdgeInsets.all(16),
-      width: double.infinity,
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment(1.038, -1),
-          end: Alignment(-0.805, 0.943),
-          colors: <Color>[Color(0x99020202), Color(0xce000000)],
-          stops: <double>[0, 0.87],
-        ),
-        borderRadius: BorderRadius.circular(20),
-      ),
+          color: AppColors.black,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              offset: Offset(0, 5),
+              spreadRadius: 8,
+              blurRadius: 0,
+              color: AppColors.darkGrey,
+            )
+          ]),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.credit_card, color: Colors.white),
+              Icon(
+                Icons.credit_card_outlined,
+                color: AppColors.white,
+                size: 21,
+              ),
               Text(
                 'VISA',
-                style: TextStyle(color: Colors.white),
+                style: AppFonts.cardH1,
               ),
             ],
           ),
-          SizedBox(height: 16),
-          Text(
-            cardNumber,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              letterSpacing: 2,
-            ),
+          SizedBox(
+            height: 20,
           ),
-          SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                formattedcardNumber + "XX",
+                style: AppFonts.cardNumber,
+              )
+            ],
+          ),
+          SizedBox(
+            height: 20,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Card Holder',
-                    style: TextStyle(color: Colors.white),
+                  Text('CARDHOLDER', style: AppFonts.cardH2),
+                  SizedBox(
+                    height: 4,
                   ),
-                  SizedBox(height: 4),
-                  Text(
-                    cardHolder.toUpperCase(),
-                    style: TextStyle(
-                      color: AppColors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text(cardHolder.toUpperCase(), style: AppFonts.cardH1),
                 ],
               ),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    'Expires',
-                    style: TextStyle(color: AppColors.white),
+                    'EXPIRES',
+                    style: AppFonts.cardH2,
                   ),
-                  SizedBox(height: 4),
-                  Text(
-                    expiryDate,
-                    style: TextStyle(
-                      color: AppColors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  SizedBox(
+                    height: 4,
                   ),
+                  Text(expiryDate, style: AppFonts.cardH1),
                 ],
               ),
             ],
