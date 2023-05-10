@@ -3,14 +3,13 @@ import 'package:appbank/components/my_button.dart';
 import 'package:appbank/pages/signup_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:appbank/firebase/authentication.dart';
 import 'package:appbank/pages/pin_page.dart';
 import 'package:appbank/components/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:appbank/components/form_input.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key? key}) : super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
@@ -23,7 +22,13 @@ class _LoginPageState extends State<LoginPage> {
   String _password = '';
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
-  final Authentication _auth = Authentication();
+
+  void changeScreen(Widget destination) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => destination),
+    );
+  }
 
   Future<void> _signInWithEmailAndPassword() async {
     setState(() {
@@ -36,10 +41,7 @@ class _LoginPageState extends State<LoginPage> {
         email: _email,
         password: _password,
       );
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => PinInputScreen()),
-      );
+      changeScreen(PinInputScreen());
     } on FirebaseAuthException catch (e) {
       String errorMessage = '';
       if (e.code == 'user-not-found') {
@@ -202,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
                           margin: EdgeInsets.fromLTRB(
                               6.5 * fem, 0 * fem, 0 * fem, 0 * fem),
                           child: Text(
-                            'Hi there!',
+                            'Welcome back!',
                             style: AppFonts.h1,
                           ),
                         ),
@@ -233,15 +235,12 @@ class _LoginPageState extends State<LoginPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const SignupPage()),
-                                );
-                              },
+                              onPressed: () => changeScreen(const SignupPage()),
                               child: (Text('Sign up', style: AppFonts.p))),
-                          Text('Forgot password?', style: AppFonts.p),
+                          TextButton(
+                              onPressed: () => changeScreen(const SignupPage()),
+                              child: (Text('Forgot password?',
+                                  style: AppFonts.p))),
                         ],
                       ),
                     ),

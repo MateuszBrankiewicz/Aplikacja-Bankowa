@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:core';
 
+import 'package:appbank/components/form_input.dart';
+
 import 'package:appbank/components/colors.dart';
 import 'package:appbank/components/fonts.dart';
 import 'package:appbank/components/my_button.dart';
@@ -20,6 +22,7 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -27,20 +30,12 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  String _firstNameError = '';
-  String _lastNameError = '';
-  String _emailError = '';
-  String _passwordError = '';
-  String _confirmPasswordError = '';
+  String _errorMessage = '';
 
   Future<void> signUp() async {
     // Reset error messages
     setState(() {
-      _firstNameError = '';
-      _lastNameError = '';
-      _emailError = '';
-      _passwordError = '';
-      _confirmPasswordError = '';
+      _errorMessage = '';
     });
 
     // Get input values
@@ -55,50 +50,50 @@ class _SignupPageState extends State<SignupPage> {
 
     if (firstName.isEmpty) {
       setState(() {
-        _firstNameError = 'Please enter your first name';
+        _errorMessage += 'Please enter your first name!\n';
       });
       isValid = false;
     }
 
     if (lastName.isEmpty) {
       setState(() {
-        _lastNameError = 'Please enter your last name';
+        _errorMessage += 'Please enter your last name!\n';
       });
       isValid = false;
     }
 
     if (email.isEmpty) {
       setState(() {
-        _emailError = 'Please enter your email';
+        _errorMessage += 'Please enter your email!\n';
       });
       isValid = false;
     } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
       setState(() {
-        _emailError = 'Please enter a valid email';
+        _errorMessage += 'Please enter a valid email!\n';
       });
       isValid = false;
     }
 
     if (password.isEmpty) {
       setState(() {
-        _passwordError = 'Please enter your password';
+        _errorMessage += 'Please enter your password!\n';
       });
       isValid = false;
     } else if (password.length < 6) {
       setState(() {
-        _passwordError = 'Password must be at least 6 characters long';
+        _errorMessage += 'Password must be at least 6 characters long!\n';
       });
       isValid = false;
     }
 
     if (confirmPassword.isEmpty) {
       setState(() {
-        _confirmPasswordError = 'Please confirm your password';
+        _errorMessage += 'Please confirm your password!\n';
       });
       isValid = false;
     } else if (password != confirmPassword) {
       setState(() {
-        _confirmPasswordError = 'Passwords do not match';
+        _errorMessage += 'Passwords do not match!\n';
       });
       isValid = false;
     }
@@ -122,13 +117,48 @@ class _SignupPageState extends State<SignupPage> {
           'expires': currentYear.toString(),
           'transaction': []
         });
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => PinInputScreen()));
+        changeScreen(PinInputScreen());
       } else {
         // Registration failed
-        // Show an error message
+        print("Something went wrong!");
       }
+    } else {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: AppColors.white,
+              title: Center(
+                child: Text(
+                  'Signup error!',
+                  style: AppFonts.h2,
+                ),
+              ),
+              content: Text(
+                _errorMessage,
+                style: AppFonts.errorText,
+              ),
+              actions: [
+                TextButton(
+                  child: Text(
+                    'Try again',
+                    style: AppFonts.buttonText,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
     }
+  }
+
+  void changeScreen(Widget destination) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => destination),
+    );
   }
 
   @override
@@ -136,336 +166,180 @@ class _SignupPageState extends State<SignupPage> {
     double baseWidth = 375;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
-
     return Material(
-      child: Container(
-        width: double.infinity,
-        height: 800 * fem,
-        decoration: const BoxDecoration(
-            gradient: LinearGradient(
-          begin: Alignment(0, 0.546),
-          end: Alignment(0, 1),
-          colors: <Color>[AppColors.lightRed, AppColors.darkRed],
-          stops: <double>[0, 1],
-        )),
-        child: Stack(
-          children: [
-            //Vector BG
-            Positioned(
-              left: 0 * fem,
-              top: 0 * fem,
-              child: Align(
-                child: FittedBox(
-                  child: Image.asset(
-                    './lib/images/vector_bg.png',
-                    width: 630.91 * fem,
-                    height: 356 * fem,
-                    fit: BoxFit.fill,
+        child: Container(
+            width: double.infinity,
+            height: 800 * fem,
+            decoration: const BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment(0, 0.546),
+              end: Alignment(0, 1),
+              colors: <Color>[AppColors.lightRed, AppColors.darkRed],
+              stops: <double>[0, 1],
+            )),
+            child: Stack(children: [
+              //Vector BG
+              Positioned(
+                left: 0 * fem,
+                top: 0 * fem,
+                child: Align(
+                  child: FittedBox(
+                    child: Image.asset(
+                      './lib/images/vector_bg.png',
+                      width: 630.91 * fem,
+                      height: 356 * fem,
+                      fit: BoxFit.fill,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              left: 100 * fem,
-              top: 46 * fem,
-              child: SizedBox(
-                width: 159 * fem,
-                height: 108 * fem,
+              Positioned(
+                left: 100 * fem,
+                top: 46 * fem,
                 child: SizedBox(
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        //logo
-                        left: 36 * fem,
-                        top: 0 * fem,
-                        child: Align(
-                          child: SizedBox(
-                            width: 89 * fem,
-                            height: 89 * fem,
-                            child: Image.asset(
-                              './lib/images/logo.png',
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        // poloniabankDAi (2:7)
-                        left: 0 * fem,
-                        top: 64 * fem,
-                        child: Align(
-                          child: SizedBox(
-                            width: 159 * fem,
-                            height: 44 * fem,
-                            child: Text(
-                              'Polonia Bank',
-                              style: GoogleFonts.glegoo(
-                                fontSize: 24 * ffem,
-                                fontWeight: FontWeight.w700,
-                                height: 1.7925 * ffem / fem,
-                                color: white,
+                  width: 159 * fem,
+                  height: 108 * fem,
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          //logo
+                          left: 36 * fem,
+                          top: 0 * fem,
+                          child: Align(
+                            child: SizedBox(
+                              width: 89 * fem,
+                              height: 89 * fem,
+                              child: Image.asset(
+                                './lib/images/logo.png',
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
+                        ),
+                        Positioned(
+                          // poloniabankDAi (2:7)
+                          left: 0 * fem,
+                          top: 64 * fem,
+                          child: Align(
+                            child: SizedBox(
+                              width: 159 * fem,
+                              height: 44 * fem,
+                              child: Text(
+                                'Polonia Bank',
+                                style: GoogleFonts.glegoo(
+                                  fontSize: 24 * ffem,
+                                  fontWeight: FontWeight.w700,
+                                  height: 1.7925 * ffem / fem,
+                                  color: AppColors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 13 * fem,
+                right: 13 * fem,
+                top: 195 * fem,
+                child: SizedBox(
+                  child: Column(
+                    key: _formKey,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.fromLTRB(
+                                6.5 * fem, 0 * fem, 0 * fem, 0 * fem),
+                            child: Text(
+                              'Hi there!',
+                              style: AppFonts.h1,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 14 * fem,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: InputForm(
+                                  controller: _firstNameController,
+                                  hintText: 'First name',
+                                  icon: Icons.person,
+                                  obscure: false,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 16 * fem,
+                              ),
+                              Expanded(
+                                child: InputForm(
+                                  controller: _lastNameController,
+                                  hintText: 'Last name',
+                                  icon: Icons.people,
+                                  obscure: false,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 18 * fem,
+                          ),
+                          InputForm(
+                            controller: _emailController,
+                            hintText: 'Email',
+                            icon: Icons.mail,
+                            obscure: false,
+                          ),
+                          SizedBox(
+                            height: 18 * fem,
+                          ),
+                          InputForm(
+                            controller: _passwordController,
+                            hintText: 'Password',
+                            icon: Icons.lock,
+                            obscure: true,
+                          ),
+                          SizedBox(
+                            height: 18 * fem,
+                          ),
+                          InputForm(
+                            controller: _confirmPasswordController,
+                            hintText: 'Confirm Password',
+                            icon: Icons.lock_person,
+                            obscure: true,
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 24 * fem),
+                        child: CustomButton(text: 'Sign up', onPressed: signUp),
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(vertical: 2 * fem),
+                        child: Row(
+                          children: [
+                            TextButton(
+                                onPressed: () =>
+                                    changeScreen(const LoginPage()),
+                                child: (Text(
+                                    'Already have an account?  Sign in',
+                                    style: AppFonts.p))),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              top: 210 * fem,
-              child: SizedBox(
-                width: 375 * fem,
-                height: 401 * fem,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.fromLTRB(
-                          0 * fem, 0 * fem, 0 * fem, 18 * fem),
-                      width: double.infinity,
-                      height: 56 * fem,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(11 * fem),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.fromLTRB(
-                                18 * fem, 0 * fem, 17.95 * fem, 0 * fem),
-                            width: 156.53 * fem,
-                            height: double.infinity,
-                            decoration: BoxDecoration(
-                              color: grey,
-                              borderRadius: BorderRadius.circular(11 * fem),
-                            ),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: 16 * fem),
-                                child: TextFormField(
-                                  controller: _firstNameController,
-                                  obscureText: false,
-                                  decoration: InputDecoration(
-                                    contentPadding:
-                                        EdgeInsets.only(bottom: -14 * fem),
-                                    border: InputBorder.none,
-                                    hintText: 'First Name',
-                                    errorText: _firstNameError,
-                                    hintStyle: GoogleFonts.leagueSpartan(
-                                      fontSize: 23 * ffem,
-                                      fontWeight: FontWeight.w400,
-                                      height: 0.92 * ffem / fem,
-                                      color: white.withOpacity(0.5),
-                                    ),
-                                  ),
-                                  style: GoogleFonts.leagueSpartan(
-                                    fontSize: 23 * ffem,
-                                    fontWeight: FontWeight.w400,
-                                    height: 0.92 * ffem / fem,
-                                    color: white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.fromLTRB(
-                                0 * fem, 0 * fem, 17.95 * fem, 0 * fem),
-                            width: 156.53 * fem,
-                            height: double.infinity,
-                            decoration: BoxDecoration(
-                              color: grey,
-                              borderRadius: BorderRadius.circular(11 * fem),
-                            ),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: 16 * fem),
-                                child: TextFormField(
-                                  controller: _lastNameController,
-                                  obscureText: false,
-                                  decoration: InputDecoration(
-                                    contentPadding:
-                                        EdgeInsets.only(bottom: -14 * fem),
-                                    border: InputBorder.none,
-                                    hintText: 'Last Name',
-                                    errorText: _lastNameError,
-                                    hintStyle: GoogleFonts.leagueSpartan(
-                                      fontSize: 23 * ffem,
-                                      fontWeight: FontWeight.w400,
-                                      height: 0.92 * ffem / fem,
-                                      color: white.withOpacity(0.5),
-                                    ),
-                                  ),
-                                  style: GoogleFonts.leagueSpartan(
-                                    fontSize: 23 * ffem,
-                                    fontWeight: FontWeight.w400,
-                                    height: 0.92 * ffem / fem,
-                                    color: white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(
-                          0 * fem, 0 * fem, 0 * fem, 17 * fem),
-                      width: 332.01 * fem,
-                      height: 56 * fem,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(11 * fem),
-                      ),
-                      child: Container(
-                        padding: EdgeInsets.fromLTRB(
-                            13.92 * fem, 18 * fem, 13.92 * fem, 16 * fem),
-                        width: double.infinity,
-                        height: double.infinity,
-                        decoration: BoxDecoration(
-                          color: grey,
-                          borderRadius: BorderRadius.circular(11 * fem),
-                        ),
-                        child: TextFormField(
-                          controller: _emailController,
-                          obscureText: false,
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.only(bottom: -4 * fem),
-                            border: InputBorder.none,
-                            hintText: 'Email',
-                            errorText: _emailError,
-                            hintStyle: GoogleFonts.leagueSpartan(
-                              fontSize: 23 * ffem,
-                              fontWeight: FontWeight.w400,
-                              height: 0.92 * ffem / fem,
-                              color: white.withOpacity(0.5),
-                            ),
-                          ),
-                          style: GoogleFonts.leagueSpartan(
-                            fontSize: 23 * ffem,
-                            fontWeight: FontWeight.w400,
-                            height: 0.92 * ffem / fem,
-                            color: white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(
-                          0 * fem, 0 * fem, 0 * fem, 18 * fem),
-                      width: 332.01 * fem,
-                      height: 56 * fem,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(11 * fem),
-                      ),
-                      child: Container(
-                        padding: EdgeInsets.fromLTRB(
-                            13.92 * fem, 18 * fem, 13.92 * fem, 16 * fem),
-                        width: double.infinity,
-                        height: double.infinity,
-                        decoration: BoxDecoration(
-                          color: grey,
-                          borderRadius: BorderRadius.circular(11 * fem),
-                        ),
-                        child: TextFormField(
-                          controller: _confirmPasswordController,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.only(bottom: -4 * fem),
-                            border: InputBorder.none,
-                            hintText: 'Password',
-                            errorText: _confirmPasswordError,
-                            hintStyle: GoogleFonts.leagueSpartan(
-                              fontSize: 23 * ffem,
-                              fontWeight: FontWeight.w400,
-                              height: 0.92 * ffem / fem,
-                              color: white.withOpacity(0.5),
-                            ),
-                          ),
-                          style: GoogleFonts.leagueSpartan(
-                            fontSize: 23 * ffem,
-                            fontWeight: FontWeight.w400,
-                            height: 0.92 * ffem / fem,
-                            color: white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 330 * fem,
-                      height: 56 * fem,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(11 * fem),
-                      ),
-                      child: Container(
-                        padding: EdgeInsets.fromLTRB(
-                            13.92 * fem, 18 * fem, 13.92 * fem, 16 * fem),
-                        width: double.infinity,
-                        height: double.infinity,
-                        decoration: BoxDecoration(
-                          color: grey,
-                          borderRadius: BorderRadius.circular(11 * fem),
-                        ),
-                        child: TextFormField(
-                          controller: _passwordController,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.only(bottom: -4 * fem),
-                            border: InputBorder.none,
-                            hintText: 'Confirm Password',
-                            errorText: _confirmPasswordError,
-                            hintStyle: GoogleFonts.leagueSpartan(
-                              fontSize: 23 * ffem,
-                              fontWeight: FontWeight.w400,
-                              height: 0.92 * ffem / fem,
-                              color: white.withOpacity(0.5),
-                            ),
-                          ),
-                          style: GoogleFonts.leagueSpartan(
-                            fontSize: 23 * ffem,
-                            fontWeight: FontWeight.w400,
-                            height: 0.92 * ffem / fem,
-                            color: white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding:
-                          EdgeInsets.fromLTRB(16 * fem, 16 * fem, 16 * fem, 0),
-                      alignment: Alignment.centerLeft,
-                      child: TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => LoginPage()),
-                            );
-                          },
-                          child: (Text('Already a member? Sign in',
-                              style: AppFonts.p))),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16 * fem),
-                      child: CustomButton(text: 'Sign Up', onPressed: signUp),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
+            ])));
   }
 }

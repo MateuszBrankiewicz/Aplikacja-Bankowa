@@ -1,4 +1,3 @@
-import 'package:appbank/pages/pin_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:appbank/components/colors.dart';

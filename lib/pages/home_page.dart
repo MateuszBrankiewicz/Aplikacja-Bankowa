@@ -605,16 +605,16 @@ class CreditCardWidget extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.credit_card,
                     color: AppColors.white,
                     size: 20,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   Text(
-                    'BALANCE: ' + currentBalance + '\$',
+                    'BALANCE: $currentBalance\$',
                     style: AppFonts.cardH1,
                   ),
                 ],
@@ -625,14 +625,14 @@ class CreditCardWidget extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                formattedcardNumber + "XX",
+                formattedcardNumber,
                 style: AppFonts.cardNumber,
               )
             ],
