@@ -173,18 +173,16 @@ class _HomeScreenState extends State<HomeScreen> {
     User? user = FirebaseAuth.instance.currentUser;
     String userId = user!.uid;
 
-    final userData = await FirebaseFirestore.instance
-        .collection('users')
-        .where('userId', isEqualTo: userId)
-        .get();
+    final userData =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
-    if (userData.docs.isNotEmpty) {
-      final userDoc = userData.docs.first;
+    if (userData.exists) {
+      final userDoc = userData.data();
       setState(() {
-        firstName = userDoc['First Name'];
-        lastName = userDoc['Last Name'];
-        numAcc = userDoc['Bank account number'];
-        expires = userDoc['expires'];
+        firstName = userDoc?['First Name'];
+        lastName = userDoc?['Last Name'];
+        numAcc = userDoc?['Bank account number'];
+        expires = userDoc?['expires'];
       });
     } else {
       print('User with ID $userId does not exist.');

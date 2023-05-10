@@ -1,4 +1,5 @@
 import 'package:appbank/pages/home_page.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../components/logo.dart';
@@ -198,26 +199,24 @@ class _PinInputScreenState extends State<PinInputScreen> {
     String userId = user!.uid;
     print('PIN przed sprawdzeniem w bazie danych: $userId');
 
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .where('userId', isEqualTo: userId)
-        .get();
+    final userData =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
-    if (querySnapshot.docs.isNotEmpty) {
-      DocumentSnapshot docSnapshot = querySnapshot.docs[0];
+    if (userData.exists) {
+      DocumentSnapshot docSnapshot = userData;
       String docId = docSnapshot.id;
       Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
-      bool hasPin = data.containsKey('pin') && data['pin'].isNotEmpty;
+      bool hasPin =
+          data.containsKey('pin') && (data['pin'] as String).isNotEmpty;
 
       if (hasPin) {
         // Check if the entered PIN matches the stored PIN
-        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        final dataPin = await FirebaseFirestore.instance
             .collection('users')
-            .where('pin', isEqualTo: pin)
-            .where('userId', isEqualTo: userId)
+            .doc(userId)
             .get();
 
-        if (querySnapshot.docs.isNotEmpty) {
+        if (dataPin.exists) {
           // Show success dialog and navigate to the home page
           showDialog(
             context: context,
@@ -264,7 +263,7 @@ class _PinInputScreenState extends State<PinInputScreen> {
         // Insert the user's PIN into the database
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(docId)
+            .doc(userId)
             .update({'pin': pin}); // specify the new pin value
 
         // Show success dialog and navigate to the home page
@@ -290,7 +289,11 @@ class _PinInputScreenState extends State<PinInputScreen> {
           MaterialPageRoute(builder: (context) => HomePage()),
         );
       }
+      setState(() {
+        _pinController.clear();
+      });
     }
+
     setState(() {
       _pinController.clear();
     });

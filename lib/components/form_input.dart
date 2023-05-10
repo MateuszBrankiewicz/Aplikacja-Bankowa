@@ -7,6 +7,8 @@ class InputForm extends StatelessWidget {
   final String hintText;
   final IconData icon;
   final bool obscure;
+  final void Function(String)?
+      onChanged; // Use Function type instead of ValueChanged
 
   const InputForm({
     Key? key,
@@ -14,6 +16,7 @@ class InputForm extends StatelessWidget {
     required this.hintText,
     required this.icon,
     required this.obscure,
+    this.onChanged,
   }) : super(key: key);
 
   @override
@@ -28,19 +31,21 @@ class InputForm extends StatelessWidget {
         borderRadius: BorderRadius.circular(11 * fem),
       ),
       child: TextFormField(
-          controller: controller,
-          obscureText: obscure ? true : false,
-          textAlignVertical: TextAlignVertical.bottom,
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: hintText,
-            hintStyle: AppFonts.formInputOpacity,
-            prefixIcon: Icon(
-              icon,
-              color: AppColors.white,
-            ),
+        controller: controller,
+        obscureText: obscure ? true : false,
+        textAlignVertical: TextAlignVertical.bottom,
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          hintText: hintText,
+          hintStyle: AppFonts.formInputOpacity,
+          prefixIcon: Icon(
+            icon,
+            color: AppColors.white,
           ),
-          style: AppFonts.formInput),
+        ),
+        style: AppFonts.formInput,
+      ),
     );
   }
 }

@@ -113,14 +113,14 @@ class _SignupPageState extends State<SignupPage> {
         String userId = user!.uid;
         String accNumber = await numAccGenerator(userId);
         final currentYear = DateTime.now().year + 5;
-        await FirebaseFirestore.instance.collection('users').add({
-          'userId': userId,
+        await FirebaseFirestore.instance.collection('users').doc(userId).set({
           'First Name': firstName,
           'Last Name': lastName,
           'Bank account number': accNumber,
           'pin': '',
           'account balance': '0',
-          'expires': currentYear.toString()
+          'expires': currentYear.toString(),
+          'transaction': []
         });
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => PinInputScreen()));
