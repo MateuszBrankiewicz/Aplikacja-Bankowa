@@ -17,7 +17,10 @@ class Authentication {
       );
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => PinInputScreen()),
+        MaterialPageRoute(
+            builder: (context) => const PinInputScreen(
+                  type: 'login',
+                )),
       );
       final User? user = userCredential.user;
       return user?.uid;

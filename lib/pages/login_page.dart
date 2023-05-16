@@ -41,7 +41,9 @@ class _LoginPageState extends State<LoginPage> {
         email: _email,
         password: _password,
       );
-      changeScreen(PinInputScreen());
+      changeScreen(const PinInputScreen(
+        type: 'login',
+      ));
     } on FirebaseAuthException catch (e) {
       String errorMessage = '';
       if (e.code == 'user-not-found') {

@@ -1,16 +1,12 @@
 import 'package:appbank/pages/home_page.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../components/logo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-const white = Color(0xfffefefe);
-const lightRed = Color(0xffc24646);
-const darkRed = Color(0xff953333);
-const grey = Color(0x99fefefe);
-const darkGrey = Color(0xff395263);
+import 'package:appbank/components/colors.dart';
+import 'package:appbank/components/my_button.dart';
+import 'package:appbank/components/fonts.dart';
 
 //Custom Keyboard
 class NumberKeyboard extends StatelessWidget {
@@ -47,7 +43,7 @@ class NumberKeyboard extends StatelessWidget {
         children: numbers.map((number) {
           return Container(
             decoration: BoxDecoration(
-              color: white, // set the background color to white
+              color: AppColors.white, // set the background color to white
               borderRadius: BorderRadius.circular(
                   80 * fem), // set the border radius to 30
             ),
@@ -55,11 +51,13 @@ class NumberKeyboard extends StatelessWidget {
               child: number == '<'
                   ? const Icon(
                       Icons.backspace_outlined,
-                      color: darkGrey,
+                      size: 30,
+                      color: AppColors.darkGrey,
                     )
                   : Text(
                       number,
-                      style: TextStyle(fontSize: 38 * fem, color: darkGrey),
+                      style: TextStyle(
+                          fontSize: 38 * fem, color: AppColors.darkGrey),
                     ),
               onPressed: () => onKeyPressed(number),
             ),
@@ -84,7 +82,7 @@ class PinWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildDot(pin.length >= 1, fem),
+        _buildDot(pin.isNotEmpty, fem),
         _buildDot(pin.length >= 2, fem),
         _buildDot(pin.length >= 3, fem),
         _buildDot(pin.length >= 4, fem),
@@ -98,10 +96,10 @@ class PinWidget extends StatelessWidget {
       width: 30 * fem,
       height: 30 * fem,
       decoration: BoxDecoration(
-        color: filled ? darkGrey : grey,
+        color: filled ? AppColors.darkGrey : AppColors.grey,
         border: filled
-            ? Border.all(color: grey, width: 3 * fem)
-            : Border.all(color: grey, width: 3 * fem),
+            ? Border.all(color: AppColors.grey, width: 3 * fem)
+            : Border.all(color: AppColors.grey, width: 3 * fem),
         borderRadius: BorderRadius.circular(50 * fem),
       ),
     );
@@ -109,12 +107,15 @@ class PinWidget extends StatelessWidget {
 }
 
 class PinInputScreen extends StatefulWidget {
+  final String type;
+  const PinInputScreen({Key? key, required this.type}) : super(key: key);
+
   @override
+  // ignore: library_private_types_in_public_api
   _PinInputScreenState createState() => _PinInputScreenState();
 }
 
 class _PinInputScreenState extends State<PinInputScreen> {
-  final TextEditingController _pinController = TextEditingController();
   String _pin = "";
 
   void _onKeyPressed(String value) {
@@ -125,185 +126,206 @@ class _PinInputScreenState extends State<PinInputScreen> {
         _pin += value;
       }
     });
+    if (_pin.length == 4) {
+      _submitPin();
+    }
   }
 
-  // Future<void> _submitPin() async {
-  //   _pinController.text = _pin;
-  //   String pin = _pinController.text;
+  void changeScreen(Widget destination) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => destination),
+    );
+  }
 
-  //   print('PIN przed sprawdzeniem w bazie danych: $pin');
-  //   User? user = FirebaseAuth.instance.currentUser;
-  //   String userId = user!.uid;
-  //   print('PIN przed sprawdzeniem w bazie danych: $userId');
-  //   // Query the database to check if the user's PIN exists
-  //   QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-  //       .collection('users')
-  //       .where('pin', isEqualTo: pin)
-  //       .where('userId', isEqualTo: userId)
-  //       .get();
+  bool checkPin(String pin) {
+    if (pin.length < 4 || pin.length > 4) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
-  //   if (querySnapshot.docs.isNotEmpty) {
-  //     // Show success dialog and navigate to the home page
-  //     showDialog(
-  //       context: context,
-  //       builder: (BuildContext context) {
-  //         return AlertDialog(
-  //           title: const Text('Logowanie'),
-  //           content: const Text('Udało ci się zalogować.'),
-  //           actions: [
-  //             TextButton(
-  //               child: const Text('OK'),
-  //               onPressed: () {
-  //                 Navigator.of(context).pop();
-  //               },
-  //             ),
-  //           ],
-  //         );
-  //       },
-  //     );
-  //     Navigator.push(
-  //       context,
-  //       MaterialPageRoute(builder: (context) => HomePage()),
-  //     );
-  //   } else {
-  //     // Show error dialog
-  //     showDialog(
-  //       context: context,
-  //       builder: (BuildContext context) {
-  //         return AlertDialog(
-  //           title: const Text('Logowanie'),
-  //           content: const Text('Wprowadź poprawny PIN.'),
-  //           actions: [
-  //             TextButton(
-  //               child: const Text('OK'),
-  //               onPressed: () {
-  //                 Navigator.of(context).pop();
-  //               },
-  //             ),
-  //           ],
-  //         );
-  //       },
-  //     );
-  //   }
-
-  //   setState(() {
-  //     _pinController.clear();
-  //   });
-  // }
   Future<void> _submitPin() async {
-    _pinController.text = _pin;
-    String pin = _pinController.text;
-
-    print('PIN przed sprawdzeniem w bazie danych: $pin');
-    User? user = FirebaseAuth.instance.currentUser;
-    String userId = user!.uid;
-    print('PIN przed sprawdzeniem w bazie danych: $userId');
-
-    final userData =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
-
-    if (userData.exists) {
-      DocumentSnapshot docSnapshot = userData;
-      String docId = docSnapshot.id;
-      Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
-      bool hasPin =
-          data.containsKey('pin') && (data['pin'] as String).isNotEmpty;
-
-      if (hasPin) {
-        // Check if the entered PIN matches the stored PIN
-        final dataPin = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userId)
-            .get();
-
-        if (dataPin.exists) {
-          // Show success dialog and navigate to the home page
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text('Logowanie'),
-                content: const Text('Udało ci się zalogować.'),
-                actions: [
-                  TextButton(
-                    child: const Text('OK'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => HomePage()),
-          );
-        } else {
-          // Show error dialog
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text('Logowanie'),
-                content: const Text('Wprowadź poprawny PIN.'),
-                actions: [
-                  TextButton(
-                    child: const Text('OK'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        }
-      } else {
-        // Insert the user's PIN into the database
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userId)
-            .update({'pin': pin}); // specify the new pin value
-
-        // Show success dialog and navigate to the home page
-        showDialog(
+    if (!checkPin(_pin)) {
+      showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('Logowanie'),
-              content: const Text('Udało ci się zalogować.'),
+              backgroundColor: AppColors.white,
+              title: Center(
+                child: Text(
+                  'PIN error!',
+                  style: AppFonts.h2,
+                ),
+              ),
+              content: Text(
+                'PIN is to short!',
+                style: AppFonts.errorText,
+              ),
               actions: [
                 TextButton(
-                  child: const Text('OK'),
+                  child: Text(
+                    'Try again',
+                    style: AppFonts.buttonText,
+                  ),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
               ],
             );
-          },
-        );
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
-      }
-      setState(() {
-        _pinController.clear();
-      });
-    }
+          });
+    } else {
+      try {
+        print(_pin);
+        String pin = _pin;
+        String type = widget.type;
 
-    setState(() {
-      _pinController.clear();
-    });
+        User? user = FirebaseAuth.instance.currentUser;
+        String userId = user!.uid;
+
+        final userData = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .get();
+
+        if (userData.exists) {
+          DocumentSnapshot docSnapshot = userData;
+          Map<String, dynamic> data =
+              docSnapshot.data() as Map<String, dynamic>;
+          bool hasPin =
+              data.containsKey('pin') && (data['pin'] as String).isNotEmpty;
+
+          if (hasPin && type == 'login') {
+            // Check if the entered PIN matches the stored PIN
+            final dataPin = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(userId)
+                .get();
+            // ignore: unrelated_type_equality_checks
+            if (dataPin.exists) {
+              final firepin = dataPin.data()?['pin'];
+              if (firepin == pin) {
+                changeScreen(HomePage());
+              } else {
+                // ignore: use_build_context_synchronously
+                showDialog(
+                    context: context,
+                    builder: (BuildContext dialogContext) {
+                      return AlertDialog(
+                        backgroundColor: AppColors.white,
+                        title: Center(
+                          child: Text(
+                            'PIN error!',
+                            style: AppFonts.h2,
+                          ),
+                        ),
+                        content: Text(
+                          'Wrong PIN!',
+                          style: AppFonts.errorText,
+                        ),
+                        actions: [
+                          TextButton(
+                            child: Text(
+                              'Try again',
+                              style: AppFonts.buttonText,
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    });
+              }
+
+              //navigate to the home page
+            } else {
+              // Show error dialog
+              // ignore: use_build_context_synchronously
+              showDialog(
+                  context: context,
+                  builder: (BuildContext dialogContext) {
+                    return AlertDialog(
+                      backgroundColor: AppColors.white,
+                      title: Center(
+                        child: Text(
+                          'PIN error!',
+                          style: AppFonts.h2,
+                        ),
+                      ),
+                      content: Text(
+                        'Wrong PIN!',
+                        style: AppFonts.errorText,
+                      ),
+                      actions: [
+                        TextButton(
+                          child: Text(
+                            'Try again',
+                            style: AppFonts.buttonText,
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  });
+            }
+          } else if (type == 'register') {
+            // Insert the user's PIN into the database
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(userId)
+                .update({'pin': pin}); // specify the new pin value
+
+            // Show success dialog and navigate to the home page
+            changeScreen(HomePage());
+          }
+        }
+      } catch (error) {
+        showDialog(
+            context: context,
+            builder: (BuildContext dialogContext) {
+              return AlertDialog(
+                backgroundColor: AppColors.white,
+                title: Center(
+                  child: Text(
+                    'PIN error!',
+                    style: AppFonts.h2,
+                  ),
+                ),
+                content: Text(
+                  'Something went wrong!',
+                  style: AppFonts.errorText,
+                ),
+                actions: [
+                  TextButton(
+                    child: Text(
+                      'Try again',
+                      style: AppFonts.buttonText,
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            });
+      } finally {
+        setState(() {
+          _pin = '';
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     double baseWidth = 375;
     double fem = MediaQuery.of(context).size.width / baseWidth;
-    double ffem = fem * 0.97;
+    String type = widget.type;
 
     return Scaffold(
       body: Container(
@@ -311,7 +333,7 @@ class _PinInputScreenState extends State<PinInputScreen> {
         height: 800 * fem,
         decoration: const BoxDecoration(
             gradient: LinearGradient(
-          colors: <Color>[lightRed, darkRed],
+          colors: <Color>[AppColors.lightRed, AppColors.darkRed],
           begin: Alignment(0, 0.546),
           end: Alignment(0, 1),
           stops: <double>[0, 1],
@@ -328,12 +350,8 @@ class _PinInputScreenState extends State<PinInputScreen> {
                     height: 160 * fem,
                   ),
                   Text(
-                    'Enter your pin!',
-                    style: GoogleFonts.leagueSpartan(
-                        fontSize: 40 * ffem,
-                        fontWeight: FontWeight.w500,
-                        height: 0.92 * ffem / fem,
-                        color: white),
+                    type == 'login' ? "Enter your pin!" : "Create your pin!",
+                    style: AppFonts.h1,
                   ),
                   SizedBox(
                     height: 12 * fem,
@@ -342,30 +360,6 @@ class _PinInputScreenState extends State<PinInputScreen> {
                   NumberKeyboard(onKeyPressed: _onKeyPressed),
                   SizedBox(
                     height: 10 * fem,
-                  ),
-                  Container(
-                    width: 180 * fem,
-                    height: 38 * fem,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: darkGrey, width: 3 * fem),
-                      borderRadius: BorderRadius.circular(14 * fem),
-                    ),
-                    child: ElevatedButton(
-                      onPressed: _submitPin,
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: grey,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10 * fem))),
-                      child: Text(
-                        "Confirm",
-                        style: GoogleFonts.leagueSpartan(
-                          fontSize: 18 * ffem,
-                          fontWeight: FontWeight.w500,
-                          height: 0.92 * ffem / fem,
-                          color: white,
-                        ),
-                      ),
-                    ),
                   ),
                 ],
               ),

@@ -117,7 +117,7 @@ class _SignupPageState extends State<SignupPage> {
           'expires': currentYear.toString(),
           'transaction': []
         });
-        changeScreen(PinInputScreen());
+        changeScreen(const PinInputScreen(type: 'register'));
       } else {
         // Registration failed
         print("Something went wrong!");
@@ -326,6 +326,7 @@ class _SignupPageState extends State<SignupPage> {
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 2 * fem),
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             TextButton(
                                 onPressed: () =>

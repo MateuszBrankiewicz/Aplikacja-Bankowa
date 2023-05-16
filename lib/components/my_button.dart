@@ -22,11 +22,14 @@ class CustomButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(11),
         ),
       ),
-      child: Container(
+      child: SizedBox(
         width: double.infinity,
         height: 48,
         child: Center(
-          child: Text(text, style: AppFonts.buttonText),
+          child: Text(
+            text,
+            style: AppFonts.buttonText,
+          ),
         ),
       ),
     );
