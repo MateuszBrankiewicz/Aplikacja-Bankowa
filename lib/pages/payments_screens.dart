@@ -6,6 +6,8 @@ import 'package:appbank/components/my_button.dart';
 import 'package:appbank/firebase/Transaction.dart';
 
 class BLIKPayment extends StatelessWidget {
+  const BLIKPayment({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -53,13 +55,17 @@ class Transfer {
 }
 
 class TransferPayment extends StatelessWidget {
-  Transfer transfer = Transfer();
+  final Transfer transfer = Transfer();
+
+  TransferPayment({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.lightRed,
         title: Text('Transfer', style: AppFonts.h1),
+        titleSpacing: 10,
+        elevation: 0,
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -71,12 +77,15 @@ class TransferPayment extends StatelessWidget {
           ),
         ),
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(height: 16),
+                const Divider(
+                  color: AppColors.white,
+                  thickness: 1,
+                ),
                 InputForm(
                   controller: TextEditingController(text: transfer.sender),
                   hintText: 'Wpisz nazwe odbiorcy',
@@ -95,7 +104,10 @@ class TransferPayment extends StatelessWidget {
                     transfer.accNumber = value;
                   },
                 ),
-                SizedBox(height: 16),
+                const Divider(
+                  color: AppColors.white,
+                  thickness: 1,
+                ),
                 InputForm(
                   controller:
                       TextEditingController(text: transfer.amount.toString()),
@@ -115,9 +127,10 @@ class TransferPayment extends StatelessWidget {
                     transfer.title = value;
                   },
                 ),
-                SizedBox(height: 48),
+                const SizedBox(height: 12),
                 CustomButton(
-                    text: 'Next', onPressed: () => {wykonajPrzelew(transfer)}),
+                    text: 'Continue',
+                    onPressed: () => {wykonajPrzelew(transfer)}),
               ]),
         ),
       ),
@@ -125,7 +138,9 @@ class TransferPayment extends StatelessWidget {
   }
 }
 
-class ContactlessPayment extends StatelessWidget {
+class TopAccount extends StatelessWidget {
+  const TopAccount({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Center(

@@ -133,23 +133,6 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// class HomeScreen extends StatelessWidget {
-//   Future<void> getUserData(String userId) async {
-//     final userData =
-//         await FirebaseFirestore.instance.collection('users').doc(userId).get();
-
-//     if (userData.exists) {
-//       final firstName = userData.data()!['First Name'];
-//       final lastName = userData.data()!['Last Name'];
-//       final numAcc = userData.data()!['Bank account number'];
-
-//       print('Name: $firstName');
-//       print('Age: $lastName');
-//       print('Email: $numAcc');
-//     } else {
-//       print('User with ID $userId does not exist.');
-//     }
-//   }
 class HomeScreen extends StatefulWidget {
   final String userId;
 
@@ -196,7 +179,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     double baseWidth = 375;
     double fem = MediaQuery.of(context).size.width / baseWidth;
-    double ffem = fem * 0.97;
     return Container(
       decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -234,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: EdgeInsets.fromLTRB(32, 0, 32, 0),
                   child: CreditCardWidget(
                     currentBalance: balance,
-                    cardHolder: firstName + " " + lastName,
+                    cardHolder: "$firstName $lastName",
                     cardNumber: numAcc,
                     expiryDate: expires,
                   )),
@@ -262,9 +244,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     PaymentShortcut(
                       size: 66,
-                      image: './lib/images/contactless.png',
-                      label: 'Contactless',
-                      destPage: ContactlessPayment(),
+                      image: './lib/images/topup.png',
+                      label: 'Top up',
+                      destPage: TopAccount(),
                     ),
                   ],
                 ),
@@ -349,14 +331,15 @@ class PaymentsScreen extends StatelessWidget {
                   ),
                   PaymentShortcut(
                     size: 70,
-                    image: './lib/images/contactless.png',
-                    label: 'Contactless',
-                    destPage: ContactlessPayment(),
+                    image: './lib/images/topup.png',
+                    label: 'Top up',
+                    destPage: TopAccount(),
                   ),
                 ],
               ),
             ),
           ),
+          // CreditCardWidget(cardHolder: firstname, cardNumber: cardNumber, expiryDate: expiryDate, currentBalance: currentBalance)
         ],
       ),
     );
