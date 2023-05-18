@@ -1,3 +1,4 @@
+import 'package:appbank/components/my_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:appbank/components/transactions.dart';
@@ -8,62 +9,20 @@ import 'package:appbank/pages/payments_screens.dart';
 import 'package:appbank/components/colors.dart';
 import 'package:appbank/components/fonts.dart';
 
-class PaymentShortcut extends StatelessWidget {
-  final String image;
-  final String label;
-  final double size;
-  final Widget destPage;
+class UserData {
+  final String firstName;
+  final String lastName;
+  final String numAcc;
+  final String expires;
+  final String balance;
 
-  PaymentShortcut({
-    Key? key,
-    required this.image,
-    required this.size,
-    required this.label,
-    required this.destPage,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    double baseWidth = 375;
-    double fem = MediaQuery.of(context).size.width / baseWidth;
-    double ffem = fem * 0.97;
-    return GestureDetector(
-      onTap: () => {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => destPage),
-        )
-      },
-      child: Column(
-        children: [
-          Container(
-              width: size,
-              height: size,
-              decoration: BoxDecoration(
-                color: AppColors.darkGrey,
-                borderRadius: BorderRadius.circular(40),
-              ),
-              child: Center(
-                child: Image(
-                  image: AssetImage(image),
-                  width: size / 2.5,
-                  height: size / 2.5,
-                ),
-              )),
-          SizedBox(height: 8),
-          Text(
-            label,
-            style: GoogleFonts.leagueSpartan(
-              fontSize: 18 * ffem,
-              fontWeight: FontWeight.w500,
-              height: 0.92 * ffem / fem,
-              color: AppColors.white,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  UserData({
+    required this.firstName,
+    required this.lastName,
+    required this.numAcc,
+    required this.expires,
+    required this.balance,
+  });
 }
 
 class HomePage extends StatefulWidget {
@@ -73,14 +32,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-  User? user;
+  UserData? userData;
   String userId = '';
-  static final List<Widget> _widgetOptions = <Widget>[
-    HomeScreen(userId: ''),
-    PaymentsScreen(),
-    HistoryScreen(),
-    ProfileScreen(),
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -88,8 +41,26 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _handleUserDataChanged(UserData? newData) {
+    setState(() {
+      userData = newData;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final List<Widget> _widgetOptions = <Widget>[
+      HomeScreen(
+        userId: '',
+        onUserDataChanged: _handleUserDataChanged,
+      ),
+      PaymentsScreen(userData: userData),
+      HistoryScreen(),
+      ProfileScreen(
+        userData: userData,
+      ),
+    ];
+
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -135,19 +106,21 @@ class _HomePageState extends State<HomePage> {
 
 class HomeScreen extends StatefulWidget {
   final String userId;
+  final void Function(UserData?) onUserDataChanged;
 
-  const HomeScreen({Key? key, required this.userId}) : super(key: key);
+  const HomeScreen({
+    Key? key,
+    required this.userId,
+    required this.onUserDataChanged,
+  }) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String firstName = '';
-  String lastName = '';
-  String numAcc = '';
-  String expires = '';
-  String balance = '';
+  UserData? userData;
+
   @override
   void initState() {
     super.initState();
@@ -158,18 +131,21 @@ class _HomeScreenState extends State<HomeScreen> {
     User? user = FirebaseAuth.instance.currentUser;
     String userId = user!.uid;
 
-    final userData =
+    final userDataSnapshot =
         await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
-    if (userData.exists) {
-      final userDoc = userData.data();
+    if (userDataSnapshot.exists) {
+      final userDoc = userDataSnapshot.data() as Map<String, dynamic>;
       setState(() {
-        firstName = userDoc?['First Name'];
-        lastName = userDoc?['Last Name'];
-        numAcc = userDoc?['Bank account number'];
-        expires = userDoc?['expires'];
-        balance = userDoc?['account balance'];
+        userData = UserData(
+          firstName: userDoc['First Name'],
+          lastName: userDoc['Last Name'],
+          numAcc: userDoc['Bank account number'],
+          expires: userDoc['expires'],
+          balance: userDoc['account balance'],
+        );
       });
+      widget.onUserDataChanged(userData);
     } else {
       print('User with ID $userId does not exist.');
     }
@@ -179,6 +155,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     double baseWidth = 375;
     double fem = MediaQuery.of(context).size.width / baseWidth;
+
+    if (userData == null) {
+      return const CircularProgressIndicator();
+    }
+
     return Container(
       decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -207,20 +188,21 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 60,
               ),
               //Credit Ca rd
               Padding(
-                  padding: EdgeInsets.fromLTRB(32, 0, 32, 0),
+                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
                   child: CreditCardWidget(
-                    currentBalance: balance,
-                    cardHolder: "$firstName $lastName",
-                    cardNumber: numAcc,
-                    expiryDate: expires,
+                    currentBalance: '${userData?.balance}',
+                    cardHolder: '${userData?.firstName} ${userData?.lastName}',
+                    cardNumber: '${userData?.numAcc}',
+                    expiryDate: '${userData?.expires}',
                   )),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               //Payment Methods
@@ -234,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       size: 66,
                       image: './lib/images/blik.png',
                       label: 'BLIK',
-                      destPage: BLIKPayment(),
+                      destPage: const BLIKPayment(),
                     ),
                     PaymentShortcut(
                       size: 66,
@@ -246,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       size: 66,
                       image: './lib/images/topup.png',
                       label: 'Top up',
-                      destPage: TopAccount(),
+                      destPage: const TopAccount(),
                     ),
                   ],
                 ),
@@ -284,8 +266,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
 //IN PROGRESS
 class PaymentsScreen extends StatelessWidget {
+  final UserData? userData;
+
+  const PaymentsScreen({Key? key, this.userData}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    if (userData == null) {
+      return const CircularProgressIndicator();
+    }
+
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -296,6 +286,7 @@ class PaymentsScreen extends StatelessWidget {
         ),
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.all(32),
@@ -313,7 +304,7 @@ class PaymentsScreen extends StatelessWidget {
             color: AppColors.grey.withAlpha(50),
             alignment: Alignment.centerLeft,
             child: Padding(
-              padding: EdgeInsets.all(32),
+              padding: const EdgeInsets.all(32),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -339,7 +330,18 @@ class PaymentsScreen extends StatelessWidget {
               ),
             ),
           ),
-          // CreditCardWidget(cardHolder: firstname, cardNumber: cardNumber, expiryDate: expiryDate, currentBalance: currentBalance)
+          const SizedBox(
+            height: 60,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
+            child: CreditCardWidget(
+              currentBalance: '${userData?.balance}',
+              cardHolder: '${userData?.firstName} ${userData?.lastName}',
+              cardNumber: '${userData?.numAcc}',
+              expiryDate: '${userData?.expires}',
+            ),
+          )
         ],
       ),
     );
@@ -444,6 +446,7 @@ class HistoryScreen extends StatelessWidget {
                 }
 
                 return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     if (showDivider)
                       Container(
@@ -473,6 +476,7 @@ class HistoryScreen extends StatelessWidget {
                             )),
                       ),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Image.asset(
                             './lib/images/${tranzakcja['type']}.png',
@@ -535,11 +539,51 @@ class HistoryScreen extends StatelessWidget {
 }
 
 class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({Key? key, this.userData}) : super(key: key);
+  final UserData? userData;
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Profile Screen'),
-    );
+    if (userData == null) {
+      return const CircularProgressIndicator();
+    }
+    return Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment(0, 0.546),
+            end: Alignment(0, 1),
+            colors: <Color>[AppColors.lightRed, AppColors.darkRed],
+            stops: <double>[0, 1],
+          ),
+        ),
+        child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+          Container(
+            padding: const EdgeInsets.fromLTRB(28, 28, 28, 22),
+            alignment: Alignment.centerLeft,
+            child: Text('Profile', style: AppFonts.h1),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 28.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('${userData?.firstName} ${userData?.lastName}',
+                      style: AppFonts.h2),
+                  SizedBox(height: 8),
+                  Text('Account Number: ${userData?.numAcc}',
+                      style: AppFonts.p),
+                  SizedBox(height: 16),
+                  Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 32.0),
+                    child: CustomButton(text: 'Logout', onPressed: () => {}),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ]));
   }
 }
 
@@ -650,6 +694,64 @@ class CreditCardWidget extends StatelessWidget {
                 ],
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class PaymentShortcut extends StatelessWidget {
+  final String image;
+  final String label;
+  final double size;
+  final Widget destPage;
+
+  PaymentShortcut({
+    Key? key,
+    required this.image,
+    required this.size,
+    required this.label,
+    required this.destPage,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    double baseWidth = 375;
+    double fem = MediaQuery.of(context).size.width / baseWidth;
+    double ffem = fem * 0.97;
+    return GestureDetector(
+      onTap: () => {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => destPage),
+        )
+      },
+      child: Column(
+        children: [
+          Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                color: AppColors.darkGrey,
+                borderRadius: BorderRadius.circular(40),
+              ),
+              child: Center(
+                child: Image(
+                  image: AssetImage(image),
+                  width: size / 2.5,
+                  height: size / 2.5,
+                ),
+              )),
+          SizedBox(height: 8),
+          Text(
+            label,
+            style: GoogleFonts.leagueSpartan(
+              fontSize: 18 * ffem,
+              fontWeight: FontWeight.w500,
+              height: 0.92 * ffem / fem,
+              color: AppColors.white,
+            ),
           ),
         ],
       ),

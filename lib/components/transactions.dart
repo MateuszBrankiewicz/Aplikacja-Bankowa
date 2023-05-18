@@ -1,4 +1,3 @@
-import 'package:appbank/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:appbank/components/colors.dart';
@@ -6,7 +5,7 @@ import 'package:appbank/components/colors.dart';
 class RecentTransactionsWidget extends StatelessWidget {
   final List<Tranzakcja> tranzakcje;
 
-  RecentTransactionsWidget({required this.tranzakcje});
+  const RecentTransactionsWidget({super.key, required this.tranzakcje});
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +51,8 @@ class RecentTransactionsWidget extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 8),
-            Container(
+            const SizedBox(height: 8),
+            SizedBox(
               height: 186,
               child: Expanded(
                 child: ListView.separated(
@@ -113,7 +112,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                       ),
                     );
                   },
-                  separatorBuilder: (context, index) => Divider(
+                  separatorBuilder: (context, index) => const Divider(
                     height: 24,
                     color: AppColors.lightRed,
                     thickness: 3,
