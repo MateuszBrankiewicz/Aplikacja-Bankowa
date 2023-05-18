@@ -148,6 +148,15 @@ class _HomeScreenState extends State<HomeScreen> {
   String numAcc = '';
   String expires = '';
   String balance = '';
+  List<String> accNumber = [];
+  List<dynamic> transaction = [];
+  List<String> firstNameT = [];
+  List<String> lastNameT = [];
+  List<String> amount = [];
+  List<String> weather = [];
+  List<String> titleT = [];
+  List<String> data = [];
+
   @override
   void initState() {
     super.initState();
@@ -156,23 +165,91 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> getUserData(String userId) async {
     User? user = FirebaseAuth.instance.currentUser;
-    String userId = user!.uid;
+    if (user != null) {
+      String userId = user.uid;
+      String temp = '';
+      List<String> czesci = [];
+      List<String> czesci2 = [];
 
-    final userData =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      final userData = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
 
-    if (userData.exists) {
-      final userDoc = userData.data();
-      setState(() {
-        firstName = userDoc?['First Name'];
-        lastName = userDoc?['Last Name'];
-        numAcc = userDoc?['Bank account number'];
-        expires = userDoc?['expires'];
-        balance = userDoc?['account balance'];
-      });
+      if (userData.exists) {
+        final userDoc = userData.data();
+        setState(() {
+          firstName = userDoc?['First Name'] ?? '';
+          lastName = userDoc?['Last Name'] ?? '';
+          numAcc = userDoc?['Bank account number'] ?? '';
+          expires = userDoc?['expires'] ?? '';
+          balance = userDoc?['account balance'] ?? '';
+          transaction = userDoc?['transaction'];
+          print(transaction);
+          List<String> transactions = transaction.toString().split(',');
+
+          for (int i = 0; i < transactions.length; i++) {
+            String temp = transactions[i];
+            List<String> czesci = temp.split(':');
+
+            if (czesci.length >= 2) {
+              String key = czesci[0].trim();
+              String value = czesci.sublist(1).join(':').trim();
+
+              switch (key) {
+                case 'accNumber':
+                  accNumber.add(value);
+                  break;
+                case 'firstName':
+                  firstNameT.add(value);
+                  break;
+                case 'lastName':
+                  lastNameT.add(value);
+                  break;
+                case 'amount':
+                  amount.add(value);
+                  break;
+                case 'wheter':
+                  weather.add(value);
+                  break;
+                case 'title':
+                  titleT.add(value);
+                  break;
+                case 'data':
+                  data.add(value);
+                  break;
+                default:
+                  break;
+              }
+            }
+          }
+          if (accNumber.length < 3) {
+            int remainingLength = 3 - accNumber.length - 1;
+            for (int i = 0; i < remainingLength; i++) {
+              accNumber.add('');
+              firstNameT.add('');
+              lastNameT.add('');
+              amount.add('0');
+              weather.add('');
+              titleT.add('');
+              data.add('');
+            }
+          }
+        });
+      } else {
+        print('User with ID $userId does not exist.');
+      }
     } else {
-      print('User with ID $userId does not exist.');
+      print('User is null.');
     }
+
+    print("accNumber: $accNumber");
+    print("firstName: $firstNameT");
+    print("lastName: $lastNameT");
+    print("amount: $amount");
+    print("weather: $weather");
+    print("title: $titleT");
+    print("data: $data");
   }
 
   @override
@@ -181,12 +258,13 @@ class _HomeScreenState extends State<HomeScreen> {
     double fem = MediaQuery.of(context).size.width / baseWidth;
     return Container(
       decoration: const BoxDecoration(
-          gradient: LinearGradient(
-        begin: Alignment(0, 0.546),
-        end: Alignment(0, 1),
-        colors: <Color>[AppColors.lightRed, AppColors.darkRed],
-        stops: <double>[0, 1],
-      )),
+        gradient: LinearGradient(
+          begin: Alignment(0, 0.546),
+          end: Alignment(0, 1),
+          colors: <Color>[AppColors.lightRed, AppColors.darkRed],
+          stops: <double>[0, 1],
+        ),
+      ),
       child: Stack(
         children: [
           Positioned(
@@ -211,22 +289,25 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(
                 height: 60,
               ),
-              //Credit Ca rd
+              //Credit Card
               Padding(
-                  padding: EdgeInsets.fromLTRB(32, 0, 32, 0),
-                  child: CreditCardWidget(
-                    currentBalance: balance,
-                    cardHolder: "$firstName $lastName",
-                    cardNumber: numAcc,
-                    expiryDate: expires,
-                  )),
+                padding: EdgeInsets.fromLTRB(32, 0, 32, 0),
+                child: CreditCardWidget(
+                  currentBalance: balance,
+                  cardHolder: "$firstName $lastName",
+                  cardNumber: numAcc,
+                  expiryDate: expires,
+                ),
+              ),
               SizedBox(
                 height: 15,
               ),
               //Payment Methods
               Padding(
                 padding: EdgeInsets.symmetric(
-                    horizontal: 32 * fem, vertical: 14 * fem),
+                  horizontal: 32 * fem,
+                  vertical: 14 * fem,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -252,28 +333,34 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               //TO DO !!!!
+
               RecentTransactionsWidget(
-                tranzakcje: [
-                  Tranzakcja(
-                    firstName: 'John',
-                    lastName: 'Smith',
-                    description: 'Grocery shopping',
-                    amount: 30.00,
-                  ),
-                  Tranzakcja(
-                    firstName: 'Amanda',
-                    lastName: 'Black',
-                    description: 'Gas refill',
-                    amount: -15.40,
-                  ),
-                  Tranzakcja(
-                    firstName: 'Shop',
-                    lastName: '',
-                    description: 'Groccery',
-                    amount: -2.90,
-                  ),
-                ],
-              )
+                tranzakcje: (firstNameT.isNotEmpty &&
+                        lastNameT.isNotEmpty &&
+                        titleT.isNotEmpty &&
+                        amount.isNotEmpty)
+                    ? [
+                        Tranzakcja(
+                          firstName: firstNameT[0],
+                          lastName: lastNameT[0],
+                          description: titleT[0],
+                          amount: double.parse(amount[0]),
+                        ),
+                        Tranzakcja(
+                          firstName: firstNameT[1],
+                          lastName: lastNameT[1],
+                          description: titleT[1],
+                          amount: double.parse(amount[1]),
+                        ),
+                        Tranzakcja(
+                          firstName: firstNameT[2],
+                          lastName: lastNameT[2],
+                          description: titleT[2],
+                          amount: double.parse(amount[2]),
+                        ),
+                      ]
+                    : [],
+              ),
             ],
           ),
         ],
@@ -347,57 +434,105 @@ class PaymentsScreen extends StatelessWidget {
 }
 
 //History page
-class HistoryScreen extends StatelessWidget {
-  final List<Map<String, dynamic>> tranzakcje = [
-    {
-      'date': DateTime(2023, 4, 1),
-      'type': 'blik',
-      'description': 'Grocery shopping',
-      'name': 'John Smith',
-      'account': '123456789',
-      'amount': 30.0,
-    },
-    {
-      'date': DateTime(2023, 4, 1),
-      'type': 'przelew',
-      'description': 'Gas refill',
-      'name': 'Amanda Black',
-      'account': '987654321',
-      'amount': -15.40,
-    },
-    {
-      'date': DateTime(2023, 4, 2),
-      'type': 'blik',
-      'description': 'Groccery',
-      'name': 'Shop',
-      'account': '456789123',
-      'amount': -2.90,
-    },
-    {
-      'date': DateTime(2023, 4, 2),
-      'type': 'przelew',
-      'description': 'Salary',
-      'name': 'Walter White',
-      'account': '321654987',
-      'amount': 1280.00,
-    },
-    {
-      'date': DateTime(2023, 4, 3),
-      'type': 'blik',
-      'description': 'TV bought',
-      'name': 'TV shop',
-      'account': '789123456',
-      'amount': 750.0,
-    },
-    {
-      'date': DateTime(2023, 4, 4),
-      'type': 'przelew',
-      'description': 'Food tip',
-      'name': 'Restaurant',
-      'account': '654987321',
-      'amount': 12.50,
-    },
-  ];
+class HistoryScreen extends StatefulWidget {
+  @override
+  _HistoryScreenState createState() => _HistoryScreenState();
+}
+
+class _HistoryScreenState extends State<HistoryScreen> {
+  List<Map<String, dynamic>> tranzakcje = [];
+  List<String> accNumber = [];
+  List<dynamic> transaction = [];
+  List<String> firstNameT = [];
+  List<String> lastNameT = [];
+  List<String> amount = [];
+  List<String> weather = [];
+  List<String> titleT = [];
+  List<String> data = [];
+  @override
+  void initState() {
+    super.initState();
+    getUserData();
+  }
+
+  Future<void> getUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      String userId = user.uid;
+
+      final userData = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+      tranzakcje.clear();
+      if (userData.exists) {
+        final userDoc = userData.data();
+
+        transaction = userDoc?['transaction'];
+        String transactionString = transaction.toString();
+        List<String> transactions = transactionString.split(',');
+
+        for (int i = 0; i < transactions.length; i++) {
+          String temp = transactions[i];
+          List<String> czesci = temp.split(':');
+
+          if (czesci.length >= 2) {
+            String key = czesci[0].trim();
+            String value = czesci.sublist(1).join(':').trim();
+
+            switch (key) {
+              case 'accNumber':
+                accNumber.add(value);
+                break;
+              case 'firstName':
+                firstNameT.add(value);
+                break;
+              case 'lastName':
+                lastNameT.add(value);
+                break;
+              case 'amount':
+                amount.add(value);
+                break;
+              case 'weather':
+                weather.add(value);
+                break;
+              case 'title':
+                titleT.add(value);
+                break;
+              case 'data':
+                data.add(value);
+                break;
+              default:
+                break;
+            }
+          }
+        }
+
+        for (int i = 0; i < transactions.length; i++) {
+          if (i < accNumber.length &&
+              i < firstNameT.length &&
+              i < lastNameT.length &&
+              i < amount.length &&
+              i < weather.length &&
+              i < titleT.length &&
+              i < data.length) {
+            Map<String, dynamic> transactionMap = {
+              'type': 'przelew', // Add the appropriate value for 'type' key
+              'name': firstNameT[i] + lastNameT[i],
+              'description': titleT[i],
+              'account': accNumber[i],
+              'amount': amount[i],
+              'date': data[i],
+            };
+            print(tranzakcje);
+            setState(() {
+              tranzakcje.add(transactionMap);
+            });
+          }
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -429,7 +564,7 @@ class HistoryScreen extends StatelessWidget {
               itemCount: tranzakcje.length,
               itemBuilder: (context, index) {
                 final tranzakcja = tranzakcje[index];
-                final currentDate = tranzakcja['date'] as DateTime;
+                final currentDate = DateTime.parse(tranzakcja['date']);
                 final formatter = DateFormat('yyyy-MM-dd');
                 final formattedDate = formatter.format(currentDate);
                 final isNegative = tranzakcja['amount'] < 0;
@@ -439,7 +574,7 @@ class HistoryScreen extends StatelessWidget {
 
                 if (index > 0) {
                   final previousDate =
-                      tranzakcje[index - 1]['date'] as DateTime;
+                      DateTime.parse(tranzakcje[index - 1]['date']);
                   showDivider = currentDate != previousDate;
                 }
 
@@ -463,19 +598,20 @@ class HistoryScreen extends StatelessWidget {
                       padding: EdgeInsets.all(16.0),
                       decoration: const BoxDecoration(
                         border: Border(
-                            top: BorderSide(
-                              color: AppColors.grey,
-                              width: 1,
-                            ),
-                            bottom: BorderSide(
-                              color: AppColors.grey,
-                              width: 1,
-                            )),
+                          top: BorderSide(
+                            color: AppColors.grey,
+                            width: 1,
+                          ),
+                          bottom: BorderSide(
+                            color: AppColors.grey,
+                            width: 1,
+                          ),
+                        ),
                       ),
                       child: Row(
                         children: [
                           Image.asset(
-                            './lib/images/${tranzakcja['type']}.png',
+                            'lib/images/${tranzakcja['type']}.png',
                             width: 25,
                             height: 25,
                           ),
@@ -495,17 +631,19 @@ class HistoryScreen extends StatelessWidget {
                               Text(
                                 tranzakcja['description'],
                                 style: GoogleFonts.leagueSpartan(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.white),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.white,
+                                ),
                               ),
                               SizedBox(height: 8.0),
                               Text(
                                 tranzakcja['account'],
                                 style: GoogleFonts.leagueSpartan(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.grey),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.grey,
+                                ),
                               ),
                             ],
                           ),

@@ -2,6 +2,8 @@ import 'package:appbank/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:appbank/components/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RecentTransactionsWidget extends StatelessWidget {
   final List<Tranzakcja> tranzakcje;
@@ -59,7 +61,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                 child: ListView.separated(
                   shrinkWrap: true,
                   physics: const ClampingScrollPhysics(),
-                  itemCount: 3,
+                  itemCount: tranzakcje.length,
                   itemBuilder: (context, index) {
                     final tranzakcja = tranzakcje[index];
                     final isNegative = tranzakcja.amount < 0;
