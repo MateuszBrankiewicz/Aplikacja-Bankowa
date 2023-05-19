@@ -288,7 +288,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       size: 66,
                       image: './lib/images/blik.png',
                       label: 'BLIK',
-                      destPage: const BLIKPayment(),
+                      destPage: BLIKPayment(),
                     ),
                     PaymentShortcut(
                       size: 66,
