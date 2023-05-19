@@ -212,6 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
               data.add('');
             }
           }
+          widget.onUserDataChanged(userData);
         });
       } else {
         print('User with ID $userId does not exist.');
@@ -306,33 +307,33 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               //TO DO !!!!
 
-              // RecentTransactionsWidget(
-              //   tranzakcje: (firstNameT.isNotEmpty &&
-              //           lastNameT.isNotEmpty &&
-              //           titleT.isNotEmpty &&
-              //           amount.isNotEmpty)
-              //       ? [
-              //           Tranzakcja(
-              //             firstName: firstNameT[0],
-              //             lastName: lastNameT[0],
-              //             description: titleT[0],
-              //             amount: double.parse(amount[0]),
-              //           ),
-              //           Tranzakcja(
-              //             firstName: firstNameT[1],
-              //             lastName: lastNameT[1],
-              //             description: titleT[1],
-              //             amount: double.parse(amount[1]),
-              //           ),
-              //           Tranzakcja(
-              //             firstName: firstNameT[2],
-              //             lastName: lastNameT[2],
-              //             description: titleT[2],
-              //             amount: double.parse(amount[2]),
-              //           ),
-              //         ]
-              //       : [],
-              // ),
+              RecentTransactionsWidget(
+                tranzakcje: (firstNameT.isNotEmpty &&
+                        lastNameT.isNotEmpty &&
+                        titleT.isNotEmpty &&
+                        amount.isNotEmpty)
+                    ? [
+                        Tranzakcja(
+                          firstName: firstNameT[0],
+                          lastName: lastNameT[0],
+                          description: titleT[0],
+                          amount: double.parse(amount[0]),
+                        ),
+                        Tranzakcja(
+                          firstName: firstNameT[1],
+                          lastName: lastNameT[1],
+                          description: titleT[1],
+                          amount: double.parse(amount[1]),
+                        ),
+                        Tranzakcja(
+                          firstName: firstNameT[2],
+                          lastName: lastNameT[2],
+                          description: titleT[2],
+                          amount: double.parse(amount[2]),
+                        ),
+                      ]
+                    : [],
+              ),
             ],
           ),
         ],
