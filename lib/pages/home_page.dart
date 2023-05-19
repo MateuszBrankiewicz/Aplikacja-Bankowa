@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
         transactionDataChanged: _handleTransactionDataChanged,
       ),
       PaymentsScreen(userData: userData),
-      HistoryScreen(),
+      HistoryScreen(transactionData: transactionData),
       ProfileScreen(
         userData: userData,
       ),
@@ -192,18 +192,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
         for (int i = 0; i < transactions.length; i++) {
           String temp = transactions[i];
+
+          temp = temp.replaceAll('[', '');
+          temp = temp.replaceAll(']', '');
           List<String> czesci = temp.split(':');
-          print(czesci);
+
           if (czesci.length >= 2) {
             String key = czesci[0].trim();
             String value = czesci.sublist(1).join(':').trim();
-
+            print(key);
+            print(value);
             switch (key) {
               case 'accNumber':
+                print(key);
+                print(value);
                 accNumberList.add(value);
                 break;
               case 'firstName':
                 firstNameTList.add(value);
+                print(key);
+                print(value);
                 break;
               case 'lastName':
                 lastNameTList.add(value);
@@ -232,10 +240,10 @@ class _HomeScreenState extends State<HomeScreen> {
             accNumberList.add('');
             firstNameTList.add('');
             lastNameTList.add('');
-            amountList.add('0');
+            amountList.add('');
             weatherList.add('');
             titleTList.add('');
-            dataList.add('');
+            dataList.add('0000-00-00 00:00:00');
           }
         }
 
@@ -248,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
           titleT: titleTList,
           data: dataList,
         );
-        print(transactionData.weather);
+        print("numer konta ${transactionData.accNumber}");
         setState(() {
           this.userData = userData;
           this.transactionData = transactionData;
@@ -356,19 +364,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       firstName: transactionData?.firstNameT[0],
                       lastName: transactionData?.lastNameT[0],
                       description: transactionData?.titleT[0],
-                      amount: parseAmount(transactionData?.amount[0]),
+                      amount: transactionData?.amount[0],
                       weather: transactionData?.weather[0]),
                   Tranzakcja(
                       firstName: transactionData?.firstNameT[1],
                       lastName: transactionData?.lastNameT[1],
                       description: transactionData?.titleT[1],
-                      amount: parseAmount(transactionData?.amount[1]),
+                      amount: transactionData?.amount[1],
                       weather: transactionData?.weather[1]),
                   Tranzakcja(
                       firstName: transactionData?.firstNameT[2],
                       lastName: transactionData?.lastNameT[2],
                       description: transactionData?.titleT[2],
-                      amount: parseAmount(transactionData?.amount[2]),
+                      amount: transactionData?.amount[2],
                       weather: transactionData?.weather[2]),
                 ],
               ),
@@ -473,104 +481,35 @@ class PaymentsScreen extends StatelessWidget {
 }
 
 //History page
-class HistoryScreen extends StatefulWidget {
-  @override
-  _HistoryScreenState createState() => _HistoryScreenState();
-}
+class HistoryScreen extends StatelessWidget {
+  TransactionData? transactionData;
+  List<dynamic> tranzakcje = [];
 
-class _HistoryScreenState extends State<HistoryScreen> {
-  List<Map<String, dynamic>> tranzakcje = [];
-  List<String> accNumber = [];
-  List<dynamic> transaction = [];
-  List<String> firstNameT = [];
-  List<String> lastNameT = [];
-  List<String> amount = [];
-  List<String> weather = [];
-  List<String> titleT = [];
-  List<String> data = [];
-  @override
-  void initState() {
-    super.initState();
-    getUserData();
+  HistoryScreen({Key? key, this.transactionData}) : super(key: key) {
+    createMap();
   }
 
-  Future<void> getUserData() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      String userId = user.uid;
-
-      final userData = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-      tranzakcje.clear();
-      if (userData.exists) {
-        final userDoc = userData.data();
-
-        transaction = userDoc?['transaction'];
-        String transactionString = transaction.toString();
-        List<String> transactions = transactionString.split(',');
-
-        for (int i = 0; i < transactions.length; i++) {
-          String temp = transactions[i];
-          List<String> czesci = temp.split(':');
-
-          if (czesci.length >= 2) {
-            String key = czesci[0].trim();
-            String value = czesci.sublist(1).join(':').trim();
-
-            switch (key) {
-              case 'accNumber':
-                accNumber.add(value);
-                break;
-              case 'firstName':
-                firstNameT.add(value);
-                break;
-              case 'lastName':
-                lastNameT.add(value);
-                break;
-              case 'amount':
-                amount.add(value);
-                break;
-              case 'weather':
-                weather.add(value);
-                break;
-              case 'title':
-                titleT.add(value);
-                break;
-              case 'data':
-                data.add(value);
-                break;
-              default:
-                break;
-            }
-          }
-        }
-
-        for (int i = 0; i < transactions.length; i++) {
-          if (i < accNumber.length &&
-              i < firstNameT.length &&
-              i < lastNameT.length &&
-              i < amount.length &&
-              i < weather.length &&
-              i < titleT.length &&
-              i < data.length) {
-            Map<String, dynamic> transactionMap = {
-              'type': 'przelew', // Add the appropriate value for 'type' key
-              'name': firstNameT[i] + lastNameT[i],
-              'description': titleT[i],
-              'account': accNumber[i],
-              'amount': amount[i],
-              'date': data[i],
-            };
-            print(tranzakcje);
-            setState(() {
-              tranzakcje.add(transactionMap);
-            });
-          }
-        }
-      }
+  void createMap() {
+    final int dataLength = transactionData?.firstNameT.length ?? 0;
+    for (int i = 0; i < dataLength; i++) {
+      final String firstName = transactionData?.firstNameT[i] ?? '';
+      final String title = transactionData?.titleT[i] ?? '';
+      final String accNumber = transactionData?.accNumber[i] ?? '';
+      final String amount = transactionData?.amount[i] ?? '';
+      final String data = transactionData?.data[i] ?? '';
+      final String weather = transactionData?.weather[i] ?? '';
+      Map<String, dynamic> transactionMap = {
+        'type': 'przelew', // Add the appropriate value for 'type' key
+        'name': firstName,
+        'description': title,
+        'account': accNumber,
+        'amount': amount,
+        'data': data,
+        'weather': weather
+      };
+      tranzakcje.add(transactionMap);
     }
+    print(tranzakcje);
   }
 
   @override
@@ -603,17 +542,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
               itemCount: tranzakcje.length,
               itemBuilder: (context, index) {
                 final tranzakcja = tranzakcje[index];
-                final currentDate = DateTime.parse(tranzakcja['date']);
-                final formatter = DateFormat('yyyy-MM-dd');
-                final formattedDate = formatter.format(currentDate);
-                final isNegative = tranzakcja['amount'] < 0;
+                final dateString = tranzakcja['data'];
+                final formattedDateString = dateString.replaceAll(' ', 'T');
+                print(formattedDateString);
+                final currentDate = DateTime.parse(formattedDateString);
+                final formattedDate = currentDate.toString();
+                final isNegative = tranzakcja['weather'] == 'false';
                 final amountText =
-                    '${isNegative ? '-' : ''}${tranzakcja['amount'].abs()}\$';
+                    '${isNegative ? '-' : ''}${tranzakcja['amount'] ?? 'N/A'}\$';
                 bool showDivider = true;
 
                 if (index > 0) {
                   final previousDate =
-                      DateTime.parse(tranzakcje[index - 1]['date']);
+                      DateTime.parse(tranzakcje[index - 1]['data']);
                   showDivider = currentDate != previousDate;
                 }
 

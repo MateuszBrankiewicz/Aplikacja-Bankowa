@@ -63,7 +63,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                   final tranzakcja = tranzakcje[index];
                   final isNegative = tranzakcja.weather == 'false';
                   final amountText =
-                      '${isNegative ? '-' : ''}${tranzakcja.amount?.abs() ?? 'N/A'}\$';
+                      '${isNegative ? '-' : ''}${tranzakcja.amount ?? 'N/A'}\$';
 
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -130,7 +130,7 @@ class Tranzakcja {
   final String? firstName;
   final String? lastName;
   final String? description;
-  final double? amount;
+  final String? amount;
   final String? weather;
 
   Tranzakcja(
