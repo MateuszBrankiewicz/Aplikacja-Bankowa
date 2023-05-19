@@ -23,7 +23,28 @@ class UserData {
     required this.numAcc,
     required this.expires,
     required this.balance,
+    // required transaction,
     // required this.transaction,
+  });
+}
+
+class TransactionData {
+  final List<String> accNumber;
+  final List<String> firstNameT;
+  final List<String> lastNameT;
+  final List<String> amount;
+  final List<String> weather;
+  final List<String> titleT;
+  final List<String> data;
+
+  TransactionData({
+    required this.accNumber,
+    required this.firstNameT,
+    required this.lastNameT,
+    required this.amount,
+    required this.weather,
+    required this.titleT,
+    required this.data,
   });
 }
 
@@ -36,7 +57,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   UserData? userData;
   String userId = '';
-
+  TransactionData? transactionData;
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -49,12 +70,19 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _handleTransactionDataChanged(TransactionData? newTransaction) {
+    setState(() {
+      transactionData = newTransaction;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<Widget> _widgetOptions = <Widget>[
       HomeScreen(
         userId: '',
         onUserDataChanged: _handleUserDataChanged,
+        transactionDataChanged: _handleTransactionDataChanged,
       ),
       PaymentsScreen(userData: userData),
       HistoryScreen(),
@@ -109,12 +137,13 @@ class _HomePageState extends State<HomePage> {
 class HomeScreen extends StatefulWidget {
   final String userId;
   final void Function(UserData?) onUserDataChanged;
-
-  const HomeScreen({
-    Key? key,
-    required this.userId,
-    required this.onUserDataChanged,
-  }) : super(key: key);
+  final void Function(TransactionData?) transactionDataChanged;
+  const HomeScreen(
+      {Key? key,
+      required this.userId,
+      required this.onUserDataChanged,
+      required this.transactionDataChanged})
+      : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -122,15 +151,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   UserData? userData;
-
-  List<String> accNumber = [];
-  List<String> firstNameT = [];
-  List<String> lastNameT = [];
-  List<String> amount = [];
-  List<String> weather = [];
-  List<String> titleT = [];
-  List<String> data = [];
-  List<dynamic> transaction = [];
+  TransactionData? transactionData;
 
   @override
   void initState() {
@@ -140,12 +161,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> getUserData(String userId) async {
     User? user = FirebaseAuth.instance.currentUser;
+
     if (user != null) {
       String userId = user.uid;
-      String temp = '';
-      List<String> czesci = [];
-      List<String> czesci2 = [];
-
       final userDataSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
@@ -153,67 +171,91 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (userDataSnapshot.exists) {
         final userDoc = userDataSnapshot.data() as Map<String, dynamic>;
+        UserData userData = UserData(
+          firstName: userDoc['First Name'],
+          lastName: userDoc['Last Name'],
+          numAcc: userDoc['Bank account number'],
+          expires: userDoc['expires'],
+          balance: userDoc['account balance'],
+        );
+
+        List<String> transactions =
+            userDoc['transaction'].toString().split(',');
+
+        List<String> accNumberList = [];
+        List<String> firstNameTList = [];
+        List<String> lastNameTList = [];
+        List<String> amountList = [];
+        List<String> weatherList = [];
+        List<String> titleTList = [];
+        List<String> dataList = [];
+
+        for (int i = 0; i < transactions.length; i++) {
+          String temp = transactions[i];
+          List<String> czesci = temp.split(':');
+          print(czesci);
+          if (czesci.length >= 2) {
+            String key = czesci[0].trim();
+            String value = czesci.sublist(1).join(':').trim();
+
+            switch (key) {
+              case 'accNumber':
+                accNumberList.add(value);
+                break;
+              case 'firstName':
+                firstNameTList.add(value);
+                break;
+              case 'lastName':
+                lastNameTList.add(value);
+                break;
+              case 'amount':
+                amountList.add(value);
+                break;
+              case 'wheter':
+                weatherList.add(value);
+                break;
+              case 'title':
+                titleTList.add(value);
+                break;
+              case 'data':
+                dataList.add(value);
+                break;
+              default:
+                break;
+            }
+          }
+        }
+
+        if (accNumberList.length < 3) {
+          int remainingLength = 3 - accNumberList.length;
+          for (int i = 0; i < remainingLength; i++) {
+            accNumberList.add('');
+            firstNameTList.add('');
+            lastNameTList.add('');
+            amountList.add('0');
+            weatherList.add('');
+            titleTList.add('');
+            dataList.add('');
+          }
+        }
+
+        TransactionData transactionData = TransactionData(
+          accNumber: accNumberList,
+          firstNameT: firstNameTList,
+          lastNameT: lastNameTList,
+          amount: amountList,
+          weather: weatherList,
+          titleT: titleTList,
+          data: dataList,
+        );
+        print(transactionData.weather);
         setState(() {
-          userData = UserData(
-            firstName: userDoc['First Name'],
-            lastName: userDoc['Last Name'],
-            numAcc: userDoc['Bank account number'],
-            expires: userDoc['expires'],
-            balance: userDoc['account balance'],
-            // transaction: userDoc['transaction'],
-          );
-          transaction = userDoc['transaction'];
-          List<String> transactions = transaction.toString().split(',');
-
-          for (int i = 0; i < transactions.length; i++) {
-            String temp = transactions[i];
-            List<String> czesci = temp.split(':');
-
-            if (czesci.length >= 2) {
-              String key = czesci[0].trim();
-              String value = czesci.sublist(1).join(':').trim();
-
-              switch (key) {
-                case 'accNumber':
-                  accNumber.add(value);
-                  break;
-                case 'firstName':
-                  firstNameT.add(value);
-                  break;
-                case 'lastName':
-                  lastNameT.add(value);
-                  break;
-                case 'amount':
-                  amount.add(value);
-                  break;
-                case 'wheter':
-                  weather.add(value);
-                  break;
-                case 'title':
-                  titleT.add(value);
-                  break;
-                case 'data':
-                  data.add(value);
-                  break;
-                default:
-                  break;
-              }
-            }
-          }
-          if (accNumber.length < 3) {
-            int remainingLength = 3 - accNumber.length - 1;
-            for (int i = 0; i < remainingLength; i++) {
-              accNumber.add('');
-              firstNameT.add('');
-              lastNameT.add('');
-              amount.add('0');
-              weather.add('');
-              titleT.add('');
-              data.add('');
-            }
-          }
-          widget.onUserDataChanged(userData);
+          this.userData = userData;
+          this.transactionData = transactionData;
         });
+
+        widget.onUserDataChanged(userData);
+        widget.transactionDataChanged(transactionData);
       } else {
         print('User with ID $userId does not exist.');
       }
@@ -265,13 +307,14 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               //Credit Card
               Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
-                  child: CreditCardWidget(
-                    currentBalance: '${userData?.balance}',
-                    cardHolder: '${userData?.firstName} ${userData?.lastName}',
-                    cardNumber: '${userData?.numAcc}',
-                    expiryDate: '${userData?.expires}',
-                  )),
+                padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
+                child: CreditCardWidget(
+                  currentBalance: userData!.balance,
+                  cardHolder: '${userData!.firstName} ${userData!.lastName}',
+                  cardNumber: userData!.numAcc,
+                  expiryDate: userData!.expires,
+                ),
+              ),
               SizedBox(
                 height: 15,
               ),
@@ -308,37 +351,40 @@ class _HomeScreenState extends State<HomeScreen> {
               //TO DO !!!!
 
               RecentTransactionsWidget(
-                tranzakcje: (firstNameT.isNotEmpty &&
-                        lastNameT.isNotEmpty &&
-                        titleT.isNotEmpty &&
-                        amount.isNotEmpty)
-                    ? [
-                        Tranzakcja(
-                          firstName: firstNameT[0],
-                          lastName: lastNameT[0],
-                          description: titleT[0],
-                          amount: double.parse(amount[0]),
-                        ),
-                        Tranzakcja(
-                          firstName: firstNameT[1],
-                          lastName: lastNameT[1],
-                          description: titleT[1],
-                          amount: double.parse(amount[1]),
-                        ),
-                        Tranzakcja(
-                          firstName: firstNameT[2],
-                          lastName: lastNameT[2],
-                          description: titleT[2],
-                          amount: double.parse(amount[2]),
-                        ),
-                      ]
-                    : [],
+                tranzakcje: [
+                  Tranzakcja(
+                      firstName: transactionData?.firstNameT[0],
+                      lastName: transactionData?.lastNameT[0],
+                      description: transactionData?.titleT[0],
+                      amount: parseAmount(transactionData?.amount[0]),
+                      weather: transactionData?.weather[0]),
+                  Tranzakcja(
+                      firstName: transactionData?.firstNameT[1],
+                      lastName: transactionData?.lastNameT[1],
+                      description: transactionData?.titleT[1],
+                      amount: parseAmount(transactionData?.amount[1]),
+                      weather: transactionData?.weather[1]),
+                  Tranzakcja(
+                      firstName: transactionData?.firstNameT[2],
+                      lastName: transactionData?.lastNameT[2],
+                      description: transactionData?.titleT[2],
+                      amount: parseAmount(transactionData?.amount[2]),
+                      weather: transactionData?.weather[2]),
+                ],
               ),
             ],
           ),
         ],
       ),
     );
+  }
+
+  double parseAmount(String? value) {
+    try {
+      return double.parse(value ?? '0');
+    } catch (e) {
+      return 0;
+    }
   }
 }
 
