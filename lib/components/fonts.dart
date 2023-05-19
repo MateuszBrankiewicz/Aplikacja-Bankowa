@@ -24,6 +24,13 @@ class AppFonts {
     color: AppColors.white,
   );
 
+  static final TextStyle h1Dark = GoogleFonts.leagueSpartan(
+    fontSize: 40,
+    fontWeight: FontWeight.bold,
+    height: 0.92,
+    color: AppColors.darkGrey,
+  );
+
   static final TextStyle h2 = GoogleFonts.leagueSpartan(
     fontSize: 26,
     fontWeight: FontWeight.bold,
@@ -43,6 +50,13 @@ class AppFonts {
     fontWeight: FontWeight.w400,
     height: 1,
     color: AppColors.white,
+  );
+
+  static final TextStyle pDark = GoogleFonts.leagueSpartan(
+    fontSize: 22,
+    fontWeight: FontWeight.w400,
+    height: 1,
+    color: AppColors.darkGrey,
   );
 
   static final TextStyle errorText = GoogleFonts.leagueSpartan(
