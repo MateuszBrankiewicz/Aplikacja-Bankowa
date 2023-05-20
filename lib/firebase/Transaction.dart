@@ -44,7 +44,7 @@ void wykonajPrzelew(Transfer transfer) async {
 
     // Add a new transaction to the sender's transaction history
     String transactionEntry =
-        "accNumber: ${transfer.accNumber.toString()}, firstName: ${senderData['First Name']}, lastName: ${senderData['Last Name']}, amount: ${transfer.amount.toString()}, wheter: false, title: ${transfer.title}, data: $data";
+        "accNumber: ${transfer.accNumber.toString()}, firstName: ${senderData['First Name']}, lastName: ${senderData['Last Name']}, amount: ${transfer.amount.toString()}, wheter: false, title: ${transfer.title}, data: $data,";
 
     batch.update(FirebaseFirestore.instance.collection('users').doc(userId), {
       'transaction': FieldValue.arrayUnion([transactionEntry])

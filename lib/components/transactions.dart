@@ -60,11 +60,15 @@ class RecentTransactionsWidget extends StatelessWidget {
                 physics: const ClampingScrollPhysics(),
                 itemCount: tranzakcje.length,
                 itemBuilder: (context, index) {
+                  final amountText;
                   final tranzakcja = tranzakcje[index];
                   final isNegative = tranzakcja.weather == 'false';
-                  final amountText =
-                      '${isNegative ? '-' : ''}${tranzakcja.amount ?? 'N/A'}\$';
-
+                  if (tranzakcja.amount == '') {
+                    amountText = '';
+                  } else {
+                    amountText =
+                        '${isNegative ? '-' : ''}${tranzakcja.amount ?? 'N/A'}\$';
+                  }
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(

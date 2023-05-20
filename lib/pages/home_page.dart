@@ -36,16 +36,17 @@ class TransactionData {
   final List<String> weather;
   final List<String> titleT;
   final List<String> data;
+  final int transactionSize;
 
-  TransactionData({
-    required this.accNumber,
-    required this.firstNameT,
-    required this.lastNameT,
-    required this.amount,
-    required this.weather,
-    required this.titleT,
-    required this.data,
-  });
+  TransactionData(
+      {required this.accNumber,
+      required this.firstNameT,
+      required this.lastNameT,
+      required this.amount,
+      required this.weather,
+      required this.titleT,
+      required this.data,
+      required this.transactionSize});
 }
 
 class HomePage extends StatefulWidget {
@@ -178,10 +179,9 @@ class _HomeScreenState extends State<HomeScreen> {
           expires: userDoc['expires'],
           balance: userDoc['account balance'],
         );
-
-        List<String> transactions =
-            userDoc['transaction'].toString().split(',');
-
+        List<dynamic> temp = userDoc['transaction'];
+        List<String> transactions = temp.toString().split(',');
+        int sizeTransaction = temp.length;
         List<String> accNumberList = [];
         List<String> firstNameTList = [];
         List<String> lastNameTList = [];
@@ -248,14 +248,14 @@ class _HomeScreenState extends State<HomeScreen> {
         }
 
         TransactionData transactionData = TransactionData(
-          accNumber: accNumberList,
-          firstNameT: firstNameTList,
-          lastNameT: lastNameTList,
-          amount: amountList,
-          weather: weatherList,
-          titleT: titleTList,
-          data: dataList,
-        );
+            accNumber: accNumberList,
+            firstNameT: firstNameTList,
+            lastNameT: lastNameTList,
+            amount: amountList,
+            weather: weatherList,
+            titleT: titleTList,
+            data: dataList,
+            transactionSize: sizeTransaction);
         print("numer konta ${transactionData.accNumber}");
         setState(() {
           this.userData = userData;
@@ -539,17 +539,19 @@ class HistoryScreen extends StatelessWidget {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: tranzakcje.length,
+              itemCount: transactionData?.transactionSize,
               itemBuilder: (context, index) {
                 final tranzakcja = tranzakcje[index];
                 final dateString = tranzakcja['data'];
                 final formattedDateString = dateString.replaceAll(' ', 'T');
-                print(formattedDateString);
+
                 final currentDate = DateTime.parse(formattedDateString);
-                final formattedDate = currentDate.toString();
+                String formattedDate = currentDate.toString();
                 final isNegative = tranzakcja['weather'] == 'false';
+
                 final amountText =
                     '${isNegative ? '-' : ''}${tranzakcja['amount'] ?? 'N/A'}\$';
+
                 bool showDivider = true;
 
                 if (index > 0) {
