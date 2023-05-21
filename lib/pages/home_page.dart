@@ -339,13 +339,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       size: 66,
                       image: './lib/images/blik.png',
                       label: 'BLIK',
-                      destPage: BLIKPayment(),
+                      destPage: const BLIKPayment(),
                     ),
                     PaymentShortcut(
                       size: 66,
                       image: './lib/images/przelew.png',
                       label: 'Transfer',
-                      destPage: TransferPayment(),
+                      destPage: TransferPayment(
+                        balance: userData!.balance,
+                      ),
                     ),
                     PaymentShortcut(
                       size: 66,
@@ -361,20 +363,20 @@ class _HomeScreenState extends State<HomeScreen> {
               RecentTransactionsWidget(
                 tranzakcje: [
                   Tranzakcja(
-                      firstName: transactionData?.firstNameT[0],
-                      lastName: transactionData?.lastNameT[0],
+                      name:
+                          '${transactionData?.firstNameT[0]} ${transactionData?.lastNameT[0]}',
                       description: transactionData?.titleT[0],
                       amount: transactionData?.amount[0],
                       weather: transactionData?.weather[0]),
                   Tranzakcja(
-                      firstName: transactionData?.firstNameT[1],
-                      lastName: transactionData?.lastNameT[1],
+                      name:
+                          '${transactionData?.firstNameT[1]} ${transactionData?.lastNameT[1]}',
                       description: transactionData?.titleT[1],
                       amount: transactionData?.amount[1],
                       weather: transactionData?.weather[1]),
                   Tranzakcja(
-                      firstName: transactionData?.firstNameT[2],
-                      lastName: transactionData?.lastNameT[2],
+                      name:
+                          '${transactionData?.firstNameT[2]} ${transactionData?.lastNameT[2]}',
                       description: transactionData?.titleT[2],
                       amount: transactionData?.amount[2],
                       weather: transactionData?.weather[2]),
@@ -450,7 +452,7 @@ class PaymentsScreen extends StatelessWidget {
                     size: 70,
                     image: './lib/images/przelew.png',
                     label: 'Transfer',
-                    destPage: TransferPayment(),
+                    destPage: TransferPayment(balance: userData!.balance),
                   ),
                   PaymentShortcut(
                     size: 70,
@@ -637,7 +639,7 @@ class HistoryScreen extends StatelessWidget {
                             style: GoogleFonts.leagueSpartan(
                               color: isNegative
                                   ? AppColors.white
-                                  : Color(0xff1fe9ad),
+                                  : AppColors.green,
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),

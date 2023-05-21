@@ -80,7 +80,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '${tranzakcja.firstName ?? 'N/A'} ${tranzakcja.lastName ?? 'N/A'}',
+                                tranzakcja.name ?? 'N/A',
                                 style: GoogleFonts.leagueSpartan(
                                   color: AppColors.white,
                                   fontWeight: FontWeight.bold,
@@ -131,16 +131,10 @@ class RecentTransactionsWidget extends StatelessWidget {
 }
 
 class Tranzakcja {
-  final String? firstName;
-  final String? lastName;
+  final String? name;
   final String? description;
   final String? amount;
   final String? weather;
 
-  Tranzakcja(
-      {this.firstName,
-      this.lastName,
-      this.description,
-      this.amount,
-      this.weather});
+  Tranzakcja({this.name, this.description, this.amount, this.weather});
 }
