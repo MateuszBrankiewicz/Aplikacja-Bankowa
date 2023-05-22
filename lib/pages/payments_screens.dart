@@ -1,3 +1,4 @@
+import 'package:appbank/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:appbank/components/colors.dart';
 import 'package:appbank/components/fonts.dart';
@@ -142,16 +143,134 @@ class Transfer {
   Transfer(
       {this.recipient = '',
       this.accNumber = '',
-      this.amount = 0,
+      this.amount = 0.00,
       this.title = '',
       this.sender = '',
       this.whether = false});
 }
 
-class TransferPayment extends StatelessWidget {
-  final Transfer transfer = Transfer();
+class TransferPayment extends StatefulWidget {
+  final String balance;
+  const TransferPayment({super.key, required this.balance});
 
-  TransferPayment({super.key});
+  @override
+  _TransferPaymentState createState() =>
+      _TransferPaymentState(balance: balance);
+}
+
+class _TransferPaymentState extends State<TransferPayment> {
+  final Transfer transfer = Transfer();
+  final String balance;
+  _TransferPaymentState({required this.balance});
+
+  void _showCongratulationDialog(double amount, String name) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: AppColors.white,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Transaction finished ',
+                style: AppFonts.h2,
+              ),
+              const Icon(
+                Icons.check_circle,
+                color: AppColors.green,
+              )
+            ],
+          ),
+          content: Text(
+            'You have successfully transfered $amount\$ to $name!',
+            style: AppFonts.errorText,
+          ),
+          actions: [
+            Center(
+              child: TextButton(
+                child: Text(
+                  'Continue',
+                  style: AppFonts.buttonText,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> makeTransaction() async {
+    String errorText = '';
+    bool isValid = true;
+    if (transfer.sender.isEmpty) {
+      errorText += 'Enter recipient name!\n';
+      isValid = false;
+    }
+    if (transfer.accNumber.isEmpty) {
+      errorText += 'Add account number!\n';
+      isValid = false;
+    }
+    if (transfer.accNumber.length != 18) {
+      errorText += 'Wrong account number length!\n';
+    }
+    if (transfer.title.isEmpty || transfer.title.length <= 2) {
+      errorText += 'Add transfer title!\n';
+      isValid = false;
+    }
+    if (transfer.amount <= 0.00) {
+      errorText += 'Enter correct amount!\n';
+      isValid = false;
+    } else {
+      double balanceAmount = double.tryParse(balance) ?? 0.0;
+      if (transfer.amount > balanceAmount) {
+        errorText += 'Insufficient balance!\n';
+        isValid = false;
+      }
+    }
+    if (isValid) {
+      wykonajPrzelew(transfer, context);
+      _showCongratulationDialog(transfer.amount, transfer.sender);
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: AppColors.white,
+            title: Center(
+              child: Text(
+                'Transfer error!',
+                style: AppFonts.h2,
+              ),
+            ),
+            content: Text(
+              errorText,
+              style: AppFonts.errorText,
+            ),
+            actions: [
+              TextButton(
+                child: Text(
+                  'Try again',
+                  style: AppFonts.buttonText,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -185,6 +304,7 @@ class TransferPayment extends StatelessWidget {
                   hintText: 'Wpisz nazwe odbiorcy',
                   icon: Icons.person,
                   obscure: false,
+                  isNumeric: false,
                   onChanged: (value) {
                     transfer.recipient = value;
                   },
@@ -193,6 +313,7 @@ class TransferPayment extends StatelessWidget {
                   controller: TextEditingController(text: transfer.accNumber),
                   hintText: 'Wpisz numer rachunku',
                   icon: Icons.wallet_rounded,
+                  isNumeric: true,
                   obscure: false,
                   onChanged: (value) {
                     transfer.accNumber = value;
@@ -207,14 +328,20 @@ class TransferPayment extends StatelessWidget {
                       TextEditingController(text: transfer.amount.toString()),
                   hintText: 'Wpisz kwote',
                   icon: Icons.monetization_on_outlined,
+                  isNumeric: true,
                   obscure: false,
                   onChanged: (value) {
-                    transfer.amount = double.parse(value);
+                    if (value.isEmpty) {
+                      transfer.amount = 0.00;
+                    } else {
+                      transfer.amount = double.parse(value);
+                    }
                   },
                 ),
                 InputForm(
                   controller: TextEditingController(text: transfer.title),
                   hintText: 'Podaj tytul przelewu',
+                  isNumeric: false,
                   icon: Icons.view_agenda,
                   obscure: false,
                   onChanged: (value) {
@@ -223,8 +350,7 @@ class TransferPayment extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 CustomButton(
-                    text: 'Continue',
-                    onPressed: () => {wykonajPrzelew(transfer)}),
+                    text: 'Continue', onPressed: () => {makeTransaction()}),
               ]),
         ),
       ),
@@ -232,13 +358,177 @@ class TransferPayment extends StatelessWidget {
   }
 }
 
-class TopAccount extends StatelessWidget {
+class TopAccount extends StatefulWidget {
   const TopAccount({super.key});
 
   @override
+  _TopAccountState createState() => _TopAccountState();
+}
+
+class _TopAccountState extends State<TopAccount> {
+  final TextEditingController _amountController = TextEditingController();
+  String errorMessage = '';
+
+  Future<void> _addMoneyToAccount() async {
+    String amountText = _amountController.text.trim();
+    int amount = int.tryParse(amountText) ?? 0;
+    bool isValid = true;
+
+    if (amountText.isEmpty) {
+      setState(() {
+        errorMessage = 'Please enter an amount!';
+      });
+      isValid = false;
+    }
+
+    if (amount <= 0 || amount > 2000) {
+      setState(() {
+        errorMessage = 'Invalid amount. Enter amount between 0 and 2000!';
+      });
+      isValid = false;
+    }
+    if (isValid) {
+      //Dodanie kasy do konta, lub wyrzucenie bledu jak sie zapytanie zepsuje
+      //Jesli pomyslnie doda kase do bazy danych to wywolujesz ta funkcje
+      //_showCongratulationDialog(amount);
+      // try{
+      _showCongratulationDialog(amount);
+      // }
+      // catch{
+      // }
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: AppColors.white,
+            title: Center(
+              child: Text(
+                'Top up error!',
+                style: AppFonts.h2,
+              ),
+            ),
+            content: Text(
+              errorMessage,
+              style: AppFonts.errorText,
+            ),
+            actions: [
+              TextButton(
+                child: Text(
+                  'Try again',
+                  style: AppFonts.buttonText,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void _showCongratulationDialog(int amount) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: AppColors.white,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Congratulations ',
+                style: AppFonts.h2,
+              ),
+              const Icon(
+                Icons.check_circle,
+                color: AppColors.green,
+              )
+            ],
+          ),
+          content: Text(
+            'You have successfully added $amount\$ to your account!',
+            style: AppFonts.errorText,
+          ),
+          actions: [
+            Center(
+              child: TextButton(
+                child: Text(
+                  'Continue',
+                  style: AppFonts.buttonText,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Profile Screen'),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.lightRed,
+        title: Text('Top up', style: AppFonts.h1),
+        titleSpacing: 10,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment(0, 0.546),
+            end: Alignment(0, 1),
+            colors: <Color>[AppColors.lightRed, AppColors.darkRed],
+            stops: <double>[0, 1],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Divider(
+              color: AppColors.white,
+              thickness: 1,
+            ),
+            const SizedBox(
+              height: 100,
+            ),
+            Text(
+              'Add funds to your account:',
+              style: AppFonts.formInput,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 32.0),
+              child: InputForm(
+                controller: _amountController,
+                isNumeric: true,
+                hintText: 'Enter amount (max: 2000\$)',
+                icon: Icons.attach_money,
+                obscure: false,
+                // onChanged: (value) {
+                //   transfer.sender = value;
+                // },
+              ),
+            ),
+            CustomButton(text: 'Add money', onPressed: _addMoneyToAccount),
+          ]),
+        ),
+      ),
     );
   }
 }

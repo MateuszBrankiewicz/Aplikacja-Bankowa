@@ -272,6 +272,7 @@ class _SignupPageState extends State<SignupPage> {
                               Expanded(
                                 child: InputForm(
                                   controller: _firstNameController,
+                                  isNumeric: false,
                                   hintText: 'First name',
                                   icon: Icons.person,
                                   obscure: false,
@@ -283,6 +284,7 @@ class _SignupPageState extends State<SignupPage> {
                               Expanded(
                                 child: InputForm(
                                   controller: _lastNameController,
+                                  isNumeric: false,
                                   hintText: 'Last name',
                                   icon: Icons.people,
                                   obscure: false,
@@ -296,6 +298,7 @@ class _SignupPageState extends State<SignupPage> {
                           InputForm(
                             controller: _emailController,
                             hintText: 'Email',
+                            isNumeric: false,
                             icon: Icons.mail,
                             obscure: false,
                           ),
@@ -304,6 +307,7 @@ class _SignupPageState extends State<SignupPage> {
                           ),
                           InputForm(
                             controller: _passwordController,
+                            isNumeric: false,
                             hintText: 'Password',
                             icon: Icons.lock,
                             obscure: true,
@@ -313,6 +317,7 @@ class _SignupPageState extends State<SignupPage> {
                           ),
                           InputForm(
                             controller: _confirmPasswordController,
+                            isNumeric: false,
                             hintText: 'Confirm Password',
                             icon: Icons.lock_person,
                             obscure: true,

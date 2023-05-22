@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:appbank/pages/payments_screens.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:appbank/components/colors.dart';
+import 'package:appbank/components/fonts.dart';
 
-void wykonajPrzelew(Transfer transfer) async {
+void wykonajPrzelew(Transfer transfer, BuildContext context) async {
   try {
     User? user = FirebaseAuth.instance.currentUser;
     String userId = user!.uid;
@@ -16,7 +19,7 @@ void wykonajPrzelew(Transfer transfer) async {
         .get();
 
     if (receivingData.docs.isEmpty) {
-      throw Exception('Niepoprawny numer konta');
+      throw Exception('NNK');
     }
 
     final receivingDoc = receivingData.docs.first;
@@ -62,6 +65,38 @@ void wykonajPrzelew(Transfer transfer) async {
     // Commit the batched write
     await batch.commit();
   } catch (e) {
-    throw Exception('Wystąpił błąd: $e');
+    print(e.toString());
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: AppColors.white,
+          title: Center(
+            child: Text(
+              'Transfer Error!',
+              style: AppFonts.h2,
+            ),
+          ),
+          content: Text(
+            e.toString().contains('NNK')
+                ? 'Wrong account number!'
+                : 'Unknown error!',
+            style: AppFonts.errorText,
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                'OK',
+                style: AppFonts.buttonText,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

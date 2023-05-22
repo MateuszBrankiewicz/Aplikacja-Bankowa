@@ -215,6 +215,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         InputForm(
                           controller: usernameController,
+                          isNumeric: false,
                           hintText: 'Email',
                           icon: Icons.person,
                           obscure: false,
@@ -224,6 +225,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         InputForm(
                           controller: passwordController,
+                          isNumeric: false,
                           hintText: 'Password',
                           icon: Icons.lock,
                           obscure: true,
