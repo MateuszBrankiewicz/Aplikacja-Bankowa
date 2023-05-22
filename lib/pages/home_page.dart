@@ -37,6 +37,7 @@ class TransactionData {
   final List<String> titleT;
   final List<String> data;
   final int transactionSize;
+  final List<String> recipient;
 
   TransactionData(
       {required this.accNumber,
@@ -46,7 +47,8 @@ class TransactionData {
       required this.weather,
       required this.titleT,
       required this.data,
-      required this.transactionSize});
+      required this.transactionSize,
+      required this.recipient});
 }
 
 class HomePage extends StatefulWidget {
@@ -189,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
         List<String> weatherList = [];
         List<String> titleTList = [];
         List<String> dataList = [];
-
+        List<String> recipient = [];
         for (int i = 0; i < transactions.length; i++) {
           String temp = transactions[i];
 
@@ -228,6 +230,9 @@ class _HomeScreenState extends State<HomeScreen> {
               case 'data':
                 dataList.add(value);
                 break;
+              case 'recipient':
+                recipient.add(value);
+                break;
               default:
                 break;
             }
@@ -243,9 +248,11 @@ class _HomeScreenState extends State<HomeScreen> {
             amountList.add('');
             weatherList.add('');
             titleTList.add('');
+            recipient.add('');
             dataList.add('0000-00-00 00:00:00');
           }
         }
+        print(recipient);
 
         TransactionData transactionData = TransactionData(
             accNumber: accNumberList,
@@ -255,7 +262,8 @@ class _HomeScreenState extends State<HomeScreen> {
             weather: weatherList,
             titleT: titleTList,
             data: dataList,
-            transactionSize: sizeTransaction);
+            transactionSize: sizeTransaction,
+            recipient: recipient);
         print("numer konta ${transactionData.accNumber}");
         setState(() {
           this.userData = userData;
@@ -498,6 +506,7 @@ class HistoryScreen extends StatelessWidget {
       final String amount = transactionData?.amount[i] ?? '';
       final String data = transactionData?.data[i] ?? '';
       final String weather = transactionData?.weather[i] ?? '';
+      final String recipient = transactionData?.recipient[i] ?? '';
       Map<String, dynamic> transactionMap = {
         'type': 'przelew', // Add the appropriate value for 'type' key
         'name': firstName,
@@ -505,7 +514,8 @@ class HistoryScreen extends StatelessWidget {
         'account': accNumber,
         'amount': amount,
         'data': data,
-        'weather': weather
+        'weather': weather,
+        'recipient': recipient
       };
       tranzakcje.add(transactionMap);
     }
@@ -544,14 +554,18 @@ class HistoryScreen extends StatelessWidget {
                 final tranzakcja = tranzakcje[index];
                 final dateString = tranzakcja['data'];
                 final formattedDateString = dateString.replaceAll(' ', 'T');
-
+                final name;
                 final currentDate = DateTime.parse(formattedDateString);
                 String formattedDate = currentDate.toString();
                 final isNegative = tranzakcja['weather'] == 'false';
 
                 final amountText =
                     '${isNegative ? '-' : ''}${tranzakcja['amount'] ?? 'N/A'}\$';
-
+                if (tranzakcja['weather'] == 'false') {
+                  name = tranzakcja['recipient'];
+                } else {
+                  name = tranzakcja['name'];
+                }
                 bool showDivider = true;
 
                 if (index > 0) {
@@ -604,7 +618,7 @@ class HistoryScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                tranzakcja['name'],
+                                name,
                                 style: GoogleFonts.leagueSpartan(
                                   fontSize: 24,
                                   color: AppColors.white,
