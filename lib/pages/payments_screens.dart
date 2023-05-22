@@ -136,37 +136,16 @@ class Transfer {
   String accNumber;
   double amount;
   String title;
-  String retrieving;
+  String recipient;
   bool whether;
 
   Transfer(
-      {this.retrieving = '',
+      {this.recipient = '',
       this.accNumber = '',
       this.amount = 0,
       this.title = '',
       this.sender = '',
       this.whether = false});
-
-  factory Transfer.fromJson(Map<String, dynamic> json) {
-    return Transfer(
-        retrieving: json['sender'] as String,
-        accNumber: json['accNumber'] as String,
-        amount: json['amount'] as double,
-        title: json['title'] as String,
-        sender: json['retrieving'] as String,
-        whether: json['whether'] as bool);
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'retrieving': sender,
-      'accNumber': accNumber,
-      'amount': amount,
-      'title': title,
-      'sender': retrieving,
-      'whether': whether
-    };
-  }
 }
 
 class TransferPayment extends StatelessWidget {
@@ -202,12 +181,12 @@ class TransferPayment extends StatelessWidget {
                   thickness: 1,
                 ),
                 InputForm(
-                  controller: TextEditingController(text: transfer.sender),
+                  controller: TextEditingController(text: transfer.recipient),
                   hintText: 'Wpisz nazwe odbiorcy',
                   icon: Icons.person,
                   obscure: false,
                   onChanged: (value) {
-                    transfer.sender = value;
+                    transfer.recipient = value;
                   },
                 ),
                 InputForm(
