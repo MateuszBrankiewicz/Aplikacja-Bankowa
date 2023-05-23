@@ -210,7 +210,7 @@ class _TransferPaymentState extends State<TransferPayment> {
   Future<void> makeTransaction() async {
     String errorText = '';
     bool isValid = true;
-    if (transfer.sender.isEmpty) {
+    if (transfer.recipient.isEmpty) {
       errorText += 'Enter recipient name!\n';
       isValid = false;
     }
