@@ -7,6 +7,8 @@ import 'package:appbank/components/my_button.dart';
 import 'package:appbank/firebase/Transaction.dart';
 import 'dart:math';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BLIKPayment extends StatefulWidget {
   const BLIKPayment({super.key});
@@ -388,10 +390,63 @@ class _TopAccountState extends State<TopAccount> {
       isValid = false;
     }
     if (isValid) {
-      //Dodanie kasy do konta, lub wyrzucenie bledu jak sie zapytanie zepsuje
-      //Jesli pomyslnie doda kase do bazy danych to wywolujesz ta funkcje
-      //_showCongratulationDialog(amount);
-      // try{
+      try {
+        User? user = FirebaseAuth.instance.currentUser;
+        String userId = user!.uid;
+        DateTime data = DateTime.now();
+        final senderData = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .get();
+
+        final senderBalance = double.parse(senderData['account balance']);
+
+        final newSenderBalance = senderBalance + amount;
+
+        WriteBatch batch = FirebaseFirestore.instance.batch();
+
+        batch.update(FirebaseFirestore.instance.collection('users').doc(userId),
+            {'account balance': newSenderBalance.toString()});
+
+        String transactionEntry =
+            "accNumber: Wplatomat, firstName: wplatomat, lastName: , amount: ${amount.toString()}, wheter: true, title: Wplata, data: $data, recipient: ${senderData['First Name']} ${senderData['Last Name']}";
+
+        batch.update(
+            FirebaseFirestore.instance.collection('users').doc(userId), {
+          'transaction': FieldValue.arrayUnion([transactionEntry])
+        });
+
+        await batch.commit();
+      } catch (e) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: AppColors.white,
+                title: Center(
+                  child: Text(
+                    'Transfer Error!',
+                    style: AppFonts.h2,
+                  ),
+                ),
+                content: Text(
+                  'Unknown error!',
+                  style: AppFonts.errorText,
+                ),
+                actions: [
+                  TextButton(
+                    child: Text(
+                      'OK',
+                      style: AppFonts.buttonText,
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            });
+      }
       _showCongratulationDialog(amount);
       // }
       // catch{
