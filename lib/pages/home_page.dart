@@ -408,7 +408,7 @@ class _HomeScreenState extends State<HomeScreen> {
       TransactionData transactionData, List<String> nameTotransaction) {
     print(transactionData.recipient);
     for (int i = 0; i < 3; i++) {
-      if (transactionData.weather[i] == "false") {
+      if (transactionData.weather[i] == "true") {
         nameToTransaction.add(
             '${transactionData.firstNameT[i]} ${transactionData.lastNameT[i]}');
       } else {
