@@ -155,7 +155,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   UserData? userData;
   TransactionData? transactionData;
-
+  List<String> nameToTransaction = [];
   @override
   void initState() {
     super.initState();
@@ -192,7 +192,8 @@ class _HomeScreenState extends State<HomeScreen> {
         List<String> titleTList = [];
         List<String> dataList = [];
         List<String> recipient = [];
-        for (int i = 0; i < transactions.length; i++) {
+
+        for (int i = transactions.length - 1; i >= 0; i--) {
           String temp = transactions[i];
 
           temp = temp.replaceAll('[', '');
@@ -228,6 +229,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 titleTList.add(value);
                 break;
               case 'data':
+                value = value.split('.')[0];
                 dataList.add(value);
                 break;
               case 'recipient':
@@ -269,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
           this.userData = userData;
           this.transactionData = transactionData;
         });
-
+        transactionScreen(transactionData, nameToTransaction);
         widget.onUserDataChanged(userData);
         widget.transactionDataChanged(transactionData);
       } else {
@@ -371,20 +373,17 @@ class _HomeScreenState extends State<HomeScreen> {
               RecentTransactionsWidget(
                 tranzakcje: [
                   Tranzakcja(
-                      name:
-                          '${transactionData?.firstNameT[0]} ${transactionData?.lastNameT[0]}',
+                      name: nameToTransaction[0],
                       description: transactionData?.titleT[0],
                       amount: transactionData?.amount[0],
                       weather: transactionData?.weather[0]),
                   Tranzakcja(
-                      name:
-                          '${transactionData?.firstNameT[1]} ${transactionData?.lastNameT[1]}',
+                      name: nameToTransaction[1],
                       description: transactionData?.titleT[1],
                       amount: transactionData?.amount[1],
                       weather: transactionData?.weather[1]),
                   Tranzakcja(
-                      name:
-                          '${transactionData?.firstNameT[2]} ${transactionData?.lastNameT[2]}',
+                      name: nameToTransaction[2],
                       description: transactionData?.titleT[2],
                       amount: transactionData?.amount[2],
                       weather: transactionData?.weather[2]),
@@ -402,6 +401,20 @@ class _HomeScreenState extends State<HomeScreen> {
       return double.parse(value ?? '0');
     } catch (e) {
       return 0;
+    }
+  }
+
+  void transactionScreen(
+      TransactionData transactionData, List<String> nameTotransaction) {
+    print(transactionData.recipient);
+    for (int i = 0; i < 3; i++) {
+      if (transactionData.weather[i] == "false") {
+        nameToTransaction.add(
+            '${transactionData.firstNameT[i]} ${transactionData.lastNameT[i]}');
+      } else {
+        nameToTransaction.add(transactionData.recipient[i]);
+      }
+      print('Do wyswietlenia tranzakcji ${nameTotransaction}');
     }
   }
 }
