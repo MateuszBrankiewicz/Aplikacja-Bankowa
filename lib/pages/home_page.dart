@@ -1,4 +1,5 @@
 import 'package:appbank/components/my_button.dart';
+import 'package:appbank/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:appbank/components/transactions.dart';
@@ -724,13 +725,27 @@ class ProfileScreen extends StatelessWidget {
                   Spacer(),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 32.0),
-                    child: CustomButton(text: 'Logout', onPressed: () => {}),
+                    child: CustomButton(
+                        text: 'Logout', onPressed: () => {signOut(context)}),
                   )
                 ],
               ),
             ),
           ),
         ]));
+  }
+
+  void signOut(BuildContext context) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    try {
+      await auth.signOut();
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => LoginPage()));
+      print('Wylogowano pomyślnie');
+    } catch (e) {
+      print('Wystąpił błąd podczas wylogowywania: $e');
+    }
   }
 }
 
