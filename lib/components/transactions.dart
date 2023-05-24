@@ -1,9 +1,11 @@
+import 'package:appbank/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:appbank/components/colors.dart';
 
 class RecentTransactionsWidget extends StatelessWidget {
   final List<Tranzakcja> tranzakcje;
+  final int _selectedIndex = 0;
 
   const RecentTransactionsWidget({Key? key, required this.tranzakcje})
       : super(key: key);
@@ -26,30 +28,14 @@ class RecentTransactionsWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Last Transactions',
-                    style: GoogleFonts.leagueSpartan(
-                      color: AppColors.white,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 20,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => {},
-                    child: Text(
-                      'More',
-                      style: GoogleFonts.leagueSpartan(
-                        color: AppColors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
-                      ),
-                    ),
-                  ),
-                ],
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Last Transactions',
+                style: GoogleFonts.leagueSpartan(
+                  color: AppColors.white,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 20,
+                ),
               ),
             ),
             const SizedBox(height: 8),

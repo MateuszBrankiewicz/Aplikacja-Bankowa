@@ -3,7 +3,6 @@ import 'package:appbank/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:appbank/components/transactions.dart';
-import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:appbank/pages/payments_screens.dart';
@@ -53,6 +52,8 @@ class TransactionData {
 }
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -82,7 +83,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> _widgetOptions = <Widget>[
+    final List<Widget> widgetOptions = <Widget>[
       HomeScreen(
         userId: '',
         onUserDataChanged: _handleUserDataChanged,
@@ -98,7 +99,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: _widgetOptions.elementAt(_selectedIndex),
+          child: widgetOptions.elementAt(_selectedIndex),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -204,18 +205,12 @@ class _HomeScreenState extends State<HomeScreen> {
           if (czesci.length >= 2) {
             String key = czesci[0].trim();
             String value = czesci.sublist(1).join(':').trim();
-            print(key);
-            print(value);
             switch (key) {
               case 'accNumber':
-                print(key);
-                print(value);
                 accNumberList.add(value);
                 break;
               case 'firstName':
                 firstNameTList.add(value);
-                print(key);
-                print(value);
                 break;
               case 'lastName':
                 lastNameTList.add(value);
@@ -255,7 +250,6 @@ class _HomeScreenState extends State<HomeScreen> {
             dataList.add('0000-00-00 00:00:00');
           }
         }
-        print(recipient);
 
         TransactionData transactionData = TransactionData(
             accNumber: accNumberList,
@@ -267,7 +261,6 @@ class _HomeScreenState extends State<HomeScreen> {
             data: dataList,
             transactionSize: sizeTransaction,
             recipient: recipient);
-        print("numer konta ${transactionData.accNumber}");
         setState(() {
           this.userData = userData;
           this.transactionData = transactionData;
@@ -334,7 +327,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   expiryDate: userData!.expires,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               //Payment Methods
@@ -407,7 +400,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void transactionScreen(
       TransactionData transactionData, List<String> nameTotransaction) {
-    print(transactionData.recipient);
     for (int i = 0; i < 3; i++) {
       if (transactionData.weather[i] == "true") {
         nameToTransaction.add(
@@ -415,7 +407,6 @@ class _HomeScreenState extends State<HomeScreen> {
       } else {
         nameToTransaction.add(transactionData.recipient[i]);
       }
-      print('Do wyswietlenia tranzakcji ${nameTotransaction}');
     }
   }
 }
@@ -535,7 +526,6 @@ class HistoryScreen extends StatelessWidget {
       };
       tranzakcje.add(transactionMap);
     }
-    print(tranzakcje);
   }
 
   @override
@@ -572,7 +562,8 @@ class HistoryScreen extends StatelessWidget {
                 final formattedDateString = dateString.replaceAll(' ', 'T');
                 final name;
                 final currentDate = DateTime.parse(formattedDateString);
-                String formattedDate = currentDate.toString();
+                String formattedDate = currentDate.toString().substring(0, 10);
+
                 final isNegative = tranzakcja['weather'] == 'false';
 
                 final amountText =
@@ -587,7 +578,9 @@ class HistoryScreen extends StatelessWidget {
                 if (index > 0) {
                   final previousDate =
                       DateTime.parse(tranzakcje[index - 1]['data']);
-                  showDivider = currentDate != previousDate;
+                  final previousDateStr =
+                      previousDate.toString().substring(0, 10);
+                  showDivider = formattedDate != previousDateStr;
                 }
 
                 return Column(
@@ -596,10 +589,10 @@ class HistoryScreen extends StatelessWidget {
                     if (showDivider)
                       Container(
                         color: AppColors.grey,
-                        padding: EdgeInsets.fromLTRB(32, 8, 32, 8),
+                        padding: const EdgeInsets.fromLTRB(32, 8, 32, 8),
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          formattedDate,
+                          formattedDate.substring(0, 10),
                           style: GoogleFonts.leagueSpartan(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -608,7 +601,7 @@ class HistoryScreen extends StatelessWidget {
                         ),
                       ),
                     Container(
-                      padding: EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(16.0),
                       decoration: const BoxDecoration(
                         border: Border(
                           top: BorderSide(
@@ -629,7 +622,7 @@ class HistoryScreen extends StatelessWidget {
                             width: 25,
                             height: 25,
                           ),
-                          SizedBox(width: 16.0),
+                          const SizedBox(width: 16.0),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -641,7 +634,7 @@ class HistoryScreen extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(height: 8.0),
+                              const SizedBox(height: 8.0),
                               Text(
                                 tranzakcja['description'],
                                 style: GoogleFonts.leagueSpartan(
@@ -650,7 +643,7 @@ class HistoryScreen extends StatelessWidget {
                                   color: AppColors.white,
                                 ),
                               ),
-                              SizedBox(height: 8.0),
+                              const SizedBox(height: 8.0),
                               Text(
                                 tranzakcja['account'],
                                 style: GoogleFonts.leagueSpartan(
@@ -661,7 +654,7 @@ class HistoryScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Spacer(),
+                          const Spacer(),
                           Text(
                             amountText,
                             style: GoogleFonts.leagueSpartan(
@@ -712,17 +705,56 @@ class ProfileScreen extends StatelessWidget {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28.0),
+              padding: const EdgeInsets.fromLTRB(28, 0, 28, 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('${userData?.firstName} ${userData?.lastName}',
-                      style: AppFonts.h2),
-                  SizedBox(height: 8),
+                  const Divider(
+                    color: AppColors.white,
+                    thickness: 1,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            color: AppColors.grey,
+                            borderRadius: BorderRadius.circular(50)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Image.asset(
+                              width: 40, height: 40, "./lib/images/user.png"),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Text(
+                            '${userData?.firstName} ${userData?.lastName}',
+                            style: AppFonts.cardNumber),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Text('Account Balance: ${userData?.balance}\$',
+                      style: AppFonts.p),
+                  const SizedBox(height: 8),
                   Text('Account Number: ${userData?.numAcc}',
                       style: AppFonts.p),
-                  SizedBox(height: 16),
-                  Spacer(),
+                  const SizedBox(height: 8),
+                  Text('Credit card expire date: ${userData?.expires}r.',
+                      style: AppFonts.p),
+                  const SizedBox(height: 34),
+                  const Divider(
+                    color: AppColors.white,
+                    thickness: 1,
+                  ),
+                  const SizedBox(height: 80),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 32.0),
                     child: CustomButton(
@@ -741,8 +773,7 @@ class ProfileScreen extends StatelessWidget {
     try {
       await auth.signOut();
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => LoginPage()));
-      print('Wylogowano pomyślnie');
+          context, MaterialPageRoute(builder: (context) => const LoginPage()));
     } catch (e) {
       print('Wystąpił błąd podczas wylogowywania: $e');
     }
