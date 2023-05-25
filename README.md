@@ -87,5 +87,5 @@ Home page contain all nedded informations (e.g., current balance, account number
 </table>
 
 <h2>Authors</h2>
-- [Mateusz Brankiewicz](https://github.com/xMatty522)<br>
-- [Konrad Piekarz](https://github.com/Squashim)
+- https://github.com/xMatty522<br>
+- https://github.com/Squashim
