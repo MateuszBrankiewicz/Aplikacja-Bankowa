@@ -26,6 +26,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "circular_countdown_timer",
+      "rootUri": "file:///C:/Users/bronc/AppData/Local/Pub/Cache/hosted/pub.dev/circular_countdown_timer-0.2.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
       "name": "clock",
       "rootUri": "file:///C:/Users/bronc/AppData/Local/Pub/Cache/hosted/pub.dev/clock-1.1.1",
       "packageUri": "lib/",
@@ -356,7 +362,7 @@
       "languageVersion": "2.19"
     }
   ],
-  "generated": "2023-04-30T08:16:23.996726Z",
+  "generated": "2023-05-25T13:47:39.529429Z",
   "generator": "pub",
   "generatorVersion": "2.19.6"
 }
