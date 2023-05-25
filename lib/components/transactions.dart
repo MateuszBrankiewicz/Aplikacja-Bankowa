@@ -1,11 +1,12 @@
-import 'package:appbank/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:appbank/components/colors.dart';
 
 class RecentTransactionsWidget extends StatelessWidget {
   final List<Tranzakcja> tranzakcje;
 
-  RecentTransactionsWidget({required this.tranzakcje});
+  const RecentTransactionsWidget({Key? key, required this.tranzakcje})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                   Text(
                     'Last Transactions',
                     style: GoogleFonts.leagueSpartan(
-                      color: white,
+                      color: AppColors.white,
                       fontWeight: FontWeight.w500,
                       fontSize: 20,
                     ),
@@ -42,7 +43,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                     child: Text(
                       'More',
                       style: GoogleFonts.leagueSpartan(
-                        color: white,
+                        color: AppColors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 22,
                       ),
@@ -51,71 +52,74 @@ class RecentTransactionsWidget extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 8),
-            Container(
+            const SizedBox(height: 8),
+            SizedBox(
               height: 186,
-              child: Expanded(
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  physics: const ClampingScrollPhysics(),
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    final tranzakcja = tranzakcje[index];
-                    final isNegative = tranzakcja.amount < 0;
-                    final amountText =
-                        '${isNegative ? '-' : ''}${tranzakcja.amount.abs()}\$';
-
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '${tranzakcja.firstName} ${tranzakcja.lastName}',
-                                  style: GoogleFonts.leagueSpartan(
-                                    color: white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 22,
-                                  ),
+              child: ListView.separated(
+                shrinkWrap: true,
+                physics: const ClampingScrollPhysics(),
+                itemCount: tranzakcje.length,
+                itemBuilder: (context, index) {
+                  final amountText;
+                  final tranzakcja = tranzakcje[index];
+                  final isNegative = tranzakcja.weather == 'false';
+                  if (tranzakcja.amount == '') {
+                    amountText = '';
+                  } else {
+                    amountText =
+                        '${isNegative ? '-' : ''}${tranzakcja.amount ?? 'N/A'}\$';
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                tranzakcja.name ?? 'N/A',
+                                style: GoogleFonts.leagueSpartan(
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 22,
                                 ),
-                                SizedBox(height: 6),
-                                Text(
-                                  tranzakcja.description,
-                                  style: GoogleFonts.leagueSpartan(
-                                    color: Colors.white70,
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Text(
-                              amountText,
-                              textAlign: TextAlign.right,
-                              style: TextStyle(
-                                color:
-                                    isNegative ? darkGrey : Color(0xff1fe9ad),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 22,
                               ),
+                              SizedBox(height: 6),
+                              Text(
+                                tranzakcja.description ?? 'N/A',
+                                style: GoogleFonts.leagueSpartan(
+                                  color: Colors.white70,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Text(
+                            amountText,
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              color: isNegative
+                                  ? AppColors.darkGrey
+                                  : Color(0xff1fe9ad),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
                             ),
                           ),
-                        ],
-                      ),
-                    );
-                  },
-                  separatorBuilder: (context, index) => Divider(
-                    height: 24,
-                    color: lightRed,
-                    thickness: 3,
-                  ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                separatorBuilder: (context, index) => const Divider(
+                  height: 24,
+                  color: AppColors.lightRed,
+                  thickness: 3,
                 ),
               ),
             ),
@@ -127,15 +131,10 @@ class RecentTransactionsWidget extends StatelessWidget {
 }
 
 class Tranzakcja {
-  final String firstName;
-  final String lastName;
-  final String description;
-  final double amount;
+  final String? name;
+  final String? description;
+  final String? amount;
+  final String? weather;
 
-  Tranzakcja({
-    required this.firstName,
-    required this.lastName,
-    required this.description,
-    required this.amount,
-  });
+  Tranzakcja({this.name, this.description, this.amount, this.weather});
 }

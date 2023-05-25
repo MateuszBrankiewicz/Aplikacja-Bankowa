@@ -1,17 +1,56 @@
-import 'package:appbank/pages/pin_page.dart';
+import 'package:appbank/components/my_button.dart';
+import 'package:appbank/pages/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:appbank/components/logo.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:appbank/components/transactions.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:appbank/pages/payments_screens.dart';
+import 'package:appbank/components/colors.dart';
+import 'package:appbank/components/fonts.dart';
 
-const white = Color(0xfffefefe);
-const lightRed = Color(0xffc24646);
-const darkRed = Color(0xff953333);
-const grey = Color(0x99fefefe);
-const darkGrey = Color(0xff395263);
+class UserData {
+  final String firstName;
+  final String lastName;
+  final String numAcc;
+  final String expires;
+  final String balance;
+  // List<String> transaction;
+
+  UserData({
+    required this.firstName,
+    required this.lastName,
+    required this.numAcc,
+    required this.expires,
+    required this.balance,
+    // required transaction,
+    // required this.transaction,
+  });
+}
+
+class TransactionData {
+  final List<String> accNumber;
+  final List<String> firstNameT;
+  final List<String> lastNameT;
+  final List<String> amount;
+  final List<String> weather;
+  final List<String> titleT;
+  final List<String> data;
+  final int transactionSize;
+  final List<String> recipient;
+
+  TransactionData(
+      {required this.accNumber,
+      required this.firstNameT,
+      required this.lastNameT,
+      required this.amount,
+      required this.weather,
+      required this.titleT,
+      required this.data,
+      required this.transactionSize,
+      required this.recipient});
+}
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,23 +59,42 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-  User? user;
+  UserData? userData;
   String userId = '';
-  static final List<Widget> _widgetOptions = <Widget>[
-    HomeScreen(userId: ''),
-    PaymentsScreen(),
-    HistoryScreen(),
-    ProfileScreen(),
-  ];
-
+  TransactionData? transactionData;
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
+  void _handleUserDataChanged(UserData? newData) {
+    setState(() {
+      userData = newData;
+    });
+  }
+
+  void _handleTransactionDataChanged(TransactionData? newTransaction) {
+    setState(() {
+      transactionData = newTransaction;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final List<Widget> _widgetOptions = <Widget>[
+      HomeScreen(
+        userId: '',
+        onUserDataChanged: _handleUserDataChanged,
+        transactionDataChanged: _handleTransactionDataChanged,
+      ),
+      PaymentsScreen(userData: userData),
+      HistoryScreen(transactionData: transactionData),
+      ProfileScreen(
+        userData: userData,
+      ),
+    ];
+
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -45,7 +103,7 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        backgroundColor: white,
+        backgroundColor: AppColors.white,
         selectedFontSize: 18,
         iconSize: 28,
         unselectedFontSize: 18,
@@ -53,7 +111,7 @@ class _HomePageState extends State<HomePage> {
             GoogleFonts.leagueSpartan(fontWeight: FontWeight.bold),
         unselectedLabelStyle:
             GoogleFonts.leagueSpartan(fontWeight: FontWeight.w500),
-        unselectedItemColor: darkGrey,
+        unselectedItemColor: AppColors.darkGrey,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -73,44 +131,32 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: darkRed,
+        selectedItemColor: AppColors.darkRed,
         onTap: _onItemTapped,
       ),
     );
   }
 }
 
-// class HomeScreen extends StatelessWidget {
-//   Future<void> getUserData(String userId) async {
-//     final userData =
-//         await FirebaseFirestore.instance.collection('users').doc(userId).get();
-
-//     if (userData.exists) {
-//       final firstName = userData.data()!['First Name'];
-//       final lastName = userData.data()!['Last Name'];
-//       final numAcc = userData.data()!['Bank account number'];
-
-//       print('Name: $firstName');
-//       print('Age: $lastName');
-//       print('Email: $numAcc');
-//     } else {
-//       print('User with ID $userId does not exist.');
-//     }
-//   }
 class HomeScreen extends StatefulWidget {
   final String userId;
-
-  const HomeScreen({Key? key, required this.userId}) : super(key: key);
+  final void Function(UserData?) onUserDataChanged;
+  final void Function(TransactionData?) transactionDataChanged;
+  const HomeScreen(
+      {Key? key,
+      required this.userId,
+      required this.onUserDataChanged,
+      required this.transactionDataChanged})
+      : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String firstName = '';
-  String lastName = '';
-  String numAcc = '';
-  String expires = '';
+  UserData? userData;
+  TransactionData? transactionData;
+  List<String> nameToTransaction = [];
   @override
   void initState() {
     super.initState();
@@ -119,23 +165,119 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> getUserData(String userId) async {
     User? user = FirebaseAuth.instance.currentUser;
-    String userId = user!.uid;
 
-    final userData = await FirebaseFirestore.instance
-        .collection('users')
-        .where('userId', isEqualTo: userId)
-        .get();
+    if (user != null) {
+      String userId = user.uid;
+      final userDataSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
 
-    if (userData.docs.isNotEmpty) {
-      final userDoc = userData.docs.first;
-      setState(() {
-        firstName = userDoc['First Name'];
-        lastName = userDoc['Last Name'];
-        numAcc = userDoc['Bank account number'];
-        expires = userDoc['expires'];
-      });
-    } else {
-      print('User with ID $userId does not exist.');
+      if (userDataSnapshot.exists) {
+        final userDoc = userDataSnapshot.data() as Map<String, dynamic>;
+        UserData userData = UserData(
+          firstName: userDoc['First Name'],
+          lastName: userDoc['Last Name'],
+          numAcc: userDoc['Bank account number'],
+          expires: userDoc['expires'],
+          balance: userDoc['account balance'],
+        );
+        List<dynamic> temp = userDoc['transaction'];
+        List<String> transactions = temp.toString().split(',');
+        int sizeTransaction = temp.length;
+        List<String> accNumberList = [];
+        List<String> firstNameTList = [];
+        List<String> lastNameTList = [];
+        List<String> amountList = [];
+        List<String> weatherList = [];
+        List<String> titleTList = [];
+        List<String> dataList = [];
+        List<String> recipient = [];
+
+        for (int i = transactions.length - 1; i >= 0; i--) {
+          String temp = transactions[i];
+
+          temp = temp.replaceAll('[', '');
+          temp = temp.replaceAll(']', '');
+          List<String> czesci = temp.split(':');
+
+          if (czesci.length >= 2) {
+            String key = czesci[0].trim();
+            String value = czesci.sublist(1).join(':').trim();
+            print(key);
+            print(value);
+            switch (key) {
+              case 'accNumber':
+                print(key);
+                print(value);
+                accNumberList.add(value);
+                break;
+              case 'firstName':
+                firstNameTList.add(value);
+                print(key);
+                print(value);
+                break;
+              case 'lastName':
+                lastNameTList.add(value);
+                break;
+              case 'amount':
+                amountList.add(value);
+                break;
+              case 'wheter':
+                weatherList.add(value);
+                break;
+              case 'title':
+                titleTList.add(value);
+                break;
+              case 'data':
+                value = value.split('.')[0];
+                dataList.add(value);
+                break;
+              case 'recipient':
+                recipient.add(value);
+                break;
+              default:
+                break;
+            }
+          }
+        }
+
+        if (accNumberList.length < 3) {
+          int remainingLength = 3 - accNumberList.length;
+          for (int i = 0; i < remainingLength; i++) {
+            accNumberList.add('');
+            firstNameTList.add('');
+            lastNameTList.add('');
+            amountList.add('');
+            weatherList.add('');
+            titleTList.add('');
+            recipient.add('');
+            dataList.add('0000-00-00 00:00:00');
+          }
+        }
+        print(recipient);
+
+        TransactionData transactionData = TransactionData(
+            accNumber: accNumberList,
+            firstNameT: firstNameTList,
+            lastNameT: lastNameTList,
+            amount: amountList,
+            weather: weatherList,
+            titleT: titleTList,
+            data: dataList,
+            transactionSize: sizeTransaction,
+            recipient: recipient);
+        print("numer konta ${transactionData.accNumber}");
+        setState(() {
+          this.userData = userData;
+          this.transactionData = transactionData;
+        });
+        transactionScreen(transactionData, nameToTransaction);
+        widget.onUserDataChanged(userData);
+        widget.transactionDataChanged(transactionData);
+      } else {
+        print('User with ID $userId does not exist.');
+      }
     }
   }
 
@@ -143,15 +285,20 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     double baseWidth = 375;
     double fem = MediaQuery.of(context).size.width / baseWidth;
-    double ffem = fem * 0.97;
+
+    if (userData == null) {
+      return const CircularProgressIndicator();
+    }
+
     return Container(
       decoration: const BoxDecoration(
-          gradient: LinearGradient(
-        begin: Alignment(0, 0.546),
-        end: Alignment(0, 1),
-        colors: <Color>[lightRed, darkRed],
-        stops: <double>[0, 1],
-      )),
+        gradient: LinearGradient(
+          begin: Alignment(0, 0.546),
+          end: Alignment(0, 1),
+          colors: <Color>[AppColors.lightRed, AppColors.darkRed],
+          stops: <double>[0, 1],
+        ),
+      ),
       child: Stack(
         children: [
           Positioned(
@@ -172,130 +319,224 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const SizedBox(
-                height: 80,
+                height: 60,
               ),
-
-              //Credit Ca rd
+              //Credit Card
               Padding(
-                  padding: EdgeInsets.fromLTRB(36, 0, 36, 0),
-                  child: CreditCardWidget(
-                    cardHolder: firstName + " " + lastName,
-                    cardNumber: numAcc,
-                    expiryDate: expires,
-                  )),
-
+                padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
+                child: CreditCardWidget(
+                  currentBalance: userData!.balance,
+                  cardHolder: '${userData!.firstName} ${userData!.lastName}',
+                  cardNumber: userData!.numAcc,
+                  expiryDate: userData!.expires,
+                ),
+              ),
+              SizedBox(
+                height: 15,
+              ),
               //Payment Methods
               Padding(
-                padding: EdgeInsets.all(16 * fem),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 32 * fem,
+                  vertical: 14 * fem,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
+                  children: [
                     PaymentShortcut(
-                        image: './lib/images/blik.png', label: 'BLIK'),
+                      size: 66,
+                      image: './lib/images/blik.png',
+                      label: 'BLIK',
+                      destPage: const BLIKPayment(),
+                    ),
                     PaymentShortcut(
-                        image: './lib/images/przelew.png', label: 'Transfer'),
+                      size: 66,
+                      image: './lib/images/przelew.png',
+                      label: 'Transfer',
+                      destPage: TransferPayment(
+                        balance: userData!.balance,
+                      ),
+                    ),
                     PaymentShortcut(
-                        image: './lib/images/contactless.png',
-                        label: 'Contactless'),
-                    PaymentShortcut(
-                        image: './lib/images/more.png', label: 'More'),
+                      size: 66,
+                      image: './lib/images/topup.png',
+                      label: 'Top up',
+                      destPage: const TopAccount(),
+                    ),
                   ],
                 ),
               ),
               //TO DO !!!!
+
               RecentTransactionsWidget(
                 tranzakcje: [
                   Tranzakcja(
-                    firstName: 'John',
-                    lastName: 'Smith',
-                    description: 'Grocery shopping',
-                    amount: 30.00,
-                  ),
+                      name: nameToTransaction[0],
+                      description: transactionData?.titleT[0],
+                      amount: transactionData?.amount[0],
+                      weather: transactionData?.weather[0]),
                   Tranzakcja(
-                    firstName: 'Amanda',
-                    lastName: 'Black',
-                    description: 'Gas refill',
-                    amount: -15.40,
-                  ),
+                      name: nameToTransaction[1],
+                      description: transactionData?.titleT[1],
+                      amount: transactionData?.amount[1],
+                      weather: transactionData?.weather[1]),
                   Tranzakcja(
-                    firstName: 'Shop',
-                    lastName: '',
-                    description: 'Groccery',
-                    amount: -2.90,
-                  ),
+                      name: nameToTransaction[2],
+                      description: transactionData?.titleT[2],
+                      amount: transactionData?.amount[2],
+                      weather: transactionData?.weather[2]),
                 ],
-              )
+              ),
             ],
           ),
         ],
       ),
     );
   }
+
+  double parseAmount(String? value) {
+    try {
+      return double.parse(value ?? '0');
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  void transactionScreen(
+      TransactionData transactionData, List<String> nameTotransaction) {
+    print(transactionData.recipient);
+    for (int i = 0; i < 3; i++) {
+      if (transactionData.weather[i] == "true") {
+        nameToTransaction.add(
+            '${transactionData.firstNameT[i]} ${transactionData.lastNameT[i]}');
+      } else {
+        nameToTransaction.add(transactionData.recipient[i]);
+      }
+      print('Do wyswietlenia tranzakcji ${nameTotransaction}');
+    }
+  }
 }
 
+//IN PROGRESS
 class PaymentsScreen extends StatelessWidget {
+  final UserData? userData;
+
+  const PaymentsScreen({Key? key, this.userData}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Payments Screen'),
+    if (userData == null) {
+      return const CircularProgressIndicator();
+    }
+
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment(0, 0.546),
+          end: Alignment(0, 1),
+          colors: <Color>[AppColors.lightRed, AppColors.darkRed],
+          stops: <double>[0, 1],
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(32),
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'Payments',
+              style: GoogleFonts.leagueSpartan(
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+                color: AppColors.white,
+              ),
+            ),
+          ),
+          Container(
+            color: AppColors.grey.withAlpha(50),
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  PaymentShortcut(
+                    size: 70,
+                    image: './lib/images/blik.png',
+                    label: 'BLIK',
+                    destPage: BLIKPayment(),
+                  ),
+                  PaymentShortcut(
+                    size: 70,
+                    image: './lib/images/przelew.png',
+                    label: 'Transfer',
+                    destPage: TransferPayment(balance: userData!.balance),
+                  ),
+                  PaymentShortcut(
+                    size: 70,
+                    image: './lib/images/topup.png',
+                    label: 'Top up',
+                    destPage: TopAccount(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 60,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
+            child: CreditCardWidget(
+              currentBalance: '${userData?.balance}',
+              cardHolder: '${userData?.firstName} ${userData?.lastName}',
+              cardNumber: '${userData?.numAcc}',
+              expiryDate: '${userData?.expires}',
+            ),
+          )
+        ],
+      ),
     );
   }
 }
 
 //History page
 class HistoryScreen extends StatelessWidget {
-  final List<Map<String, dynamic>> tranzakcje = [
-    {
-      'date': DateTime(2023, 4, 1),
-      'type': 'blik',
-      'description': 'Grocery shopping',
-      'name': 'John Smith',
-      'account': '123456789',
-      'amount': 30.0,
-    },
-    {
-      'date': DateTime(2023, 4, 1),
-      'type': 'przelew',
-      'description': 'Gas refill',
-      'name': 'Amanda Black',
-      'account': '987654321',
-      'amount': -15.40,
-    },
-    {
-      'date': DateTime(2023, 4, 2),
-      'type': 'blik',
-      'description': 'Groccery',
-      'name': 'Shop',
-      'account': '456789123',
-      'amount': -2.90,
-    },
-    {
-      'date': DateTime(2023, 4, 2),
-      'type': 'przelew',
-      'description': 'Salary',
-      'name': 'Walter White',
-      'account': '321654987',
-      'amount': 1280.00,
-    },
-    {
-      'date': DateTime(2023, 4, 3),
-      'type': 'blik',
-      'description': 'TV bought',
-      'name': 'TV shop',
-      'account': '789123456',
-      'amount': 750.0,
-    },
-    {
-      'date': DateTime(2023, 4, 4),
-      'type': 'przelew',
-      'description': 'Food tip',
-      'name': 'Restaurant',
-      'account': '654987321',
-      'amount': 12.50,
-    },
-  ];
+  TransactionData? transactionData;
+  List<dynamic> tranzakcje = [];
+
+  HistoryScreen({Key? key, this.transactionData}) : super(key: key) {
+    createMap();
+  }
+
+  void createMap() {
+    final int dataLength = transactionData?.firstNameT.length ?? 0;
+    for (int i = 0; i < dataLength; i++) {
+      final String firstName = transactionData?.firstNameT[i] ?? '';
+      final String title = transactionData?.titleT[i] ?? '';
+      final String accNumber = transactionData?.accNumber[i] ?? '';
+      final String amount = transactionData?.amount[i] ?? '';
+      final String data = transactionData?.data[i] ?? '';
+      final String weather = transactionData?.weather[i] ?? '';
+      final String recipient = transactionData?.recipient[i] ?? '';
+      Map<String, dynamic> transactionMap = {
+        'type': 'przelew', // Add the appropriate value for 'type' key
+        'name': firstName,
+        'description': title,
+        'account': accNumber,
+        'amount': amount,
+        'data': data,
+        'weather': weather,
+        'recipient': recipient
+      };
+      tranzakcje.add(transactionMap);
+    }
+    print(tranzakcje);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -304,7 +545,7 @@ class HistoryScreen extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment(0, 0.546),
           end: Alignment(0, 1),
-          colors: <Color>[lightRed, darkRed],
+          colors: <Color>[AppColors.lightRed, AppColors.darkRed],
           stops: <double>[0, 1],
         ),
       ),
@@ -318,34 +559,43 @@ class HistoryScreen extends StatelessWidget {
               style: GoogleFonts.leagueSpartan(
                 fontSize: 40,
                 fontWeight: FontWeight.bold,
-                color: white,
+                color: AppColors.white,
               ),
             ),
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: tranzakcje.length,
+              itemCount: transactionData?.transactionSize,
               itemBuilder: (context, index) {
                 final tranzakcja = tranzakcje[index];
-                final currentDate = tranzakcja['date'] as DateTime;
-                final formatter = DateFormat('yyyy-MM-dd');
-                final formattedDate = formatter.format(currentDate);
-                final isNegative = tranzakcja['amount'] < 0;
+                final dateString = tranzakcja['data'];
+                final formattedDateString = dateString.replaceAll(' ', 'T');
+                final name;
+                final currentDate = DateTime.parse(formattedDateString);
+                String formattedDate = currentDate.toString();
+                final isNegative = tranzakcja['weather'] == 'false';
+
                 final amountText =
-                    '${isNegative ? '-' : ''}${tranzakcja['amount'].abs()}\$';
+                    '${isNegative ? '-' : ''}${tranzakcja['amount'] ?? 'N/A'}\$';
+                if (tranzakcja['weather'] == 'false') {
+                  name = tranzakcja['recipient'];
+                } else {
+                  name = tranzakcja['name'];
+                }
                 bool showDivider = true;
 
                 if (index > 0) {
                   final previousDate =
-                      tranzakcje[index - 1]['date'] as DateTime;
+                      DateTime.parse(tranzakcje[index - 1]['data']);
                   showDivider = currentDate != previousDate;
                 }
 
                 return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     if (showDivider)
                       Container(
-                        color: grey,
+                        color: AppColors.grey,
                         padding: EdgeInsets.fromLTRB(32, 8, 32, 8),
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -353,7 +603,7 @@ class HistoryScreen extends StatelessWidget {
                           style: GoogleFonts.leagueSpartan(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
-                            color: darkGrey,
+                            color: AppColors.darkGrey,
                           ),
                         ),
                       ),
@@ -361,19 +611,21 @@ class HistoryScreen extends StatelessWidget {
                       padding: EdgeInsets.all(16.0),
                       decoration: const BoxDecoration(
                         border: Border(
-                            top: BorderSide(
-                              color: grey,
-                              width: 1,
-                            ),
-                            bottom: BorderSide(
-                              color: grey,
-                              width: 1,
-                            )),
+                          top: BorderSide(
+                            color: AppColors.grey,
+                            width: 1,
+                          ),
+                          bottom: BorderSide(
+                            color: AppColors.grey,
+                            width: 1,
+                          ),
+                        ),
                       ),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Image.asset(
-                            './lib/images/${tranzakcja['type']}.png',
+                            'lib/images/${tranzakcja['type']}.png',
                             width: 25,
                             height: 25,
                           ),
@@ -382,10 +634,10 @@ class HistoryScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                tranzakcja['name'],
+                                name,
                                 style: GoogleFonts.leagueSpartan(
                                   fontSize: 24,
-                                  color: white,
+                                  color: AppColors.white,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -393,17 +645,19 @@ class HistoryScreen extends StatelessWidget {
                               Text(
                                 tranzakcja['description'],
                                 style: GoogleFonts.leagueSpartan(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
-                                    color: white),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.white,
+                                ),
                               ),
                               SizedBox(height: 8.0),
                               Text(
                                 tranzakcja['account'],
                                 style: GoogleFonts.leagueSpartan(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                    color: grey),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.grey,
+                                ),
                               ),
                             ],
                           ),
@@ -411,7 +665,9 @@ class HistoryScreen extends StatelessWidget {
                           Text(
                             amountText,
                             style: GoogleFonts.leagueSpartan(
-                              color: isNegative ? white : Color(0xff1fe9ad),
+                              color: isNegative
+                                  ? AppColors.white
+                                  : AppColors.green,
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
@@ -431,11 +687,65 @@ class HistoryScreen extends StatelessWidget {
 }
 
 class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({Key? key, this.userData}) : super(key: key);
+  final UserData? userData;
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Profile Screen'),
-    );
+    if (userData == null) {
+      return const CircularProgressIndicator();
+    }
+    return Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment(0, 0.546),
+            end: Alignment(0, 1),
+            colors: <Color>[AppColors.lightRed, AppColors.darkRed],
+            stops: <double>[0, 1],
+          ),
+        ),
+        child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+          Container(
+            padding: const EdgeInsets.fromLTRB(28, 28, 28, 22),
+            alignment: Alignment.centerLeft,
+            child: Text('Profile', style: AppFonts.h1),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 28.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('${userData?.firstName} ${userData?.lastName}',
+                      style: AppFonts.h2),
+                  SizedBox(height: 8),
+                  Text('Account Number: ${userData?.numAcc}',
+                      style: AppFonts.p),
+                  SizedBox(height: 16),
+                  Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 32.0),
+                    child: CustomButton(
+                        text: 'Logout', onPressed: () => {signOut(context)}),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ]));
+  }
+
+  void signOut(BuildContext context) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    try {
+      await auth.signOut();
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => LoginPage()));
+      print('Wylogowano pomyślnie');
+    } catch (e) {
+      print('Wystąpił błąd podczas wylogowywania: $e');
+    }
   }
 }
 
@@ -444,86 +754,105 @@ class CreditCardWidget extends StatelessWidget {
   final String cardHolder;
   final String cardNumber;
   final String expiryDate;
+  final String currentBalance;
 
   const CreditCardWidget({
     Key? key,
     required this.cardHolder,
     required this.cardNumber,
     required this.expiryDate,
+    required this.currentBalance,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    String formattedcardNumber = cardNumber.replaceAllMapped(
+        RegExp(r'^(\d{4})(\d{4})(\d{4})(\d{4})(\d+)$'),
+        (Match match) =>
+            '${match[1]} ${match[2]} ${match[3]} ${match[4]} ${match[5]}');
+
     return Container(
-      padding: EdgeInsets.all(16),
-      width: double.infinity,
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment(1.038, -1),
-          end: Alignment(-0.805, 0.943),
-          colors: <Color>[Color(0x99020202), Color(0xce000000)],
-          stops: <double>[0, 0.87],
-        ),
-        borderRadius: BorderRadius.circular(20),
-      ),
+          color: AppColors.black,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              offset: Offset(0, 5),
+              spreadRadius: 8,
+              blurRadius: 0,
+              color: AppColors.darkGrey,
+            )
+          ]),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.credit_card, color: Colors.white),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.credit_card,
+                    color: AppColors.white,
+                    size: 20,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    'BALANCE: $currentBalance\$',
+                    style: AppFonts.cardH1,
+                  ),
+                ],
+              ),
               Text(
                 'VISA',
-                style: TextStyle(color: Colors.white),
+                style: AppFonts.cardH1,
               ),
             ],
           ),
-          SizedBox(height: 16),
-          Text(
-            cardNumber,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              letterSpacing: 2,
-            ),
+          const SizedBox(
+            height: 20,
           ),
-          SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                formattedcardNumber,
+                style: AppFonts.cardNumber,
+              )
+            ],
+          ),
+          SizedBox(
+            height: 20,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Card Holder',
-                    style: TextStyle(color: Colors.white),
+                  Text('CARDHOLDER', style: AppFonts.cardH2),
+                  SizedBox(
+                    height: 4,
                   ),
-                  SizedBox(height: 4),
-                  Text(
-                    cardHolder.toUpperCase(),
-                    style: TextStyle(
-                      color: white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text(cardHolder.toUpperCase(), style: AppFonts.cardH1),
                 ],
               ),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    'Expires',
-                    style: TextStyle(color: white),
+                    'EXPIRES',
+                    style: AppFonts.cardH2,
                   ),
-                  SizedBox(height: 4),
-                  Text(
-                    expiryDate,
-                    style: TextStyle(
-                      color: white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  SizedBox(
+                    height: 4,
                   ),
+                  Text(expiryDate, style: AppFonts.cardH1),
                 ],
               ),
             ],
@@ -537,13 +866,15 @@ class CreditCardWidget extends StatelessWidget {
 class PaymentShortcut extends StatelessWidget {
   final String image;
   final String label;
-  final VoidCallback? onTap;
+  final double size;
+  final Widget destPage;
 
-  const PaymentShortcut({
+  PaymentShortcut({
     Key? key,
     required this.image,
+    required this.size,
     required this.label,
-    this.onTap,
+    required this.destPage,
   }) : super(key: key);
 
   @override
@@ -552,21 +883,26 @@ class PaymentShortcut extends StatelessWidget {
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
     return GestureDetector(
-      onTap: onTap,
+      onTap: () => {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => destPage),
+        )
+      },
       child: Column(
         children: [
           Container(
-              width: 60,
-              height: 60,
+              width: size,
+              height: size,
               decoration: BoxDecoration(
-                color: darkGrey,
+                color: AppColors.darkGrey,
                 borderRadius: BorderRadius.circular(40),
               ),
               child: Center(
                 child: Image(
                   image: AssetImage(image),
-                  width: 22,
-                  height: 22,
+                  width: size / 2.5,
+                  height: size / 2.5,
                 ),
               )),
           SizedBox(height: 8),
@@ -576,7 +912,7 @@ class PaymentShortcut extends StatelessWidget {
               fontSize: 18 * ffem,
               fontWeight: FontWeight.w500,
               height: 0.92 * ffem / fem,
-              color: white,
+              color: AppColors.white,
             ),
           ),
         ],
