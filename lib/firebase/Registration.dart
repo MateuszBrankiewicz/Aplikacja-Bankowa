@@ -1,3 +1,4 @@
+// ignore: file_names
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
@@ -63,10 +64,6 @@ Future<String> numAccGenerator(String userId) async {
         .get();
     numberExists = snapshot.exists;
   }
-
-  // await collectionRef.doc(userId).collection('users').doc(newNumber).set({
-  //   'createdAt': FieldValue.serverTimestamp(),
-  // });
 
   return newNumber;
 }

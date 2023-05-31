@@ -26,33 +26,17 @@ class RecentTransactionsWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Last Transactions',
-                    style: GoogleFonts.leagueSpartan(
-                      color: AppColors.white,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 20,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => {},
-                    child: Text(
-                      'More',
-                      style: GoogleFonts.leagueSpartan(
-                        color: AppColors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
-                      ),
-                    ),
-                  ),
-                ],
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Last Transactions',
+                style: GoogleFonts.leagueSpartan(
+                  color: AppColors.white,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 20,
+                ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 2),
             SizedBox(
               height: 186,
               child: ListView.separated(
@@ -87,7 +71,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                                   fontSize: 22,
                                 ),
                               ),
-                              SizedBox(height: 6),
+                              const SizedBox(height: 6),
                               Text(
                                 tranzakcja.description ?? 'N/A',
                                 style: GoogleFonts.leagueSpartan(
@@ -106,7 +90,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                             style: TextStyle(
                               color: isNegative
                                   ? AppColors.darkGrey
-                                  : Color(0xff1fe9ad),
+                                  : AppColors.green,
                               fontWeight: FontWeight.bold,
                               fontSize: 22,
                             ),

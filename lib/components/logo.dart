@@ -112,7 +112,7 @@ class LogoHomePage extends StatelessWidget {
         Positioned(
           left: 77 * fem,
           top: 13 * fem,
-          child: Container(
+          child: SizedBox(
             width: 208.14 * fem,
             height: 46 * fem,
             child: Row(

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:appbank/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:appbank/components/colors.dart';
@@ -14,6 +15,7 @@ class BLIKPayment extends StatefulWidget {
   const BLIKPayment({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _BLIKPaymentState createState() => _BLIKPaymentState();
 }
 
@@ -22,11 +24,35 @@ class _BLIKPaymentState extends State<BLIKPayment> {
   final CountDownController _controller = CountDownController();
   String blikCode = '';
   String remainingTime = '120';
+  int _start = 120;
+  late Timer _timer;
+
+  void startTimer() {
+    const oneSec = Duration(seconds: 1);
+    _timer = Timer.periodic(
+      oneSec,
+      (Timer timer) {
+        if (_start == 0) {
+          timer.cancel();
+        } else {
+          setState(() {
+            _start--;
+          });
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
-    generateRandomCode();
+    blikCode = generateRandomCode();
     _controller.start();
   }
 
@@ -62,8 +88,8 @@ class _BLIKPaymentState extends State<BLIKPayment> {
           alignment: Alignment.center,
           children: [
             FractionallySizedBox(
-              widthFactor: 1.25, // Adjust the width factor as desired
-              heightFactor: 1.25, // Adjust the height factor as desired
+              widthFactor: 1.25,
+              heightFactor: 1.25,
               child: Container(
                 decoration: const BoxDecoration(
                   color: AppColors.grey,
@@ -89,44 +115,37 @@ class _BLIKPaymentState extends State<BLIKPayment> {
               isTimerTextShown: true,
               autoStart: true,
               onStart: () {
-                setState(() {
-                  blikCode = generateRandomCode();
-                });
-              },
-              onChange: (duration) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  setState(() {
-                    remainingTime = duration;
-                  });
+                  blikCode = generateRandomCode();
+                  _start = 120;
+                  startTimer();
                 });
               },
               onComplete: () {
                 _controller.restart();
+                _timer.cancel();
               },
             ),
             Positioned(
-              bottom: 325,
+              bottom: 370,
               child: Text(
                 "BLIK CODE",
                 style: AppFonts.pDark,
               ),
             ),
             Positioned(
-              bottom: 280,
+              bottom: 320,
               child: Text(
                 "${blikCode.substring(0, 3)} ${blikCode.substring(3, 6)}",
                 style: AppFonts.h1Dark,
               ),
             ),
             Positioned(
-              bottom: 250,
-              child: Text(
-                remainingTime == '120' || remainingTime == '02:00'
-                    ? 'Time left: 2min 00s'
-                    : 'Time left: ${remainingTime.substring(1, 2)}min ${remainingTime.substring(3, 5)}s',
-                style: AppFonts.h2,
-              ),
-            ),
+                bottom: 290,
+                child: Text(
+                  '$_start seconds left...',
+                  style: AppFonts.h2,
+                )),
           ],
         )),
       ),
@@ -156,7 +175,9 @@ class TransferPayment extends StatefulWidget {
   const TransferPayment({super.key, required this.balance});
 
   @override
+  // ignore: library_private_types_in_public_api
   _TransferPaymentState createState() =>
+      // ignore: no_logic_in_create_state
       _TransferPaymentState(balance: balance);
 }
 
@@ -164,50 +185,6 @@ class _TransferPaymentState extends State<TransferPayment> {
   final Transfer transfer = Transfer();
   final String balance;
   _TransferPaymentState({required this.balance});
-
-  void _showCongratulationDialog(double amount, String name) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: AppColors.white,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Transaction finished ',
-                style: AppFonts.h2,
-              ),
-              const Icon(
-                Icons.check_circle,
-                color: AppColors.green,
-              )
-            ],
-          ),
-          content: Text(
-            'You have successfully transfered $amount\$ to $name!',
-            style: AppFonts.errorText,
-          ),
-          actions: [
-            Center(
-              child: TextButton(
-                child: Text(
-                  'Continue',
-                  style: AppFonts.buttonText,
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
-                  );
-                },
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   Future<void> makeTransaction() async {
     String errorText = '';
@@ -239,7 +216,6 @@ class _TransferPaymentState extends State<TransferPayment> {
     }
     if (isValid) {
       wykonajPrzelew(transfer, context);
-      _showCongratulationDialog(transfer.amount, transfer.sender);
     } else {
       showDialog(
         context: context,
@@ -364,6 +340,7 @@ class TopAccount extends StatefulWidget {
   const TopAccount({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _TopAccountState createState() => _TopAccountState();
 }
 
@@ -409,7 +386,7 @@ class _TopAccountState extends State<TopAccount> {
             {'account balance': newSenderBalance.toString()});
 
         String transactionEntry =
-            "accNumber: Wplatomat, firstName: wplatomat, lastName: , amount: ${amount.toString()}, wheter: true, title: Wplata, data: $data, recipient: ${senderData['First Name']} ${senderData['Last Name']}";
+            "accNumber: Wplatomat, firstName: Wplatomat, lastName: , amount: ${amount.toString()}, wheter: true, title: Wplata na konto, data: $data, recipient: ${senderData['First Name']} ${senderData['Last Name']}";
 
         batch.update(
             FirebaseFirestore.instance.collection('users').doc(userId), {
@@ -517,7 +494,7 @@ class _TopAccountState extends State<TopAccount> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
+                    MaterialPageRoute(builder: (context) => const HomePage()),
                   );
                 },
               ),
@@ -575,9 +552,6 @@ class _TopAccountState extends State<TopAccount> {
                 hintText: 'Enter amount (max: 2000\$)',
                 icon: Icons.attach_money,
                 obscure: false,
-                // onChanged: (value) {
-                //   transfer.sender = value;
-                // },
               ),
             ),
             CustomButton(text: 'Add money', onPressed: _addMoneyToAccount),
