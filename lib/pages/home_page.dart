@@ -15,7 +15,6 @@ class UserData {
   final String numAcc;
   final String expires;
   final String balance;
-  // List<String> transaction;
 
   UserData({
     required this.firstName,
@@ -23,8 +22,6 @@ class UserData {
     required this.numAcc,
     required this.expires,
     required this.balance,
-    // required transaction,
-    // required this.transaction,
   });
 }
 
@@ -55,6 +52,7 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomePageState createState() => _HomePageState();
 }
 
@@ -151,6 +149,7 @@ class HomeScreen extends StatefulWidget {
       : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomeScreenState createState() => _HomeScreenState();
 }
 
@@ -459,7 +458,7 @@ class PaymentsScreen extends StatelessWidget {
                     size: 70,
                     image: './lib/images/blik.png',
                     label: 'BLIK',
-                    destPage: BLIKPayment(),
+                    destPage: const BLIKPayment(),
                   ),
                   PaymentShortcut(
                     size: 70,
@@ -471,7 +470,7 @@ class PaymentsScreen extends StatelessWidget {
                     size: 70,
                     image: './lib/images/topup.png',
                     label: 'Top up',
-                    destPage: TopAccount(),
+                    destPage: const TopAccount(),
                   ),
                 ],
               ),
@@ -496,6 +495,7 @@ class PaymentsScreen extends StatelessWidget {
 }
 
 //History page
+// ignore: must_be_immutable
 class HistoryScreen extends StatelessWidget {
   TransactionData? transactionData;
   List<dynamic> tranzakcje = [];
@@ -772,6 +772,7 @@ class ProfileScreen extends StatelessWidget {
 
     try {
       await auth.signOut();
+      // ignore: use_build_context_synchronously
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => const LoginPage()));
     } catch (e) {
@@ -797,17 +798,19 @@ class CreditCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double baseWidth = 375;
+    double fem = MediaQuery.of(context).size.width / baseWidth;
     String formattedcardNumber = cardNumber.replaceAllMapped(
         RegExp(r'^(\d{4})(\d{4})(\d{4})(\d{4})(\d+)$'),
         (Match match) =>
             '${match[1]} ${match[2]} ${match[3]} ${match[4]} ${match[5]}');
 
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
           color: AppColors.black,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               offset: Offset(0, 5),
               spreadRadius: 8,
@@ -845,8 +848,8 @@ class CreditCardWidget extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(
-            height: 20,
+          SizedBox(
+            height: 20 * fem,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -858,7 +861,7 @@ class CreditCardWidget extends StatelessWidget {
             ],
           ),
           SizedBox(
-            height: 20,
+            height: 20 * fem,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -868,7 +871,7 @@ class CreditCardWidget extends StatelessWidget {
                 children: [
                   Text('CARDHOLDER', style: AppFonts.cardH2),
                   SizedBox(
-                    height: 4,
+                    height: 4 * fem,
                   ),
                   Text(cardHolder.toUpperCase(), style: AppFonts.cardH1),
                 ],
@@ -881,7 +884,7 @@ class CreditCardWidget extends StatelessWidget {
                     style: AppFonts.cardH2,
                   ),
                   SizedBox(
-                    height: 4,
+                    height: 4 * fem,
                   ),
                   Text(expiryDate, style: AppFonts.cardH1),
                 ],
@@ -900,7 +903,7 @@ class PaymentShortcut extends StatelessWidget {
   final double size;
   final Widget destPage;
 
-  PaymentShortcut({
+  const PaymentShortcut({
     Key? key,
     required this.image,
     required this.size,
@@ -936,7 +939,7 @@ class PaymentShortcut extends StatelessWidget {
                   height: size / 2.5,
                 ),
               )),
-          SizedBox(height: 8),
+          SizedBox(height: 8 * fem),
           Text(
             label,
             style: GoogleFonts.leagueSpartan(

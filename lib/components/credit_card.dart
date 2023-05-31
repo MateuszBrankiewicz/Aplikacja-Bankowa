@@ -24,11 +24,11 @@ class CreditCardWidget extends StatelessWidget {
             '${match[1]} ${match[2]} ${match[3]} ${match[4]} ${match[5]}');
 
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
           color: AppColors.black,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               offset: Offset(0, 5),
               spreadRadius: 8,
@@ -46,16 +46,16 @@ class CreditCardWidget extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.credit_card,
                     color: AppColors.white,
                     size: 20,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   Text(
-                    'BALANCE: ' + currentBalance + '\$',
+                    'BALANCE: $currentBalance\$',
                     style: AppFonts.cardH1,
                   ),
                 ],
@@ -66,7 +66,7 @@ class CreditCardWidget extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Row(
@@ -78,7 +78,7 @@ class CreditCardWidget extends StatelessWidget {
               )
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Row(
@@ -88,7 +88,7 @@ class CreditCardWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('CARDHOLDER', style: AppFonts.cardH2),
-                  SizedBox(
+                  const SizedBox(
                     height: 4,
                   ),
                   Text(cardHolder.toUpperCase(), style: AppFonts.cardH1),
@@ -101,7 +101,7 @@ class CreditCardWidget extends StatelessWidget {
                     'EXPIRES',
                     style: AppFonts.cardH2,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 4,
                   ),
                   Text(expiryDate, style: AppFonts.cardH1),

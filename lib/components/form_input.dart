@@ -9,8 +9,7 @@ class InputForm extends StatelessWidget {
   final IconData icon;
   final bool obscure;
   final bool isNumeric;
-  final void Function(String)?
-      onChanged; // Use Function type instead of ValueChanged
+  final void Function(String)? onChanged;
 
   const InputForm({
     Key? key,

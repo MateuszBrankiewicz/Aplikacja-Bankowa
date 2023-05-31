@@ -1,11 +1,9 @@
-import 'package:appbank/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:appbank/components/colors.dart';
 
 class RecentTransactionsWidget extends StatelessWidget {
   final List<Tranzakcja> tranzakcje;
-  final int _selectedIndex = 0;
 
   const RecentTransactionsWidget({Key? key, required this.tranzakcje})
       : super(key: key);
@@ -38,7 +36,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 2),
             SizedBox(
               height: 186,
               child: ListView.separated(
@@ -73,7 +71,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                                   fontSize: 22,
                                 ),
                               ),
-                              SizedBox(height: 6),
+                              const SizedBox(height: 6),
                               Text(
                                 tranzakcja.description ?? 'N/A',
                                 style: GoogleFonts.leagueSpartan(
@@ -92,7 +90,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                             style: TextStyle(
                               color: isNegative
                                   ? AppColors.darkGrey
-                                  : Color(0xff1fe9ad),
+                                  : AppColors.green,
                               fontWeight: FontWeight.bold,
                               fontSize: 22,
                             ),

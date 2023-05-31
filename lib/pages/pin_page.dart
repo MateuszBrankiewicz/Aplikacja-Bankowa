@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import '../components/logo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:appbank/components/colors.dart';
-import 'package:appbank/components/my_button.dart';
 import 'package:appbank/components/fonts.dart';
 
 //Custom Keyboard
@@ -32,10 +30,9 @@ class NumberKeyboard extends StatelessWidget {
     ];
     double baseWidth = 375;
     double fem = MediaQuery.of(context).size.width / baseWidth;
-    // double ffem = fem * 0.97;
     return SizedBox(
-      height: 300 * fem,
-      width: 240 * fem, // set the height of the number keyboard
+      height: 320 * fem,
+      width: 240 * fem,
       child: GridView.count(
         crossAxisSpacing: 25 * fem,
         mainAxisSpacing: 7 * fem,
@@ -43,9 +40,8 @@ class NumberKeyboard extends StatelessWidget {
         children: numbers.map((number) {
           return Container(
             decoration: BoxDecoration(
-              color: AppColors.white, // set the background color to white
-              borderRadius: BorderRadius.circular(
-                  80 * fem), // set the border radius to 30
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(80 * fem),
             ),
             child: TextButton(
               child: number == '<'
@@ -178,7 +174,6 @@ class _PinInputScreenState extends State<PinInputScreen> {
           });
     } else {
       try {
-        print(_pin);
         String pin = _pin;
         String type = widget.type;
 
@@ -207,7 +202,7 @@ class _PinInputScreenState extends State<PinInputScreen> {
             if (dataPin.exists) {
               final firepin = dataPin.data()?['pin'];
               if (firepin == pin) {
-                changeScreen(HomePage());
+                changeScreen(const HomePage());
               } else {
                 // ignore: use_build_context_synchronously
                 showDialog(
@@ -239,10 +234,7 @@ class _PinInputScreenState extends State<PinInputScreen> {
                       );
                     });
               }
-
-              //navigate to the home page
             } else {
-              // Show error dialog
               // ignore: use_build_context_synchronously
               showDialog(
                   context: context,
@@ -281,7 +273,7 @@ class _PinInputScreenState extends State<PinInputScreen> {
                 .update({'pin': pin}); // specify the new pin value
 
             // Show success dialog and navigate to the home page
-            changeScreen(HomePage());
+            changeScreen(const HomePage());
           }
         }
       } catch (error) {
@@ -347,7 +339,7 @@ class _PinInputScreenState extends State<PinInputScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   SizedBox(
-                    height: 160 * fem,
+                    height: 140 * fem,
                   ),
                   Text(
                     type == 'login' ? "Enter your pin!" : "Create your pin!",
